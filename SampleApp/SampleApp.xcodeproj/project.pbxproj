@@ -1,0 +1,510 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 63;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		115B6F703AFA86BB971BB979 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 623C0CF8A53AC78C910062BF /* ContentView.swift */; };
+		6D51616C2EAA41A800D3AA8B /* WebRTCPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D51616B2EAA41A200D3AA8B /* WebRTCPreviewView.swift */; };
+		6D8815352EA55519003EC781 /* WebRTC in Frameworks */ = {isa = PBXBuildFile; productRef = 6D8815342EA55519003EC781 /* WebRTC */; };
+		6DA466732EA579D000A857C6 /* StandalonePublishView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DA4666F2EA579D000A857C6 /* StandalonePublishView.swift */; };
+		6DA466742EA579D000A857C6 /* StandaloneSubscribeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DA466702EA579D000A857C6 /* StandaloneSubscribeView.swift */; };
+		6DA466752EA579D000A857C6 /* StreamManagerSubscribeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DA466722EA579D000A857C6 /* StreamManagerSubscribeView.swift */; };
+		6DA466762EA579D000A857C6 /* StreamManagerPublishView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DA466712EA579D000A857C6 /* StreamManagerPublishView.swift */; };
+		6DA466772EA579D000A857C6 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DA4666E2EA579D000A857C6 /* SettingsView.swift */; };
+		6DA466792EA7C0CF00A857C6 /* SettingsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DA466782EA7C0C800A857C6 /* SettingsManager.swift */; };
+		702417A8B729903716C03656 /* SampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 725AF3CA546011CA2D137BF0 /* SampleApp.swift */; };
+		827D9BD9EECED5AC8A2F3557 /* Red5WebRTCKit in Frameworks */ = {isa = PBXBuildFile; productRef = 83E0ABDB632D940B9B82FC4F /* Red5WebRTCKit */; };
+		F744840EF6CBECF2FC82F37A /* Red5WebRTCKit in Frameworks */ = {isa = PBXBuildFile; productRef = 29651CD75B3A721E47C080AB /* Red5WebRTCKit */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		DA20698AB3480BE0BBEEABDF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3F108E0E1A9C2FF2E8F23400 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 69D3C2A73C3237C27B28F505;
+			remoteInfo = SampleApp;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		163DC6DF7B01CB383ED47399 /* SampleAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SampleAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		623C0CF8A53AC78C910062BF /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		6D51616B2EAA41A200D3AA8B /* WebRTCPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebRTCPreviewView.swift; sourceTree = "<group>"; };
+		6DA4666E2EA579D000A857C6 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		6DA4666F2EA579D000A857C6 /* StandalonePublishView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StandalonePublishView.swift; sourceTree = "<group>"; };
+		6DA466702EA579D000A857C6 /* StandaloneSubscribeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StandaloneSubscribeView.swift; sourceTree = "<group>"; };
+		6DA466712EA579D000A857C6 /* StreamManagerPublishView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamManagerPublishView.swift; sourceTree = "<group>"; };
+		6DA466722EA579D000A857C6 /* StreamManagerSubscribeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamManagerSubscribeView.swift; sourceTree = "<group>"; };
+		6DA466782EA7C0C800A857C6 /* SettingsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsManager.swift; sourceTree = "<group>"; };
+		725AF3CA546011CA2D137BF0 /* SampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleApp.swift; sourceTree = "<group>"; };
+		926B243E7397BE09F5A32F91 /* Red5WebRTCKit */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Red5WebRTCKit; path = ../Red5WebRTCKit; sourceTree = SOURCE_ROOT; };
+		B96A5BE77A87BA78BA16575E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		DD0E01F9D77DC91660EB290F /* SampleApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SampleApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		0AA14396AD996B6593C9EAA8 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				827D9BD9EECED5AC8A2F3557 /* Red5WebRTCKit in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9923C1DC7DBFB3FC9A16688E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F744840EF6CBECF2FC82F37A /* Red5WebRTCKit in Frameworks */,
+				6D8815352EA55519003EC781 /* WebRTC in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		6E373651B9BB3262E8B686E3 /* UITests */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = UITests;
+			sourceTree = "<group>";
+		};
+		6E946A22C297953FEF67562A /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				6D51616B2EAA41A200D3AA8B /* WebRTCPreviewView.swift */,
+				6DA466782EA7C0C800A857C6 /* SettingsManager.swift */,
+				6DA4666E2EA579D000A857C6 /* SettingsView.swift */,
+				6DA4666F2EA579D000A857C6 /* StandalonePublishView.swift */,
+				6DA466702EA579D000A857C6 /* StandaloneSubscribeView.swift */,
+				6DA466712EA579D000A857C6 /* StreamManagerPublishView.swift */,
+				6DA466722EA579D000A857C6 /* StreamManagerSubscribeView.swift */,
+				623C0CF8A53AC78C910062BF /* ContentView.swift */,
+				725AF3CA546011CA2D137BF0 /* SampleApp.swift */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
+		95B484EFB95AA7854C88CB61 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				B96A5BE77A87BA78BA16575E /* Info.plist */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		C62D65BC2378A8F8766F8E3E = {
+			isa = PBXGroup;
+			children = (
+				E4F3AF9EA173644759DEF899 /* Packages */,
+				95B484EFB95AA7854C88CB61 /* Resources */,
+				6E946A22C297953FEF67562A /* Sources */,
+				EDAA898CACD5BD8CA312640B /* Tests */,
+				6E373651B9BB3262E8B686E3 /* UITests */,
+				EC09C6124F53F34B3B06618A /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		E4F3AF9EA173644759DEF899 /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				926B243E7397BE09F5A32F91 /* Red5WebRTCKit */,
+			);
+			name = Packages;
+			sourceTree = "<group>";
+		};
+		EC09C6124F53F34B3B06618A /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				DD0E01F9D77DC91660EB290F /* SampleApp.app */,
+				163DC6DF7B01CB383ED47399 /* SampleAppTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		EDAA898CACD5BD8CA312640B /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Tests;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		69D3C2A73C3237C27B28F505 /* SampleApp */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1C4C9E1641DBA8E16E60B680 /* Build configuration list for PBXNativeTarget "SampleApp" */;
+			buildPhases = (
+				4EB4BFD39782C29A3595B653 /* Sources */,
+				9923C1DC7DBFB3FC9A16688E /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SampleApp;
+			packageProductDependencies = (
+				29651CD75B3A721E47C080AB /* Red5WebRTCKit */,
+				6D8815342EA55519003EC781 /* WebRTC */,
+			);
+			productName = SampleApp;
+			productReference = DD0E01F9D77DC91660EB290F /* SampleApp.app */;
+			productType = "com.apple.product-type.application";
+		};
+		EEAEA467BCC00C3E95D72DB5 /* SampleAppTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 03CE24C21855C2D5833F9675 /* Build configuration list for PBXNativeTarget "SampleAppTests" */;
+			buildPhases = (
+				27662B0B140F4FB0CF118E79 /* Sources */,
+				0AA14396AD996B6593C9EAA8 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				9A8DC1D197187BBE2A4C561E /* PBXTargetDependency */,
+			);
+			name = SampleAppTests;
+			packageProductDependencies = (
+				83E0ABDB632D940B9B82FC4F /* Red5WebRTCKit */,
+			);
+			productName = SampleAppTests;
+			productReference = 163DC6DF7B01CB383ED47399 /* SampleAppTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		3F108E0E1A9C2FF2E8F23400 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 2600;
+			};
+			buildConfigurationList = 7FCD0870993D894B84E16173 /* Build configuration list for PBXProject "SampleApp" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = C62D65BC2378A8F8766F8E3E;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				AABCF29BC18D98A3DB782C38 /* XCLocalSwiftPackageReference "/Users/mustafaboleken/Documents/GitHub/red5pro-ios-sdk/Red5WebRTCKit" */,
+				6D8815332EA55519003EC781 /* XCRemoteSwiftPackageReference "WebRTC" */,
+			);
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				69D3C2A73C3237C27B28F505 /* SampleApp */,
+				EEAEA467BCC00C3E95D72DB5 /* SampleAppTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		27662B0B140F4FB0CF118E79 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4EB4BFD39782C29A3595B653 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6D51616C2EAA41A800D3AA8B /* WebRTCPreviewView.swift in Sources */,
+				6DA466732EA579D000A857C6 /* StandalonePublishView.swift in Sources */,
+				6DA466742EA579D000A857C6 /* StandaloneSubscribeView.swift in Sources */,
+				6DA466752EA579D000A857C6 /* StreamManagerSubscribeView.swift in Sources */,
+				6DA466762EA579D000A857C6 /* StreamManagerPublishView.swift in Sources */,
+				6DA466772EA579D000A857C6 /* SettingsView.swift in Sources */,
+				115B6F703AFA86BB971BB979 /* ContentView.swift in Sources */,
+				702417A8B729903716C03656 /* SampleApp.swift in Sources */,
+				6DA466792EA7C0CF00A857C6 /* SettingsManager.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		9A8DC1D197187BBE2A4C561E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 69D3C2A73C3237C27B28F505 /* SampleApp */;
+			targetProxy = DA20698AB3480BE0BBEEABDF /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		3C369ED413F8B808BFCD2226 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = Resources/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = bola.com.red5.SampleApp;
+				PRODUCT_NAME = SampleApp;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		9303882A1F2C3F1C4DCBB9D2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = bola.com.red5.SampleAppTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SampleApp.app/SampleApp";
+			};
+			name = Release;
+		};
+		9F7C5C53EADC8EB05C680D9F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = VPF2Y9AU9Q;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		B5E66F216F31A6E3CDDFA68A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = Resources/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = bola.com.red5.SampleApp;
+				PRODUCT_NAME = SampleApp;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		C3D140D81C7DB2CCBF6837F7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = VPF2Y9AU9Q;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		D6AF7024DB4BB5B284FBFCD8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = bola.com.red5.SampleAppTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SampleApp.app/SampleApp";
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		03CE24C21855C2D5833F9675 /* Build configuration list for PBXNativeTarget "SampleAppTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D6AF7024DB4BB5B284FBFCD8 /* Debug */,
+				9303882A1F2C3F1C4DCBB9D2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		1C4C9E1641DBA8E16E60B680 /* Build configuration list for PBXNativeTarget "SampleApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B5E66F216F31A6E3CDDFA68A /* Debug */,
+				3C369ED413F8B808BFCD2226 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		7FCD0870993D894B84E16173 /* Build configuration list for PBXProject "SampleApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9F7C5C53EADC8EB05C680D9F /* Debug */,
+				C3D140D81C7DB2CCBF6837F7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		AABCF29BC18D98A3DB782C38 /* XCLocalSwiftPackageReference "/Users/mustafaboleken/Documents/GitHub/red5pro-ios-sdk/Red5WebRTCKit" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = "/Users/mustafaboleken/Documents/GitHub/red5pro-ios-sdk/Red5WebRTCKit";
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		6D8815332EA55519003EC781 /* XCRemoteSwiftPackageReference "WebRTC" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/stasel/WebRTC";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 140.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		29651CD75B3A721E47C080AB /* Red5WebRTCKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Red5WebRTCKit;
+		};
+		6D8815342EA55519003EC781 /* WebRTC */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 6D8815332EA55519003EC781 /* XCRemoteSwiftPackageReference "WebRTC" */;
+			productName = WebRTC;
+		};
+		83E0ABDB632D940B9B82FC4F /* Red5WebRTCKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Red5WebRTCKit;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 3F108E0E1A9C2FF2E8F23400 /* Project object */;
+}
