@@ -2,6 +2,7 @@ import SwiftUI
 import AVFoundation
 import WebRTC
 import Red5WebRTCKit
+import PubNubSDK
 
 // MARK: - Publish Manager (Screen-specific)
 class StreamManagerPublishManager: NSObject, ObservableObject {
@@ -23,8 +24,6 @@ class StreamManagerPublishManager: NSObject, ObservableObject {
         
         // Configure the client using SettingsManager
         config.streamManagerHost = SettingsManager.getStreamManagerHost()
-        config.serverIp = SettingsManager.getStandaloneServerIp()
-        config.port = 443
         config.appName = SettingsManager.getAppName()
         config.streamName = SettingsManager.getStreamName()
         config.userName = SettingsManager.getUserName()
@@ -41,8 +40,6 @@ class StreamManagerPublishManager: NSObject, ObservableObject {
         
         // Initialize the client with builder pattern
         webrtcClient = Red5WebrtcClientBuilder()
-            .setServerIp(SettingsManager.getStandaloneServerIp())
-            .setPort(config.port)
             .setAppName(SettingsManager.getAppName())
             .setStreamManagerHost(SettingsManager.getStreamManagerHost())
             .setNodeGroup(SettingsManager.getNodeGroup())
@@ -53,6 +50,7 @@ class StreamManagerPublishManager: NSObject, ObservableObject {
             .setVideoHeight(config.videoHeight)
             .setVideoFps(config.videoFps)
             .setVideoBitrate(config.videoBitrate)
+            .setTurnServer(uri: SettingsManager.getTurnUrl(), username: SettingsManager.getTurnUsername(), password: SettingsManager.getTurnPassword())
             .setEventListener(self)
             .build()
         
@@ -146,6 +144,26 @@ class StreamManagerPublishManager: NSObject, ObservableObject {
 
 // MARK: - Red5ProWebrtcEventDelegate Implementation
 extension StreamManagerPublishManager: Red5ProWebrtcEventDelegate {
+    func onChatMessageReceived(channel: String, message: any PubNubSDK.JSONCodable) {
+        print("chat message received")
+    }
+    
+    func onChatConnected() {
+        print("chat connected")
+    }
+    
+    func onChatDisconnected() {
+        print("chat disconnected")
+    }
+    
+    func onChatSendError(channel: String, errorMessage: String) {
+        print("chat send error")
+    }
+    
+    func onChatSendSuccess(channel: String, timetoken: NSNumber) {
+        print("chat send success")
+    }
+    
     func onPublishStarted() {
         DispatchQueue.main.async {
             self.statusCallback?("Publishing...")

@@ -20,7 +20,7 @@ struct GridView: View {
         GridItem(.flexible())
     ]
     
-    let items = ["Standalone Publish Screen", "Standalone Subscribe Screen", "Stream Manager Publish Screen", "Stream Manager Subscribe Screen", "Settings"]
+    let items = ["Standalone Publish Screen", "Standalone Subscribe Screen", "Stream Manager Publish Screen", "Stream Manager Subscribe Screen", "Chat Screen", "Settings"]
     
     var body: some View {
         ScrollView {
@@ -57,6 +57,8 @@ struct GridView: View {
             StreamManagerPublishScreen()
         case "Stream Manager Subscribe Screen":
             StreamManagerSubscribeScreen()
+        case "Chat Screen":
+            ChatDemoView()
         case "Settings":
             SettingsScreen()
         default:

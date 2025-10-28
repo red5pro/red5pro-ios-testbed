@@ -2,6 +2,7 @@ import SwiftUI
 import AVFoundation
 import WebRTC
 import Red5WebRTCKit
+import PubNubSDK
 
 // MARK: - Publish Manager (Screen-specific)
 class StandalonePublishManager: NSObject, ObservableObject {
@@ -22,9 +23,8 @@ class StandalonePublishManager: NSObject, ObservableObject {
         self.localVideoRenderer?.videoContentMode = .scaleAspectFill
         
         // Configure the client using SettingsManager
-        config.streamManagerHost = SettingsManager.getStreamManagerHost()
         config.serverIp = SettingsManager.getStandaloneServerIp()
-        config.port = 443
+        config.port = SettingsManager.getStandaloneServerPort()
         config.appName = SettingsManager.getAppName()
         config.streamName = SettingsManager.getStreamName()
         config.userName = SettingsManager.getUserName()
@@ -42,10 +42,8 @@ class StandalonePublishManager: NSObject, ObservableObject {
         // Initialize the client with builder pattern
         webrtcClient = Red5WebrtcClientBuilder()
             .setServerIp(SettingsManager.getStandaloneServerIp())
-            .setPort(config.port)
+            .setPort(SettingsManager.getStandaloneServerPort())
             .setAppName(SettingsManager.getAppName())
-            .setStreamManagerHost(SettingsManager.getStreamManagerHost())
-            .setNodeGroup(SettingsManager.getNodeGroup())
             .setStreamName(SettingsManager.getStreamName())
             .setVideoEnabled(config.videoEnabled)
             .setAudioEnabled(config.audioEnabled)
@@ -53,6 +51,7 @@ class StandalonePublishManager: NSObject, ObservableObject {
             .setVideoHeight(config.videoHeight)
             .setVideoFps(config.videoFps)
             .setVideoBitrate(config.videoBitrate)
+            .setTurnServer(uri: SettingsManager.getTurnUrl(), username: SettingsManager.getTurnUsername(), password: SettingsManager.getTurnPassword())
             .setEventListener(self)
             .build()
         
@@ -146,6 +145,26 @@ class StandalonePublishManager: NSObject, ObservableObject {
 
 // MARK: - Red5ProWebrtcEventDelegate Implementation
 extension StandalonePublishManager: Red5ProWebrtcEventDelegate {
+    func onChatMessageReceived(channel: String, message: any PubNubSDK.JSONCodable) {
+        print("chat message received")
+    }
+    
+    func onChatConnected() {
+        print("chat connected")
+    }
+    
+    func onChatDisconnected() {
+        print("chat disconnected")
+    }
+    
+    func onChatSendError(channel: String, errorMessage: String) {
+        print("chat send error")
+    }
+    
+    func onChatSendSuccess(channel: String, timetoken: NSNumber) {
+        print("chat send success")
+    }
+    
     func onPublishStarted() {
         DispatchQueue.main.async {
             self.statusCallback?("Publishing...")
@@ -230,7 +249,7 @@ extension StandalonePublishManager: Red5ProWebrtcEventDelegate {
 
 // MARK: - Standalone Publish Screen
 struct StandalonePublishScreen: View {
-    @StateObject private var publishManager = PublishManager()
+    @StateObject private var publishManager = StandalonePublishManager()
     @State private var isVideoMuted = false
     @State private var isAudioMuted = false
     @State private var isFrontCamera = true
