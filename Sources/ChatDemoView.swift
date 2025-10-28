@@ -340,7 +340,7 @@ struct ChatDemoView: View {
         DispatchQueue.main.async {
             // Parse the received message
             if let messageDict = message.rawValue as? [String: Any],
-               let username = messageDict["username"] as? String,
+               let username = messageDict["name"] as? String,
                let content = messageDict["message"] as? String {
                 
                 // Don't show our own messages again
