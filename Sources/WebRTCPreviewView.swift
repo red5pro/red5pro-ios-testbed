@@ -1,6 +1,6 @@
 //
 //  WebRTCPreviewView.swift
-//  SampleApp
+//  TestBed
 //
 //  Created by Mustafa BOLEKEN on 28.10.2025.
 //

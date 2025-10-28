@@ -1,3 +1,10 @@
+//
+//  ContentView.swift
+//  TestBed
+//
+//  Created by Mustafa BOLEKEN on 21.10.2025.
+//
+
 import SwiftUI
 
 struct ContentView: View {
@@ -14,7 +21,6 @@ struct ContentView: View {
 }
 
 struct GridView: View {
-    // Changed to 2 columns
     let columns = [
         GridItem(.flexible()),
         GridItem(.flexible())

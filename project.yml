@@ -1,4 +1,4 @@
-name: SampleApp
+name: TestBed
 options:
   bundleIdPrefix: com.red5
 
@@ -10,7 +10,7 @@ packages:
     path: /Users/mustafaboleken/Documents/GitHub/red5pro-ios-sdk/Red5WebRTCKit
 
 targets:
-  SampleApp:
+  TestBed:
     type: application
     platform: iOS
     deploymentTarget: "15.0"
@@ -21,12 +21,12 @@ targets:
       path: Resources/Info.plist
     settings:
       base:
-        PRODUCT_NAME: SampleApp
+        PRODUCT_NAME: TestBed
     dependencies:
       - package: WebRTC
       - package: Red5WebRTCKit
 
-  SampleAppTests:
+  TestBedTests:
     type: bundle.unit-test
     platform: iOS
     deploymentTarget: "15.0"
@@ -34,13 +34,13 @@ targets:
       - path: Tests
     settings:
       base:
-        GENERATE_INFOPLIST_FILE: YES      # ← auto-generate  
+        GENERATE_INFOPLIST_FILE: YES      # ← auto-generate
     dependencies:
-      - target: SampleApp
+      - target: TestBed
       - package: Red5WebRTCKit
       - package: WebRTC
 
-  SampleAppUITests:
+ TestBedUITests:
     type: bundle.ui-testing
     platform: iOS
     deploymentTarget: "15.0"
@@ -48,21 +48,21 @@ targets:
       - path: UITests
     settings:
       base:
-        GENERATE_INFOPLIST_FILE: YES      # ← auto-generate  
+        GENERATE_INFOPLIST_FILE: YES      # ← auto-generate
     dependencies:
-      - target: SampleApp   # UI tests run your app target
+      - target: TestBed   # UI tests run your app target
 
 schemes:
-  SampleApp:
+  TestBed:
     build:
       targets:
-        SampleApp: all
-        SampleAppTests: test
-        SampleAppUITests: test
+        TestBed: all
+        TestBedTests: test
+        TestBedUITests: test
     run:
       config: Debug
     test:
       config: Debug
       targets:
-        - name: SampleAppTests
-        - name: SampleAppUITests
+        - name: TestBedTests
+        - name: TestBedUITests

@@ -1,3 +1,10 @@
+//
+//  StreamManagerSubscribeView.swift
+//  TestBed
+//
+//  Created by Mustafa BOLEKEN on 21.10.2025.
+//
+
 import SwiftUI
 import AVFoundation
 import WebRTC
@@ -26,7 +33,7 @@ class StreamManagerSubscribeManager: NSObject, ObservableObject {
         // Configure the client using SettingsManager
         config.streamManagerHost = SettingsManager.getStreamManagerHost()
         config.serverIp = SettingsManager.getStandaloneServerIp()
-        config.port = 443
+        config.port = SettingsManager.getStandaloneServerPort()
         config.appName = SettingsManager.getAppName()
         config.streamName = SettingsManager.getStreamName()
         config.userName = SettingsManager.getUserName()
@@ -111,23 +118,33 @@ class StreamManagerSubscribeManager: NSObject, ObservableObject {
 // MARK: - Red5ProWebrtcEventDelegate Implementation
 extension StreamManagerSubscribeManager: Red5ProWebrtcEventDelegate {
     func onChatMessageReceived(channel: String, message: any PubNubSDK.JSONCodable) {
-        print("chat message received")
+        DispatchQueue.main.async {
+            print("chat message received")
+        }
     }
     
     func onChatConnected() {
-        print("chat connected")
+        DispatchQueue.main.async {
+            print("chat connected")
+        }
     }
     
     func onChatDisconnected() {
-        print("chat disconnected")
+        DispatchQueue.main.async {
+            print("chat disconnected")
+        }
     }
     
     func onChatSendError(channel: String, errorMessage: String) {
-        print("chat send error")
+        DispatchQueue.main.async {
+            print("chat send error")
+        }
     }
     
     func onChatSendSuccess(channel: String, timetoken: NSNumber) {
-        print("chat send success")
+        DispatchQueue.main.async {
+            print("chat send success")
+        }
     }
     
     func onPublishStarted() {

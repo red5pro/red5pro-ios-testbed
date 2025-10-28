@@ -1,51 +1,9 @@
 //
 //  ChatDemoView.swift
-//  SampleApp
+//  TestBed
 //
-//  Created by Assistant on 27.10.2025.
+//  Created by Mustafa BOLEKEN on 27.10.2025.
 //
-
-/*
- PubNub Chat Demo View
- 
- This is a fully functional chat application that integrates with your Red5WebRTC client
- to provide real-time messaging capabilities using PubNub.
- 
- SETUP INSTRUCTIONS:
- 
- 1. Get PubNub Keys:
-    - Sign up at https://www.pubnub.com
-    - Create a new app in the PubNub dashboard
-    - Get your Publish Key and Subscribe Key
- 
- 2. Configure the app:
-    - Open the chat demo
-    - Tap "Settings" in the top left
-    - Enter your PubNub Publish and Subscribe keys
-    - Optionally change your username and channel name
-    - Tap "Done"
- 
- 3. Connect and chat:
-    - Tap "Connect" in the top right
-    - Once connected, you can send and receive messages
-    - Other users on the same channel will see your messages in real-time
- 
- FEATURES:
- - Real-time messaging using PubNub
- - Custom usernames and channel names
- - Message history and timestamps
- - Connection status indicator
- - Error handling and user feedback
- - Clean, modern UI with message bubbles
- - System messages for status updates
- 
- TECHNICAL DETAILS:
- - Uses Red5WebrtcClient with PubNub integration
- - Messages are sent as JSON objects with metadata
- - Automatic scroll to latest messages
- - Thread-safe UI updates
- - Proper resource cleanup
- */
 
 import SwiftUI
 import PubNubSDK
@@ -58,7 +16,7 @@ struct ChatDemoView: View {
     @State private var isConnected = false
     @State private var connectionStatus = "Disconnected"
     @State private var currentUsername = "User\(Int.random(in: 1000...9999))"
-    @State private var currentChannel = "red5pro-chat-demo"
+    @State private var currentChannel = "room1"
     @State private var showingSettings = false
     @State private var errorMessage: String?
     @State private var showingError = false
@@ -116,6 +74,7 @@ struct ChatDemoView: View {
                 Text(errorMessage ?? "Unknown error occurred")
             }
             .onAppear {
+                currentChannel = SettingsManager.getPubnubChannel()
                 loadDemoMessages()
             }
         }
@@ -306,7 +265,7 @@ struct ChatDemoView: View {
     private func loadDemoMessages() {
         messages = [
             ChatMessage(
-                content: "Welcome to PubNub Chat Demo! 🎉",
+                content: "Welcome to Chat Demo!",
                 username: "System",
                 messageType: .system
             ),
@@ -324,7 +283,7 @@ struct ChatDemoView: View {
         DispatchQueue.main.async {
             self.isConnected = true
             self.connectionStatus = "Connected"
-            self.addSystemMessage("✅ Connected to PubNub chat!")
+            self.addSystemMessage("Connected to chat!")
         }
     }
     
@@ -332,7 +291,7 @@ struct ChatDemoView: View {
         DispatchQueue.main.async {
             self.isConnected = false
             self.connectionStatus = "Disconnected"
-            self.addSystemMessage("❌ Disconnected from PubNub chat")
+            self.addSystemMessage("Disconnected from chat")
         }
     }
     
@@ -367,7 +326,7 @@ struct ChatDemoView: View {
     
     fileprivate func handleSendSuccess(channel: String, timetoken: NSNumber) {
         // Message was sent successfully
-        print("✅ Message sent successfully with timetoken: \(timetoken)")
+        print("Message sent successfully with timetoken: \(timetoken)")
     }
 }
 

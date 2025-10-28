@@ -1,6 +1,6 @@
 //
 //  SettingsView.swift
-//  SampleApp
+//  TestBed
 //
 //  Created by Mustafa BOLEKEN on 21.10.2025.
 //
@@ -141,6 +141,15 @@ struct SettingsScreen: View {
                 }
                 
                 Section(header: Text("PubNub Credentials")) {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Channel Name")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        TextField("Enter channel name", text: $settings.pubnubChannel)
+                            .textInputAutocapitalization(.never)
+                            .autocorrectionDisabled()
+                    }
+                    
                     VStack(alignment: .leading, spacing: 4) {
                         Text("Publish Key")
                             .font(.caption)

@@ -1,6 +1,6 @@
 //
 //  SettingsManager.swift
-//  SampleApp
+//  TestBed
 //
 //  Created by Mustafa BOLEKEN on 21.10.2025.
 //
@@ -27,6 +27,7 @@ class SettingsManager: ObservableObject {
         static let streamName = "stream_name"
         static let userName = "username"
         static let password = "password"
+        static let pubnubChannel = "pubnub_channel_name"
         static let pubnubPubKey = "pubnub_publish_key"
         static let pubnubSubKey = "pubnub_subscribe_key"
         static let enableDebug = "enable_debug"
@@ -82,6 +83,10 @@ class SettingsManager: ObservableObject {
         didSet { defaults.set(password, forKey: Keys.password) }
     }
     
+    @Published var pubnubChannel: String {
+        didSet { defaults.set(pubnubChannel, forKey: Keys.pubnubChannel) }
+    }
+    
     @Published var pubnubPubKey: String {
         didSet { defaults.set(pubnubPubKey, forKey: Keys.pubnubPubKey) }
     }
@@ -104,9 +109,10 @@ class SettingsManager: ObservableObject {
         self.sdkLicenseKey = defaults.string(forKey: Keys.sdkLicenseKey) ?? ""
         self.appName = defaults.string(forKey: Keys.appName) ?? "live"
         self.nodeGroup = defaults.string(forKey: Keys.nodeGroup) ?? "default"
-        self.streamName = defaults.string(forKey: Keys.streamName) ?? "myStream"
+        self.streamName = defaults.string(forKey: Keys.streamName) ?? "stream1"
         self.userName = defaults.string(forKey: Keys.userName) ?? ""
         self.password = defaults.string(forKey: Keys.password) ?? ""
+        self.pubnubChannel = defaults.string(forKey: Keys.pubnubChannel) ?? "room1"
         self.pubnubPubKey = defaults.string(forKey: Keys.pubnubPubKey) ?? ""
         self.pubnubSubKey = defaults.string(forKey: Keys.pubnubSubKey) ?? ""
         
@@ -155,7 +161,7 @@ class SettingsManager: ObservableObject {
     
     static func getStreamName() -> String {
         let value = shared.streamName.trimmingCharacters(in: .whitespaces)
-        return value.isEmpty ? "myStream" : value
+        return value.isEmpty ? "stream1" : value
     }
     
     static func getUserName() -> String {
@@ -164,6 +170,11 @@ class SettingsManager: ObservableObject {
     
     static func getPassword() -> String {
         return shared.password
+    }
+    
+    static func getPubnubChannel() -> String {
+        let value = shared.pubnubChannel.trimmingCharacters(in: .whitespaces)
+        return value.isEmpty ? "room1" : value
     }
     
     static func getPubnubPubKey() -> String {
@@ -192,6 +203,7 @@ class SettingsManager: ObservableObject {
         sdkLicenseKey = sdkLicenseKey.trimmingCharacters(in: .whitespaces)
         userName = userName.trimmingCharacters(in: .whitespaces)
         password = password.trimmingCharacters(in: .whitespaces)
+        pubnubChannel = pubnubChannel.trimmingCharacters(in: .whitespaces)
         pubnubPubKey = pubnubPubKey.trimmingCharacters(in: .whitespaces)
         pubnubSubKey = pubnubSubKey.trimmingCharacters(in: .whitespaces)
         
@@ -202,7 +214,7 @@ class SettingsManager: ObservableObject {
             nodeGroup = "default"
         }
         if streamName.trimmingCharacters(in: .whitespaces).isEmpty {
-            streamName = "myStream"
+            streamName = "stream1"
         }
         if standaloneServerPort <= 0 {
             standaloneServerPort = 5080
