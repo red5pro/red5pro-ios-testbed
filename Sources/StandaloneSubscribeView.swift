@@ -1,6 +1,6 @@
 //
 //  StandaloneSubscribeView.swift
-//  TestBed
+//  WebRTCTestBed
 //
 //  Created by Mustafa BOLEKEN on 21.10.2025.
 //
@@ -15,21 +15,21 @@ import PubNubSDK
 class StandaloneSubscribeManager: NSObject, ObservableObject {
     private var webrtcClient: Red5WebrtcClient?
     private var statusCallback: ((String) -> Void)?
-    
+
     @Published var remoteVideoRenderer: RTCMTLVideoView?
     @Published var isReady: Bool = false
     @Published var isSubscribing: Bool = false
-    
+
     private let config = Red5WebrtcClientConfig()
     private var isInitialized = false
-    
+
     func setupDelegate(statusCallback: @escaping (String) -> Void) {
         self.statusCallback = statusCallback
-        
+
         self.remoteVideoRenderer = RTCMTLVideoView()
         self.remoteVideoRenderer?.contentMode = .scaleAspectFill
         self.remoteVideoRenderer?.videoContentMode = .scaleAspectFill
-        
+
         // Configure the client using SettingsManager
         config.streamManagerHost = SettingsManager.getStreamManagerHost()
         config.serverIp = SettingsManager.getStandaloneServerIp()
@@ -45,9 +45,9 @@ class StandaloneSubscribeManager: NSObject, ObservableObject {
         config.videoFps = 30
         config.videoBitrate = 750
         config.nodeGroup = SettingsManager.getNodeGroup()
-        
+
         config.videoRenderer = self.remoteVideoRenderer
-        
+
         // Initialize the client with builder pattern
         webrtcClient = Red5WebrtcClientBuilder()
             .setServerIp(SettingsManager.getStandaloneServerIp())
@@ -63,52 +63,52 @@ class StandaloneSubscribeManager: NSObject, ObservableObject {
             .setTurnServer(uri: SettingsManager.getTurnUrl(), username: SettingsManager.getTurnUsername(), password: SettingsManager.getTurnPassword())
             .setEventListener(self)
             .build()
-        
+
         print("Subscribe Client built")
-        
+
         if let client = self.webrtcClient {
             client.setVideoRenderer(self.remoteVideoRenderer!)
         }
-        
+
         self.statusCallback?("Ready to subscribe")
         isReady = true
     }
-    
+
     // Call this to start subscribing
     func startSubscribe() {
         guard let client = webrtcClient else {
             statusCallback?("Client not initialized")
             return
         }
-        
+
         statusCallback?("Connecting to stream...")
-        
+
         // Start subscribing
         client.subscribe()
         isSubscribing = true
     }
-    
+
     func stopSubscribe() {
         guard let client = webrtcClient else { return }
-        
+
         // Stop subscribing
         client.stopSubscribe()
         isSubscribing = false
-        
+
         statusCallback?("Stopped subscribing")
     }
-    
+
     func release() {
         // Stop everything
         webrtcClient?.stopSubscribe()
-        
+
         // Clean up
         webrtcClient = nil
         remoteVideoRenderer = nil
         isInitialized = false
         isSubscribing = false
     }
-    
+
     // Get the video renderer for SwiftUI view
     func getVideoRenderer() -> RTCMTLVideoView? {
         return remoteVideoRenderer
@@ -122,49 +122,49 @@ extension StandaloneSubscribeManager: Red5ProWebrtcEventDelegate {
             print("chat message received")
         }
     }
-    
+
     func onChatConnected() {
         DispatchQueue.main.async {
             print("chat connected")
         }
     }
-    
+
     func onChatDisconnected() {
         DispatchQueue.main.async {
             print("chat disconnected")
         }
     }
-    
+
     func onChatSendError(channel: String, errorMessage: String) {
         DispatchQueue.main.async {
             print("chat send error")
         }
     }
-    
+
     func onChatSendSuccess(channel: String, timetoken: NSNumber) {
         DispatchQueue.main.async {
             print("chat send success")
         }
     }
-    
+
     func onPublishStarted() {
         DispatchQueue.main.async {
             self.statusCallback?("Publish started")
         }
     }
-    
+
     func onPublishStopped() {
         DispatchQueue.main.async {
             self.statusCallback?("Publish stopped")
         }
     }
-    
+
     func onPublishFailed(error: String) {
         DispatchQueue.main.async {
             self.statusCallback?("Publish error: \(error)")
         }
     }
-    
+
     func onSubscribeStarted() {
         DispatchQueue.main.async {
             self.statusCallback?("Receiving stream...")
@@ -172,7 +172,7 @@ extension StandaloneSubscribeManager: Red5ProWebrtcEventDelegate {
             print("Subscribe started")
         }
     }
-    
+
     func onSubscribeStopped() {
         DispatchQueue.main.async {
             self.statusCallback?("Stopped")
@@ -180,7 +180,7 @@ extension StandaloneSubscribeManager: Red5ProWebrtcEventDelegate {
             print("Subscribe stopped")
         }
     }
-    
+
     func onSubscribeFailed(error: String) {
         DispatchQueue.main.async {
             self.statusCallback?("Error: \(error)")
@@ -188,12 +188,12 @@ extension StandaloneSubscribeManager: Red5ProWebrtcEventDelegate {
             print("Subscribe failed: \(error)")
         }
     }
-    
+
     func onIceConnectionStateChanged(state: IceConnectionState) {
         DispatchQueue.main.async {
             self.statusCallback?("ICE: \(state)")
             print("ICE connection state: \(state)")
-            
+
             // Update connection status based on ICE state
             switch state {
             case .connected, .completed:
@@ -211,11 +211,11 @@ extension StandaloneSubscribeManager: Red5ProWebrtcEventDelegate {
             }
         }
     }
-    
+
     func onConnectionStateChanged(state: PeerConnectionState) {
         DispatchQueue.main.async {
             print("Connection state: \(state)")
-            
+
             // Update status based on peer connection state
             switch state {
             case .connected:
@@ -233,7 +233,7 @@ extension StandaloneSubscribeManager: Red5ProWebrtcEventDelegate {
             }
         }
     }
-    
+
     func onError(error: String) {
         DispatchQueue.main.async {
             self.statusCallback?("Error: \(error)")
@@ -241,19 +241,19 @@ extension StandaloneSubscribeManager: Red5ProWebrtcEventDelegate {
             print("Error: \(error)")
         }
     }
-    
+
     func onPreviewStarted() {
         DispatchQueue.main.async {
             self.statusCallback?("Preview started")
         }
     }
-    
+
     func onPreviewStopped() {
         DispatchQueue.main.async {
             self.statusCallback?("Preview stopped")
         }
     }
-    
+
     func onLicenseValidated(validated: Bool, message: String) {
         DispatchQueue.main.async {
             self.statusCallback?(validated ? "License valid" : "License invalid: \(message)")
@@ -266,11 +266,11 @@ struct StandaloneSubscribeScreen: View {
     @StateObject private var subscribeManager = StandaloneSubscribeManager()
     @State private var statusMessage = "Ready"
     @State private var isFullscreen = false
-    
+
     var body: some View {
         ZStack {
             Color.black.ignoresSafeArea()
-            
+
             // Full-size WebRTC subscribe view
             if subscribeManager.isReady, let renderer = subscribeManager.remoteVideoRenderer {
                 WebRTCPreviewView(renderer: renderer)
@@ -284,11 +284,11 @@ struct StandaloneSubscribeScreen: View {
                                 .resizable()
                                 .frame(width: 120, height: 80)
                                 .foregroundColor(.white.opacity(0.3))
-                            
+
                             Text("No Stream")
                                 .foregroundColor(.white.opacity(0.5))
                                 .font(.title2)
-                                
+
                             ProgressView("Loading...")
                                 .foregroundColor(.white)
                         }
@@ -317,17 +317,17 @@ struct StandaloneSubscribeScreen: View {
                     .cornerRadius(8)
                     .padding(.top, 10)
                     .padding(.leading, 15)
-                    
+
                     Spacer()
                 }
-                
+
                 Spacer()
             }
-            
+
             // Subscribe button at the bottom
             VStack {
                 Spacer()
-                
+
                 HStack(spacing: 20) {
                     // Main Subscribe/Stop Button
                     Button(action: {
@@ -365,7 +365,7 @@ struct StandaloneSubscribeScreen: View {
             cleanup()
         }
     }
-    
+
     private func setupSubscription() {
         // Setup the subscribe manager
         subscribeManager.setupDelegate { message in
@@ -374,7 +374,7 @@ struct StandaloneSubscribeScreen: View {
             }
         }
     }
-    
+
     private func cleanup() {
         subscribeManager.stopSubscribe()
         subscribeManager.release()

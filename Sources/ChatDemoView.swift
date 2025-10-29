@@ -1,6 +1,6 @@
 //
 //  ChatDemoView.swift
-//  TestBed
+//  WebRTCTestBed
 //
 //  Created by Mustafa BOLEKEN on 27.10.2025.
 //
@@ -20,23 +20,23 @@ struct ChatDemoView: View {
     @State private var showingSettings = false
     @State private var errorMessage: String?
     @State private var showingError = false
-    
+
     // Red5Pro WebRTC Client
     @State private var webrtcClient: Red5WebrtcClient?
-    
+
     // Configuration
     @State private var pubKey = ""
     @State private var subKey = ""
-    
+
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
                 // Connection Status Header
                 connectionStatusHeader
-                
+
                 // Messages List
                 messagesScrollView
-                
+
                 // Message Input
                 messageInputSection
             }
@@ -48,7 +48,7 @@ struct ChatDemoView: View {
                         showingSettings = true
                     }
                 }
-                
+
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(isConnected ? "Disconnect" : "Connect") {
                         if isConnected {
@@ -79,9 +79,9 @@ struct ChatDemoView: View {
             }
         }
     }
-    
+
     // MARK: - UI Components
-    
+
     private var connectionStatusHeader: some View {
         HStack {
             HStack(spacing: 6) {
@@ -92,9 +92,9 @@ struct ChatDemoView: View {
                     .font(.caption)
                     .foregroundColor(isConnected ? .green : .red)
             }
-            
+
             Spacer()
-            
+
             Text("Channel: \(currentChannel)")
                 .font(.caption)
                 .foregroundColor(.secondary)
@@ -108,7 +108,7 @@ struct ChatDemoView: View {
             alignment: .bottom
         )
     }
-    
+
     private var messagesScrollView: some View {
         ScrollViewReader { proxy in
             ScrollView {
@@ -130,13 +130,13 @@ struct ChatDemoView: View {
             }
         }
     }
-    
+
     private var messageInputSection: some View {
         VStack(spacing: 0) {
             Rectangle()
                 .frame(height: 1)
                 .foregroundColor(Color(.separator))
-            
+
             HStack(spacing: 12) {
                 if #available(iOS 16.0, *) {
                     TextField("Type a message...", text: $messageText, axis: .vertical)
@@ -148,7 +148,7 @@ struct ChatDemoView: View {
                 } else {
                     // Fallback on earlier versions
                 }
-                
+
                 Button(action: sendMessage) {
                     Image(systemName: "paperplane.fill")
                         .foregroundColor(canSendMessage ? .blue : .gray)
@@ -160,56 +160,56 @@ struct ChatDemoView: View {
             .background(Color(.systemBackground))
         }
     }
-    
+
     private var canSendMessage: Bool {
         isConnected && !messageText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
-    
+
     // MARK: - Chat Functions
-    
+
     private func connectToChat() {
         guard !SettingsManager.getPubnubPubKey().isEmpty && !SettingsManager.getPubnubSubKey().isEmpty else {
             showError("Please configure PubNub keys in Settings")
             return
         }
-        
+
         connectionStatus = "Connecting..."
-        
+
         // Create Red5WebRTC client configuration
         let config = Red5WebrtcClientConfig()
         config.pubnubPublishKey = SettingsManager.getPubnubPubKey()
         config.pubnubSubscribeKey = SettingsManager.getPubnubSubKey()
         config.eventListener = ChatEventListener(chatView: self)
-        
+
         // Create WebRTC client
         let client = Red5WebrtcClientBuilder()
             .setPubnubPublishKey(config.pubnubPublishKey ?? "")
             .setPubnubSubscribeKey(config.pubnubSubscribeKey ?? "")
             .setEventListener(ChatEventListener(chatView: self))
             .build()
-        
+
         webrtcClient = client
-        
+
         // Subscribe to chat channel
         client.subscribeChatChannel(channelName: currentChannel)
-        
+
         addSystemMessage("Connecting to channel '\(currentChannel)'...")
     }
-    
+
     private func disconnectFromChat() {
         webrtcClient?.disconnectChat()
         webrtcClient = nil
-        
+
         isConnected = false
         connectionStatus = "Disconnected"
-        
+
         addSystemMessage("Disconnected from chat")
     }
-    
+
     private func sendMessage() {
         let trimmed = messageText.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty, let client = webrtcClient, isConnected else { return }
-        
+
         // Create message object
         let messageData: [String: Any] = [
             "username": currentUsername,
@@ -217,33 +217,33 @@ struct ChatDemoView: View {
             "timestamp": Date().timeIntervalSince1970,
             "messageId": UUID().uuidString
         ]
-        
+
         // Convert to JSONCodable
         if let jsonData = try? JSONSerialization.data(withJSONObject: messageData),
            let jsonMessage = try? JSONDecoder().decode(AnyJSON.self, from: jsonData) {
-            
+
             // Send via PubNub
             client.sendChatJsonMessage(
                 channelName: currentChannel,
                 jsonObject: jsonMessage,
                 metaData: nil
             )
-            
+
             // Add to local messages immediately
             let chatMessage = ChatMessage(
                 content: trimmed,
                 username: currentUsername,
                 isCurrentUser: true
             )
-            
+
             withAnimation(.easeOut(duration: 0.2)) {
                 messages.append(chatMessage)
             }
-            
+
             messageText = ""
         }
     }
-    
+
     private func addSystemMessage(_ content: String) {
         let systemMessage = ChatMessage(
             content: content,
@@ -251,17 +251,17 @@ struct ChatDemoView: View {
             isCurrentUser: false,
             messageType: .system
         )
-        
+
         withAnimation(.easeOut(duration: 0.2)) {
             messages.append(systemMessage)
         }
     }
-    
+
     private func showError(_ message: String) {
         errorMessage = message
         showingError = true
     }
-    
+
     private func loadDemoMessages() {
         messages = [
             ChatMessage(
@@ -276,9 +276,9 @@ struct ChatDemoView: View {
             )
         ]
     }
-    
+
     // MARK: - Event Handling
-    
+
     fileprivate func handleChatConnected() {
         DispatchQueue.main.async {
             self.isConnected = true
@@ -286,7 +286,7 @@ struct ChatDemoView: View {
             self.addSystemMessage("Connected to chat!")
         }
     }
-    
+
     fileprivate func handleChatDisconnected() {
         DispatchQueue.main.async {
             self.isConnected = false
@@ -294,14 +294,14 @@ struct ChatDemoView: View {
             self.addSystemMessage("Disconnected from chat")
         }
     }
-    
+
     fileprivate func handleMessageReceived(channel: String, message: JSONCodable) {
         DispatchQueue.main.async {
             // Parse the received message
             if let messageDict = message.rawValue as? [String: Any],
                let username = messageDict["name"] as? String,
                let content = messageDict["message"] as? String {
-                
+
                 // Don't show our own messages again
                 if username != self.currentUsername {
                     let chatMessage = ChatMessage(
@@ -309,7 +309,7 @@ struct ChatDemoView: View {
                         username: username,
                         isCurrentUser: false
                     )
-                    
+
                     withAnimation(.easeOut(duration: 0.2)) {
                         self.messages.append(chatMessage)
                     }
@@ -317,13 +317,13 @@ struct ChatDemoView: View {
             }
         }
     }
-    
+
     fileprivate func handleSendError(channel: String, error: String) {
         DispatchQueue.main.async {
             self.showError("Failed to send message: \(error)")
         }
     }
-    
+
     fileprivate func handleSendSuccess(channel: String, timetoken: NSNumber) {
         // Message was sent successfully
         print("Message sent successfully with timetoken: \(timetoken)")
@@ -333,20 +333,20 @@ struct ChatDemoView: View {
 // MARK: - Message Bubble View
 struct MessageBubbleView: View {
     let message: ChatMessage
-    
+
     var body: some View {
         HStack {
             if message.isCurrentUser {
                 Spacer(minLength: 50)
             }
-            
+
             VStack(alignment: message.isCurrentUser ? .trailing : .leading, spacing: 4) {
                 if !message.isCurrentUser && message.messageType != .system {
                     Text(message.username)
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
-                
+
                 Text(message.content)
                     .padding(.horizontal, message.messageType == .system ? 12 : 16)
                     .padding(.vertical, message.messageType == .system ? 6 : 10)
@@ -355,20 +355,20 @@ struct MessageBubbleView: View {
                             .fill(backgroundColorForMessage)
                     )
                     .foregroundColor(textColorForMessage)
-                
+
                 if message.messageType != .system {
                     Text(message.timestamp, style: .time)
                         .font(.caption2)
                         .foregroundColor(.secondary)
                 }
             }
-            
+
             if !message.isCurrentUser {
                 Spacer(minLength: 50)
             }
         }
     }
-    
+
     private var backgroundColorForMessage: Color {
         switch message.messageType {
         case .system:
@@ -377,7 +377,7 @@ struct MessageBubbleView: View {
             return message.isCurrentUser ? Color.blue : Color(.systemGray5)
         }
     }
-    
+
     private var textColorForMessage: Color {
         switch message.messageType {
         case .system:
@@ -396,12 +396,12 @@ struct ChatMessage: Identifiable {
     let timestamp: Date
     let isCurrentUser: Bool
     let messageType: MessageType
-    
+
     enum MessageType {
         case user
         case system
     }
-    
+
     init(content: String, username: String, isCurrentUser: Bool = false, messageType: MessageType = .user) {
         self.content = content
         self.username = username
@@ -414,37 +414,37 @@ struct ChatMessage: Identifiable {
 // MARK: - Chat Event Listener
 class ChatEventListener: Red5ProWebrtcEventDelegate {
     var chatView: ChatDemoView?
-    
+
     init(chatView: ChatDemoView) {
         self.chatView = chatView
     }
-    
+
     // MARK: - Chat-specific events
     func onChatConnected() {
         chatView?.handleChatConnected()
     }
-    
+
     func onChatDisconnected() {
         chatView?.handleChatDisconnected()
     }
-    
+
     func onChatMessageReceived(channel: String, message: JSONCodable) {
         chatView?.handleMessageReceived(channel: channel, message: message)
     }
-    
+
     func onChatSendError(channel: String, errorMessage: String) {
         chatView?.handleSendError(channel: channel, error: errorMessage)
     }
-    
+
     func onChatSendSuccess(channel: String, timetoken: NSNumber) {
         chatView?.handleSendSuccess(channel: channel, timetoken: timetoken)
     }
-    
+
     // MARK: - WebRTC events (optional implementations)
     func onError(error: String) {
         print("WebRTC Error: \(error)")
     }
-    
+
     // Other delegate methods can be left empty since we're only using chat
     func onPublishStarted() {}
     func onPublishStopped() {}
@@ -465,9 +465,9 @@ struct ChatSettingsView: View {
     @Binding var channel: String
     @Binding var pubKey: String
     @Binding var subKey: String
-    
+
     @Environment(\.dismiss) private var dismiss
-    
+
     var body: some View {
         NavigationView {
             Form {
@@ -477,21 +477,21 @@ struct ChatSettingsView: View {
                         TextField("Enter username", text: $username)
                             .multilineTextAlignment(.trailing)
                     }
-                    
+
                     HStack {
                         Text("Channel")
                         TextField("Enter channel name", text: $channel)
                             .multilineTextAlignment(.trailing)
                     }
                 }
-                
+
                 Section(header: Text("PubNub Configuration")) {
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Publish Key")
                         TextField("Enter your PubNub publish key", text: $pubKey)
                             .textFieldStyle(RoundedBorderTextFieldStyle())
                     }
-                    
+
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Subscribe Key")
                         TextField("Enter your PubNub subscribe key", text: $subKey)
@@ -507,7 +507,7 @@ struct ChatSettingsView: View {
                         dismiss()
                     }
                 }
-                
+
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Done") {
                         dismiss()

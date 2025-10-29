@@ -1,6 +1,6 @@
 //
 //  SettingsView.swift
-//  TestBed
+//  WebRTCTestBed
 //
 //  Created by Mustafa BOLEKEN on 21.10.2025.
 //
@@ -12,7 +12,7 @@ struct SettingsScreen: View {
     @StateObject private var settings = SettingsManager.shared
     @Environment(\.dismiss) private var dismiss
     @State private var showingSaveAlert = false
-    
+
     var body: some View {
         NavigationView {
             Form {
@@ -25,7 +25,7 @@ struct SettingsScreen: View {
                             .textInputAutocapitalization(.never)
                             .autocorrectionDisabled()
                     }
-                    
+
                     VStack(alignment: .leading, spacing: 4) {
                         Text("Standalone Server IP")
                             .font(.caption)
@@ -35,7 +35,7 @@ struct SettingsScreen: View {
                             .autocorrectionDisabled()
                             .keyboardType(.decimalPad)
                     }
-                    
+
                     VStack(alignment: .leading, spacing: 4) {
                         Text("Standalone Server Port")
                             .font(.caption)
@@ -49,7 +49,7 @@ struct SettingsScreen: View {
                             .keyboardType(.numberPad)
                     }
                 }
-                
+
                 Section(header: Text("Turn Configuration")) {
                     VStack(alignment: .leading, spacing: 4) {
                         Text("Turn URL")
@@ -59,7 +59,7 @@ struct SettingsScreen: View {
                             .textInputAutocapitalization(.never)
                             .autocorrectionDisabled()
                     }
-                    
+
                     VStack(alignment: .leading, spacing: 4) {
                         Text("Turn Username")
                             .font(.caption)
@@ -69,7 +69,7 @@ struct SettingsScreen: View {
                             .autocorrectionDisabled()
                             .keyboardType(.decimalPad)
                     }
-                    
+
                     VStack(alignment: .leading, spacing: 4) {
                         Text("Turn Password")
                             .font(.caption)
@@ -79,9 +79,9 @@ struct SettingsScreen: View {
                             .autocorrectionDisabled()
                             .keyboardType(.decimalPad)
                     }
-                    
+
                 }
-                
+
                 Section(header: Text("SDK Configuration")) {
                     VStack(alignment: .leading, spacing: 4) {
                         Text("SDK License Key")
@@ -92,7 +92,7 @@ struct SettingsScreen: View {
                             .autocorrectionDisabled()
                     }
                 }
-                
+
                 Section(header: Text("Stream Configuration")) {
                     VStack(alignment: .leading, spacing: 4) {
                         Text("App Name")
@@ -102,7 +102,7 @@ struct SettingsScreen: View {
                             .textInputAutocapitalization(.never)
                             .autocorrectionDisabled()
                     }
-                    
+
                     VStack(alignment: .leading, spacing: 4) {
                         Text("Node Group")
                             .font(.caption)
@@ -111,7 +111,7 @@ struct SettingsScreen: View {
                             .textInputAutocapitalization(.never)
                             .autocorrectionDisabled()
                     }
-                    
+
                     VStack(alignment: .leading, spacing: 4) {
                         Text("Stream Name")
                             .font(.caption)
@@ -121,7 +121,7 @@ struct SettingsScreen: View {
                             .autocorrectionDisabled()
                     }
                 }
-                
+
                 Section(header: Text("Authentication")) {
                     VStack(alignment: .leading, spacing: 4) {
                         Text("Username")
@@ -131,7 +131,7 @@ struct SettingsScreen: View {
                             .textInputAutocapitalization(.never)
                             .autocorrectionDisabled()
                     }
-                    
+
                     VStack(alignment: .leading, spacing: 4) {
                         Text("Password")
                             .font(.caption)
@@ -139,7 +139,7 @@ struct SettingsScreen: View {
                         SecureField("Enter password", text: $settings.password)
                     }
                 }
-                
+
                 Section(header: Text("PubNub Credentials")) {
                     VStack(alignment: .leading, spacing: 4) {
                         Text("Channel Name")
@@ -149,7 +149,7 @@ struct SettingsScreen: View {
                             .textInputAutocapitalization(.never)
                             .autocorrectionDisabled()
                     }
-                    
+
                     VStack(alignment: .leading, spacing: 4) {
                         Text("Publish Key")
                             .font(.caption)
@@ -158,7 +158,7 @@ struct SettingsScreen: View {
                             .textInputAutocapitalization(.never)
                             .autocorrectionDisabled()
                     }
-                    
+
                     VStack(alignment: .leading, spacing: 4) {
                         Text("Subscribe Key")
                             .font(.caption)
@@ -168,7 +168,7 @@ struct SettingsScreen: View {
                             .autocorrectionDisabled()
                     }
                 }
-                
+
                 Section(header: Text("DTLS Setup")) {
                     Picker("DTLS Mode", selection: $settings.dtlsSetup) {
                         ForEach(DTLSSetup.allCases, id: \.self) { setup in
@@ -177,7 +177,7 @@ struct SettingsScreen: View {
                     }
                     .pickerStyle(.segmented)
                 }
-                
+
                 Section {
                     Button(action: {
                         settings.saveSettings()

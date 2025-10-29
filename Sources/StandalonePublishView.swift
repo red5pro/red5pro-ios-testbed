@@ -1,6 +1,6 @@
 //
 //  StandalonePublishView.swift
-//  TestBed
+//  WebRTCTestBed
 //
 //  Created by Mustafa BOLEKEN on 21.10.2025.
 //
@@ -15,20 +15,20 @@ import PubNubSDK
 class StandalonePublishManager: NSObject, ObservableObject {
     private var webrtcClient: Red5WebrtcClient?
     private var statusCallback: ((String) -> Void)?
-    
+
     @Published var localVideoRenderer: RTCMTLVideoView?
     @Published var isReady: Bool = false
-    
+
     private let config = Red5WebrtcClientConfig()
     private var isInitialized = false
-    
+
     func setupDelegate(statusCallback: @escaping (String) -> Void) {
         self.statusCallback = statusCallback
-        
+
         self.localVideoRenderer = RTCMTLVideoView()
         self.localVideoRenderer?.contentMode = .scaleAspectFill
         self.localVideoRenderer?.videoContentMode = .scaleAspectFill
-        
+
         // Configure the client using SettingsManager
         config.serverIp = SettingsManager.getStandaloneServerIp()
         config.port = SettingsManager.getStandaloneServerPort()
@@ -43,9 +43,9 @@ class StandalonePublishManager: NSObject, ObservableObject {
         config.videoFps = 30
         config.videoBitrate = 750
         config.nodeGroup = SettingsManager.getNodeGroup()
-        
+
         config.videoRenderer = self.localVideoRenderer
-        
+
         // Initialize the client with builder pattern
         webrtcClient = Red5WebrtcClientBuilder()
             .setServerIp(SettingsManager.getStandaloneServerIp())
@@ -61,89 +61,89 @@ class StandalonePublishManager: NSObject, ObservableObject {
             .setTurnServer(uri: SettingsManager.getTurnUrl(), username: SettingsManager.getTurnUsername(), password: SettingsManager.getTurnPassword())
             .setEventListener(self)
             .build()
-        
+
         print("Client built")
-        
+
         if let client = self.webrtcClient {
             client.setVideoRenderer(self.localVideoRenderer!)
         }
-        
+
         self.statusCallback?("Ready to start")
     }
-    
+
     // Call this ONCE when view appears to start camera preview
     func startPreview() {
         guard let client = webrtcClient, !isInitialized else { return }
-        
+
         statusCallback?("Starting preview...")
-        
+
         // Start the camera capture for preview
         // WebRTC will own the camera from now on
         client.startPreview()
-        
+
         isInitialized = true
     }
-    
+
     // Call this to start publishing (camera is already running)
     func startPublish() {
         guard let client = webrtcClient else {
             statusCallback?("Client not initialized")
             return
         }
-        
+
         guard isInitialized else {
             statusCallback?("Preview not started. Call startPreview() first.")
             return
         }
-        
+
         statusCallback?("Connecting...")
-        
+
         // Just start publishing - camera is already running
         client.publish()
     }
-    
+
     func stopPublish() {
         guard let client = webrtcClient else { return }
-        
+
         // Stop publishing but keep preview running
         client.stopPublish()
-        
+
         statusCallback?("Stopped publishing")
     }
-    
+
     func stopPreview() {
         guard let client = webrtcClient else { return }
-        
+
         // Stop the camera preview
         client.stopPreview()
-        
+
         isInitialized = false
         statusCallback?("Preview stopped")
     }
-    
+
     func toggleVideo(enabled: Bool) {
         webrtcClient?.setVideoEnabled(enabled)
     }
-    
+
     func toggleAudio(enabled: Bool) {
         webrtcClient?.setAudioEnabled(enabled)
     }
-    
+
     func switchCamera() {
         webrtcClient?.switchCamera()
     }
-    
+
     func release() {
         // Stop everything
         webrtcClient?.stopPublish()
         webrtcClient?.stopPreview()
-        
+
         // Clean up
         webrtcClient = nil
         localVideoRenderer = nil
         isInitialized = false
     }
-    
+
     // Get the video renderer for SwiftUI view
     func getVideoRenderer() -> RTCMTLVideoView? {
         return localVideoRenderer
@@ -157,90 +157,90 @@ extension StandalonePublishManager: Red5ProWebrtcEventDelegate {
             print("chat message received")
         }
     }
-    
+
     func onChatConnected() {
         DispatchQueue.main.async {
             print("chat connected")
         }
     }
-    
+
     func onChatDisconnected() {
         DispatchQueue.main.async {
             print("chat disconnected")
         }
     }
-    
+
     func onChatSendError(channel: String, errorMessage: String) {
         DispatchQueue.main.async {
             print("chat send error")
         }
     }
-    
+
     func onChatSendSuccess(channel: String, timetoken: NSNumber) {
         DispatchQueue.main.async {
             print("chat send success")
         }
     }
-    
+
     func onPublishStarted() {
         DispatchQueue.main.async {
             self.statusCallback?("Publishing...")
             print("Publish started")
         }
     }
-    
+
     func onPublishStopped() {
         DispatchQueue.main.async {
             self.statusCallback?("Stopped")
             print("Publish stopped")
         }
     }
-    
+
     func onPublishFailed(error: String) {
         DispatchQueue.main.async {
             self.statusCallback?("Error: \(error)")
             print("Publish failed: \(error)")
         }
     }
-    
+
     func onSubscribeStarted() {
         DispatchQueue.main.async {
             self.statusCallback?("Subscribe started")
         }
     }
-    
+
     func onSubscribeStopped() {
         DispatchQueue.main.async {
             self.statusCallback?("Subscribe stopped")
         }
     }
-    
+
     func onSubscribeFailed(error: String) {
         DispatchQueue.main.async {
             self.statusCallback?("Subscribe error: \(error)")
         }
     }
-    
+
     func onIceConnectionStateChanged(state: IceConnectionState) {
         DispatchQueue.main.async {
             self.statusCallback?("ICE: \(state)")
             print("ICE connection state: \(state)")
         }
     }
-    
+
     func onConnectionStateChanged(state: PeerConnectionState) {
         DispatchQueue.main.async {
             print("Connection state: \(state)")
         }
     }
-    
+
     func onError(error: String) {
         DispatchQueue.main.async {
             self.statusCallback?("Error: \(error)")
             print("Error: \(error)")
         }
     }
-    
+
     func onPreviewStarted() {
         DispatchQueue.main.async {
             print("[Delegate] Preview started!")
@@ -249,14 +249,14 @@ extension StandalonePublishManager: Red5ProWebrtcEventDelegate {
             self.objectWillChange.send()  // Force UI update
         }
     }
-    
+
     func onPreviewStopped() {
         DispatchQueue.main.async {
             self.statusCallback?("Preview stopped")
             print("Preview stopped")
         }
     }
-    
+
     func onLicenseValidated(validated: Bool, message: String) {
         DispatchQueue.main.async {
             self.statusCallback?(validated ? "License valid" : "License invalid: \(message)")
@@ -274,7 +274,7 @@ struct StandalonePublishScreen: View {
     @State private var statusMessage = "Ready"
     @State private var previewStarted = false
     @State private var cameraPermissionGranted = false
-    
+
     var body: some View {
         ZStack {
             Color.black.ignoresSafeArea()
@@ -291,12 +291,12 @@ struct StandalonePublishScreen: View {
                                 .resizable()
                                 .frame(width: 80, height: 60)
                                 .foregroundColor(.white.opacity(0.5))
-                            
+
                             if !cameraPermissionGranted {
                                 Text("Camera Access Required")
                                     .foregroundColor(.white)
                                     .font(.headline)
-                                
+
                                 Button("Open Settings") {
                                     if let url = URL(string: UIApplication.openSettingsURLString) {
                                         UIApplication.shared.open(url)
@@ -313,7 +313,7 @@ struct StandalonePublishScreen: View {
                         }
                     )
             }
-            
+
             // Status indicator at top left
             VStack {
                 HStack {
@@ -336,17 +336,17 @@ struct StandalonePublishScreen: View {
                     .cornerRadius(8)
                     .padding(.top, 10)
                     .padding(.leading, 15)
-                    
+
                     Spacer()
                 }
-                
+
                 Spacer()
             }
-            
+
             // Buttons at the bottom
             VStack {
                 Spacer()
-                
+
                 VStack(spacing: 15) {
                     // First row: 3 buttons
                     HStack(spacing: 20) {
@@ -368,7 +368,7 @@ struct StandalonePublishScreen: View {
                             .cornerRadius(12)
                         }
                         .disabled(!previewStarted)
-                        
+
                         // Audio Mute/Unmute Button
                         Button(action: {
                             isAudioMuted.toggle()
@@ -387,7 +387,7 @@ struct StandalonePublishScreen: View {
                             .cornerRadius(12)
                         }
                         .disabled(!previewStarted)
-                        
+
                         // Camera Switch Button
                         Button(action: {
                             isFrontCamera.toggle()
@@ -407,7 +407,7 @@ struct StandalonePublishScreen: View {
                         }
                         .disabled(!previewStarted)
                     }
-                    
+
                     // Second row: Full-width Publish Button
                     Button(action: {
                         if isPublishing {
@@ -444,31 +444,31 @@ struct StandalonePublishScreen: View {
             cleanup()
         }
     }
-    
+
     private func setupPublishing() {
         // Check camera permission first
         checkCameraPermission { granted in
             cameraPermissionGranted = granted
-            
+
             if granted {
                 // Setup the publish manager
                 publishManager.setupDelegate { message in
                     DispatchQueue.main.async {
                         statusMessage = message
-                        
+
                         // Track when preview actually starts
                         if message.contains("Preview") && message.contains("ready") {
                             previewStarted = true
                         }
                     }
                 }
-                
+
                 // Start preview - camera will start and stay running
                 publishManager.startPreview()
             }
         }
     }
-    
+
     private func cleanup() {
         if isPublishing {
             publishManager.stopPublish()
@@ -476,7 +476,7 @@ struct StandalonePublishScreen: View {
         publishManager.stopPreview()
         publishManager.release()
     }
-    
+
     private func checkCameraPermission(completion: @escaping (Bool) -> Void) {
         switch AVCaptureDevice.authorizationStatus(for: .video) {
         case .authorized:

@@ -1,6 +1,6 @@
 //
 //  SettingsManager.swift
-//  TestBed
+//  WebRTCTestBed
 //
 //  Created by Mustafa BOLEKEN on 21.10.2025.
 //
@@ -10,9 +10,9 @@ import SwiftUI
 // MARK: - Settings Manager
 class SettingsManager: ObservableObject {
     static let shared = SettingsManager()
-    
+
     private let defaults = UserDefaults.standard
-    
+
     // Keys
     private enum Keys {
         static let streamManagerHost = "stream_manager_host"
@@ -33,72 +33,72 @@ class SettingsManager: ObservableObject {
         static let enableDebug = "enable_debug"
         static let dtlsSetup = "dtls_setup"
     }
-    
+
     // Published properties for binding
     @Published var streamManagerHost: String {
         didSet { defaults.set(streamManagerHost, forKey: Keys.streamManagerHost) }
     }
-    
+
     @Published var standaloneServerIp: String {
         didSet { defaults.set(standaloneServerIp, forKey: Keys.standaloneServerIp) }
     }
-    
+
     @Published var standaloneServerPort: Int {
         didSet { defaults.set(standaloneServerPort, forKey: Keys.standaloneServerPort) }
     }
-    
+
     @Published var turnUrl: String {
         didSet { defaults.set(turnUrl, forKey: Keys.turnUrl) }
     }
-    
+
     @Published var turnUsername: String {
         didSet { defaults.set(turnUsername, forKey: Keys.turnUsername) }
     }
-    
+
     @Published var turnPassword: String {
         didSet { defaults.set(turnPassword, forKey: Keys.turnPassword) }
     }
-    
+
     @Published var sdkLicenseKey: String {
         didSet { defaults.set(sdkLicenseKey, forKey: Keys.sdkLicenseKey) }
     }
-    
+
     @Published var appName: String {
         didSet { defaults.set(appName, forKey: Keys.appName) }
     }
-    
+
     @Published var nodeGroup: String {
         didSet { defaults.set(nodeGroup, forKey: Keys.nodeGroup) }
     }
-    
+
     @Published var streamName: String {
         didSet { defaults.set(streamName, forKey: Keys.streamName) }
     }
-    
+
     @Published var userName: String {
         didSet { defaults.set(userName, forKey: Keys.userName) }
     }
-    
+
     @Published var password: String {
         didSet { defaults.set(password, forKey: Keys.password) }
     }
-    
+
     @Published var pubnubChannel: String {
         didSet { defaults.set(pubnubChannel, forKey: Keys.pubnubChannel) }
     }
-    
+
     @Published var pubnubPubKey: String {
         didSet { defaults.set(pubnubPubKey, forKey: Keys.pubnubPubKey) }
     }
-    
+
     @Published var pubnubSubKey: String {
         didSet { defaults.set(pubnubSubKey, forKey: Keys.pubnubSubKey) }
     }
-    
+
     @Published var dtlsSetup: DTLSSetup {
         didSet { defaults.set(dtlsSetup.rawValue, forKey: Keys.dtlsSetup) }
     }
-    
+
     private init() {
         self.streamManagerHost = defaults.string(forKey: Keys.streamManagerHost) ?? ""
         self.standaloneServerIp = defaults.string(forKey: Keys.standaloneServerIp) ?? ""
@@ -115,84 +115,84 @@ class SettingsManager: ObservableObject {
         self.pubnubChannel = defaults.string(forKey: Keys.pubnubChannel) ?? "room1"
         self.pubnubPubKey = defaults.string(forKey: Keys.pubnubPubKey) ?? ""
         self.pubnubSubKey = defaults.string(forKey: Keys.pubnubSubKey) ?? ""
-        
+
         let dtlsValue = defaults.string(forKey: Keys.dtlsSetup) ?? "actpass"
         self.dtlsSetup = DTLSSetup(rawValue: dtlsValue) ?? .actpass
     }
-    
+
     // Static getter methods
     static func getStreamManagerHost() -> String {
         return shared.streamManagerHost
     }
-    
+
     static func getStandaloneServerIp() -> String {
         return shared.standaloneServerIp
     }
-    
+
     static func getStandaloneServerPort() -> Int {
         return shared.standaloneServerPort
     }
-    
+
     static func getTurnUrl() -> String {
         return shared.turnUrl
     }
-    
+
     static func getTurnUsername() -> String {
         return shared.turnUsername
     }
-    
+
     static func getTurnPassword() -> String {
         return shared.turnPassword
     }
-    
+
     static func getSdkLicenseKey() -> String {
         return shared.sdkLicenseKey
     }
-    
+
     static func getAppName() -> String {
         let value = shared.appName.trimmingCharacters(in: .whitespaces)
         return value.isEmpty ? "live" : value
     }
-    
+
     static func getNodeGroup() -> String {
         let value = shared.nodeGroup.trimmingCharacters(in: .whitespaces)
         return value.isEmpty ? "default" : value
     }
-    
+
     static func getStreamName() -> String {
         let value = shared.streamName.trimmingCharacters(in: .whitespaces)
         return value.isEmpty ? "stream1" : value
     }
-    
+
     static func getUserName() -> String {
         return shared.userName
     }
-    
+
     static func getPassword() -> String {
         return shared.password
     }
-    
+
     static func getPubnubChannel() -> String {
         let value = shared.pubnubChannel.trimmingCharacters(in: .whitespaces)
         return value.isEmpty ? "room1" : value
     }
-    
+
     static func getPubnubPubKey() -> String {
         return shared.pubnubPubKey
     }
-    
+
     static func getPubnubSubKey() -> String {
         return shared.pubnubSubKey
     }
-    
+
     static func getDtlsSetup() -> String {
         return shared.dtlsSetup.rawValue
     }
-    
+
     static func isDebugEnabled() -> Bool {
         return shared.defaults.bool(forKey: Keys.enableDebug)
     }
-    
+
     func saveSettings() {
         // Trim whitespace and set defaults for empty fields
         streamManagerHost = streamManagerHost.trimmingCharacters(in: .whitespaces)
@@ -206,7 +206,7 @@ class SettingsManager: ObservableObject {
         pubnubChannel = pubnubChannel.trimmingCharacters(in: .whitespaces)
         pubnubPubKey = pubnubPubKey.trimmingCharacters(in: .whitespaces)
         pubnubSubKey = pubnubSubKey.trimmingCharacters(in: .whitespaces)
-        
+
         if appName.trimmingCharacters(in: .whitespaces).isEmpty {
             appName = "live"
         }
@@ -227,7 +227,7 @@ enum DTLSSetup: String, CaseIterable {
     case actpass = "actpass"
     case active = "active"
     case passive = "passive"
-    
+
     var displayName: String {
         switch self {
         case .actpass: return "Actpass"

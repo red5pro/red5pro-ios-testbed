@@ -1,6 +1,6 @@
 //
 //  ContentView.swift
-//  TestBed
+//  WebRTCTestBed
 //
 //  Created by Mustafa BOLEKEN on 21.10.2025.
 //
@@ -25,9 +25,9 @@ struct GridView: View {
         GridItem(.flexible()),
         GridItem(.flexible())
     ]
-    
+
     let items = ["Standalone Publish Screen", "Standalone Subscribe Screen", "Stream Manager Publish Screen", "Stream Manager Subscribe Screen", "Chat Screen", "Settings"]
-    
+
     var body: some View {
         ScrollView {
             LazyVGrid(columns: columns, spacing: 20) {
@@ -50,7 +50,7 @@ struct GridView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
-    
+
     // Route to different screens based on item
     @ViewBuilder
     func destinationView(for item: String) -> some View {
@@ -81,15 +81,15 @@ struct ProfileScreen: View {
                 .resizable()
                 .frame(width: 100, height: 100)
                 .foregroundColor(.blue)
-            
+
             Text("Profile Screen")
                 .font(.largeTitle)
                 .fontWeight(.bold)
-            
+
             Text("View and edit your profile")
                 .font(.body)
                 .foregroundColor(.gray)
-            
+
             Spacer()
         }
         .padding()
@@ -106,15 +106,15 @@ struct NotificationsScreen: View {
                 .resizable()
                 .frame(width: 100, height: 100)
                 .foregroundColor(.orange)
-            
+
             Text("Notifications Screen")
                 .font(.largeTitle)
                 .fontWeight(.bold)
-            
+
             Text("Check your notifications")
                 .font(.body)
                 .foregroundColor(.gray)
-            
+
             Spacer()
         }
         .padding()
@@ -131,15 +131,15 @@ struct MessagesScreen: View {
                 .resizable()
                 .frame(width: 100, height: 100)
                 .foregroundColor(.green)
-            
+
             Text("Messages Screen")
                 .font(.largeTitle)
                 .fontWeight(.bold)
-            
+
             Text("Read your messages")
                 .font(.body)
                 .foregroundColor(.gray)
-            
+
             Spacer()
         }
         .padding()
@@ -156,15 +156,15 @@ struct FavoritesScreen: View {
                 .resizable()
                 .frame(width: 100, height: 100)
                 .foregroundColor(.yellow)
-            
+
             Text("Favorites Screen")
                 .font(.largeTitle)
                 .fontWeight(.bold)
-            
+
             Text("Your favorite items")
                 .font(.body)
                 .foregroundColor(.gray)
-            
+
             Spacer()
         }
         .padding()
@@ -176,21 +176,21 @@ struct FavoritesScreen: View {
 // Default screen for other items
 struct DefaultDetailScreen: View {
     let item: String
-    
+
     var body: some View {
         VStack(spacing: 20) {
             Image(systemName: "doc.text.fill")
                 .resizable()
                 .frame(width: 100, height: 100)
                 .foregroundColor(.purple)
-            
+
             Text("Detail Screen")
                 .font(.largeTitle)
                 .fontWeight(.bold)
-            
+
             Text("You selected: \(item)")
                 .font(.title2)
-            
+
             Spacer()
         }
         .padding()
