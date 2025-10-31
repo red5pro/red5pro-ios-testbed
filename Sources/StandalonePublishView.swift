@@ -36,6 +36,7 @@ class StandalonePublishManager: NSObject, ObservableObject {
         config.streamName = SettingsManager.getStreamName()
         config.userName = SettingsManager.getUserName()
         config.password = SettingsManager.getPassword()
+        config.licenseKey = SettingsManager.getSdkLicenseKey()
         config.videoEnabled = true
         config.audioEnabled = true
         config.videoWidth = 640
@@ -52,6 +53,7 @@ class StandalonePublishManager: NSObject, ObservableObject {
             .setPort(SettingsManager.getStandaloneServerPort())
             .setAppName(SettingsManager.getAppName())
             .setStreamName(SettingsManager.getStreamName())
+            .setLicenseKey(SettingsManager.getSdkLicenseKey())
             .setVideoEnabled(config.videoEnabled)
             .setAudioEnabled(config.audioEnabled)
             .setVideoWidth(config.videoWidth)

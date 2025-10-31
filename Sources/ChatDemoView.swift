@@ -180,11 +180,13 @@ struct ChatDemoView: View {
         config.pubnubPublishKey = SettingsManager.getPubnubPubKey()
         config.pubnubSubscribeKey = SettingsManager.getPubnubSubKey()
         config.eventListener = ChatEventListener(chatView: self)
+        config.licenseKey = SettingsManager.getSdkLicenseKey()
 
         // Create WebRTC client
         let client = Red5WebrtcClientBuilder()
             .setPubnubPublishKey(config.pubnubPublishKey ?? "")
             .setPubnubSubscribeKey(config.pubnubSubscribeKey ?? "")
+            .setLicenseKey(config.licenseKey ?? "")
             .setEventListener(ChatEventListener(chatView: self))
             .build()
 
