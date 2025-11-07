@@ -48,6 +48,7 @@
 		6DE249CE2EBE855A00410348 /* Assets.xcassetsContents.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Assets.xcassetsContents.json; sourceTree = "<group>"; };
 		6DE249CF2EBE855D00410348 /* Assets.xcassetsAppIcon.appiconsetContents.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Assets.xcassetsAppIcon.appiconsetContents.json; sourceTree = "<group>"; };
 		6DE249D02EBE856200410348 /* Assets.xcassetsAccentColor.colorsetContents.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Assets.xcassetsAccentColor.colorsetContents.json; sourceTree = "<group>"; };
+		6DE249D12EBE8CE500410348 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		926B243E7397BE09F5A32F91 /* Red5WebRTCKit */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Red5WebRTCKit; path = ../Red5WebRTCKit; sourceTree = SOURCE_ROOT; };
 		B96A5BE77A87BA78BA16575E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		DD0E01F9D77DC91660EB290F /* SampleApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SampleApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -102,6 +103,7 @@
 		95B484EFB95AA7854C88CB61 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				6DE249D12EBE8CE500410348 /* Assets.xcassets */,
 				B96A5BE77A87BA78BA16575E /* Info.plist */,
 				6DE249CE2EBE855A00410348 /* Assets.xcassetsContents.json */,
 				6DE249CF2EBE855D00410348 /* Assets.xcassetsAppIcon.appiconsetContents.json */,
