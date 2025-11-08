@@ -16,7 +16,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "69D3C2A73C3237C27B28F505"
-               BuildableName = "SampleApp.app"
+               BuildableName = "WebRTCTestBed.app"
                BlueprintName = "WebRTCTestBed"
                ReferencedContainer = "container:WebRTCTestBed.xcodeproj">
             </BuildableReference>
@@ -45,7 +45,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "69D3C2A73C3237C27B28F505"
-            BuildableName = "SampleApp.app"
+            BuildableName = "WebRTCTestBed.app"
             BlueprintName = "WebRTCTestBed"
             ReferencedContainer = "container:WebRTCTestBed.xcodeproj">
          </BuildableReference>
@@ -62,7 +62,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "69D3C2A73C3237C27B28F505"
-            BuildableName = "SampleApp.app"
+            BuildableName = "WebRTCTestBed.app"
             BlueprintName = "WebRTCTestBed"
             ReferencedContainer = "container:WebRTCTestBed.xcodeproj">
          </BuildableReference>
