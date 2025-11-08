@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+internal import Combine
 
 // MARK: - Settings Manager
 class SettingsManager: ObservableObject {

@@ -10,6 +10,7 @@ import AVFoundation
 import WebRTC
 import Red5WebRTCKit
 import PubNubSDK
+internal import Combine
 
 // MARK: - Subscribe Manager (Screen-specific)
 class StandaloneSubscribeManager: NSObject, ObservableObject {

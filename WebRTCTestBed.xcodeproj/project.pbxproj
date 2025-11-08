@@ -7,10 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		6D6971902EBF757C0046870B /* Red5WebRTCKit in Frameworks */ = {isa = PBXBuildFile; productRef = 6D69718F2EBF757C0046870B /* Red5WebRTCKit */; };
+		6D6971942EBF76CF0046870B /* WebRTC in Frameworks */ = {isa = PBXBuildFile; productRef = 6D6971932EBF76CF0046870B /* WebRTC */; };
 		6DB87FD62EBF74B600597531 /* Red5WebRTCKit in Frameworks */ = {isa = PBXBuildFile; productRef = 6DB87FD52EBF74B600597531 /* Red5WebRTCKit */; };
 		6DE3B4402EBF7333008C07A0 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 6DE3B43F2EBF7333008C07A0 /* README.md */; };
 		6DE3B4432EBF7397008C07A0 /* PubNubSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 6DE3B4422EBF7397008C07A0 /* PubNubSDK */; };
-		6DE3B4462EBF73A4008C07A0 /* WebRTC in Frameworks */ = {isa = PBXBuildFile; productRef = 6DE3B4452EBF73A4008C07A0 /* WebRTC */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -31,8 +32,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6D6971902EBF757C0046870B /* Red5WebRTCKit in Frameworks */,
+				6D6971942EBF76CF0046870B /* WebRTC in Frameworks */,
 				6DE3B4432EBF7397008C07A0 /* PubNubSDK in Frameworks */,
-				6DE3B4462EBF73A4008C07A0 /* WebRTC in Frameworks */,
 				6DB87FD62EBF74B600597531 /* Red5WebRTCKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -40,12 +42,20 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		6D6971912EBF76A80046870B /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		6DE3B4182EBF70FA008C07A0 = {
 			isa = PBXGroup;
 			children = (
 				6DE3B4232EBF70FA008C07A0 /* WebRTCTestBed */,
 				6DE3B4222EBF70FA008C07A0 /* Products */,
 				6DE3B43F2EBF7333008C07A0 /* README.md */,
+				6D6971912EBF76A80046870B /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -78,8 +88,9 @@
 			name = WebRTCTestBed;
 			packageProductDependencies = (
 				6DE3B4422EBF7397008C07A0 /* PubNubSDK */,
-				6DE3B4452EBF73A4008C07A0 /* WebRTC */,
 				6DB87FD52EBF74B600597531 /* Red5WebRTCKit */,
+				6D69718F2EBF757C0046870B /* Red5WebRTCKit */,
+				6D6971932EBF76CF0046870B /* WebRTC */,
 			);
 			productName = WebRTCTestBed;
 			productReference = 6DE3B4212EBF70FA008C07A0 /* WebRTCTestBed.app */;
@@ -111,8 +122,8 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				6DE3B4412EBF7397008C07A0 /* XCRemoteSwiftPackageReference "swift" */,
-				6DE3B4442EBF73A4008C07A0 /* XCRemoteSwiftPackageReference "WebRTC" */,
-				6DB87FD42EBF74B600597531 /* XCLocalSwiftPackageReference "../GitHub/red5pro-ios-sdk/Red5WebRTCKit" */,
+				6D69718E2EBF757C0046870B /* XCLocalSwiftPackageReference "../red5pro-ios-sdk/Red5WebRTCKit" */,
+				6D6971922EBF76CF0046870B /* XCRemoteSwiftPackageReference "WebRTC" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 6DE3B4222EBF70FA008C07A0 /* Products */;
@@ -199,6 +210,8 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_KEY_NSMainCameraUsageDescription = true;
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = true;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MACOSX_DEPLOYMENT_TARGET = 26.1;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
@@ -257,6 +270,8 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_KEY_NSMainCameraUsageDescription = true;
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = true;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MACOSX_DEPLOYMENT_TARGET = 26.1;
 				MTL_ENABLE_DEBUG_INFO = NO;
@@ -272,18 +287,29 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				AUTOMATION_APPLE_EVENTS = NO;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = E964K44BWW;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = YES;
+				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
+				ENABLE_RESOURCE_ACCESS_CAMERA = YES;
+				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
+				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
+				ENABLE_RESOURCE_ACCESS_PHOTO_LIBRARY = NO;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = WebRTCTestBed/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = WebRTCTestBed;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.video";
+				INFOPLIST_KEY_NSCameraUsageDescription = true;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSMainCameraUsageDescription = true;
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = true;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				IPHONEOS_DEPLOYMENT_TARGET = 15;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -292,9 +318,15 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 15;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.infrared5.test.WebRTCTestBed;
+				PRODUCT_BUNDLE_IDENTIFIER = com.infrared5.test;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
+				RUNTIME_EXCEPTION_ALLOW_DYLD_ENVIRONMENT_VARIABLES = NO;
+				RUNTIME_EXCEPTION_ALLOW_JIT = NO;
+				RUNTIME_EXCEPTION_ALLOW_UNSIGNED_EXECUTABLE_MEMORY = NO;
+				RUNTIME_EXCEPTION_DEBUGGING_TOOL = NO;
+				RUNTIME_EXCEPTION_DISABLE_EXECUTABLE_PAGE_PROTECTION = NO;
+				RUNTIME_EXCEPTION_DISABLE_LIBRARY_VALIDATION = NO;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
 				SUPPORTS_MACCATALYST = NO;
@@ -313,18 +345,29 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				AUTOMATION_APPLE_EVENTS = NO;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = E964K44BWW;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = YES;
+				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
+				ENABLE_RESOURCE_ACCESS_CAMERA = YES;
+				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
+				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
+				ENABLE_RESOURCE_ACCESS_PHOTO_LIBRARY = NO;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = WebRTCTestBed/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = WebRTCTestBed;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.video";
+				INFOPLIST_KEY_NSCameraUsageDescription = true;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSMainCameraUsageDescription = true;
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = true;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				IPHONEOS_DEPLOYMENT_TARGET = 15;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -333,9 +376,15 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 15;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.infrared5.test.WebRTCTestBed;
+				PRODUCT_BUNDLE_IDENTIFIER = com.infrared5.test;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
+				RUNTIME_EXCEPTION_ALLOW_DYLD_ENVIRONMENT_VARIABLES = NO;
+				RUNTIME_EXCEPTION_ALLOW_JIT = NO;
+				RUNTIME_EXCEPTION_ALLOW_UNSIGNED_EXECUTABLE_MEMORY = NO;
+				RUNTIME_EXCEPTION_DEBUGGING_TOOL = NO;
+				RUNTIME_EXCEPTION_DISABLE_EXECUTABLE_PAGE_PROTECTION = NO;
+				RUNTIME_EXCEPTION_DISABLE_LIBRARY_VALIDATION = NO;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
 				SUPPORTS_MACCATALYST = NO;
@@ -372,13 +421,21 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		6DB87FD42EBF74B600597531 /* XCLocalSwiftPackageReference "../GitHub/red5pro-ios-sdk/Red5WebRTCKit" */ = {
+		6D69718E2EBF757C0046870B /* XCLocalSwiftPackageReference "../red5pro-ios-sdk/Red5WebRTCKit" */ = {
 			isa = XCLocalSwiftPackageReference;
-			relativePath = "../GitHub/red5pro-ios-sdk/Red5WebRTCKit";
+			relativePath = "../red5pro-ios-sdk/Red5WebRTCKit";
 		};
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		6D6971922EBF76CF0046870B /* XCRemoteSwiftPackageReference "WebRTC" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/stasel/WebRTC";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 140.0.0;
+			};
+		};
 		6DE3B4412EBF7397008C07A0 /* XCRemoteSwiftPackageReference "swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/pubnub/swift.git";
@@ -387,17 +444,18 @@
 				minimumVersion = 10.0.1;
 			};
 		};
-		6DE3B4442EBF73A4008C07A0 /* XCRemoteSwiftPackageReference "WebRTC" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/stasel/WebRTC";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 140.0.0;
-			};
-		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		6D69718F2EBF757C0046870B /* Red5WebRTCKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Red5WebRTCKit;
+		};
+		6D6971932EBF76CF0046870B /* WebRTC */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 6D6971922EBF76CF0046870B /* XCRemoteSwiftPackageReference "WebRTC" */;
+			productName = WebRTC;
+		};
 		6DB87FD52EBF74B600597531 /* Red5WebRTCKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Red5WebRTCKit;
@@ -406,11 +464,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 6DE3B4412EBF7397008C07A0 /* XCRemoteSwiftPackageReference "swift" */;
 			productName = PubNubSDK;
-		};
-		6DE3B4452EBF73A4008C07A0 /* WebRTC */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 6DE3B4442EBF73A4008C07A0 /* XCRemoteSwiftPackageReference "WebRTC" */;
-			productName = WebRTC;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
