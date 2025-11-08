@@ -44,7 +44,7 @@
 		6DA466712EA579D000A857C6 /* StreamManagerPublishView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamManagerPublishView.swift; sourceTree = "<group>"; };
 		6DA466722EA579D000A857C6 /* StreamManagerSubscribeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamManagerSubscribeView.swift; sourceTree = "<group>"; };
 		6DA466782EA7C0C800A857C6 /* SettingsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsManager.swift; sourceTree = "<group>"; };
-		6DAB11682EBEA07C000091A9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		6DD4080A2EBF5C0400F3ED23 /* Logo.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = Logo.icon; sourceTree = "<group>"; };
 		6DD7D4712EAF96C60078A96A /* ChatDemoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatDemoView.swift; sourceTree = "<group>"; };
 		926B243E7397BE09F5A32F91 /* Red5WebRTCKit */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Red5WebRTCKit; path = ../Red5WebRTCKit; sourceTree = SOURCE_ROOT; };
 		B96A5BE77A87BA78BA16575E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -108,13 +108,13 @@
 		C62D65BC2378A8F8766F8E3E = {
 			isa = PBXGroup;
 			children = (
+				6DD4080A2EBF5C0400F3ED23 /* Logo.icon */,
 				E4F3AF9EA173644759DEF899 /* Packages */,
 				95B484EFB95AA7854C88CB61 /* Resources */,
 				6E946A22C297953FEF67562A /* Sources */,
 				EDAA898CACD5BD8CA312640B /* Tests */,
 				6E373651B9BB3262E8B686E3 /* UITests */,
 				EC09C6124F53F34B3B06618A /* Products */,
-				6DAB11682EBEA07C000091A9 /* Assets.xcassets */,
 			);
 			sourceTree = "<group>";
 		};
@@ -193,7 +193,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
-				LastUpgradeCheck = 2600;
+				LastUpgradeCheck = 2610;
 			};
 			buildConfigurationList = 7FCD0870993D894B84E16173 /* Build configuration list for PBXProject "WebRTCTestBed" */;
 			compatibilityVersion = "Xcode 14.0";
@@ -258,12 +258,14 @@
 		3C369ED413F8B808BFCD2226 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = Logo;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = E964K44BWW;
 				INFOPLIST_FILE = Resources/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = I;
+				INFOPLIST_KEY_CFBundleDisplayName = "Red5 iOS TestBed";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.video";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -273,7 +275,10 @@
 				PRODUCT_NAME = SampleApp;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
@@ -299,6 +304,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -363,12 +369,14 @@
 		B5E66F216F31A6E3CDDFA68A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = Logo;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = E964K44BWW;
 				INFOPLIST_FILE = Resources/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = I;
+				INFOPLIST_KEY_CFBundleDisplayName = "Red5 iOS TestBed";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.video";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -378,7 +386,10 @@
 				PRODUCT_NAME = SampleApp;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -386,6 +397,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
