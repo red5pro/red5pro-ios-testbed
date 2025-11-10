@@ -71,17 +71,28 @@ class StandalonePublishManager: NSObject, ObservableObject {
             client.setVideoRenderer(self.localVideoRenderer!)
         }
 
-        self.statusCallback?("Ready to start")
+        self.statusCallback?("Validating license...")
     }
 
     // Call this ONCE when view appears to start camera preview
     func startPreview() {
-        guard let client = webrtcClient, !isInitialized else { return }
+        guard let client = webrtcClient, !isInitialized else {
+            if isInitialized {
+                print("Preview already initialized")
+            }
+            return
+        }
+
+        // Check if license is validated
+        if !client.isLicenseValidated() {
+            statusCallback?("Waiting for license validation...")
+            print("Cannot start preview - license not validated yet")
+            return
+        }
 
         statusCallback?("Starting preview...")
 
         // Start the camera capture for preview
-        // WebRTC will own the camera from now on
         client.startPreview()
 
         isInitialized = true
@@ -262,7 +273,18 @@ extension StandalonePublishManager: Red5ProWebrtcEventDelegate {
 
     func onLicenseValidated(validated: Bool, message: String) {
         DispatchQueue.main.async {
-            self.statusCallback?(validated ? "License valid" : "License invalid: \(message)")
+            if validated {
+                print("License validated - ready to start")
+                self.statusCallback?("Ready to start")
+                
+                // Auto-start preview after license validation
+                if !self.isInitialized {
+                    self.startPreview()
+                }
+            } else {
+                self.statusCallback?("License error: \(message)")
+                print("License validation failed: \(message)")
+            }
         }
     }
 }

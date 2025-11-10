@@ -67,7 +67,6 @@ struct SettingsScreen: View {
                         TextField("Enter username", text: $settings.turnUsername)
                             .textInputAutocapitalization(.never)
                             .autocorrectionDisabled()
-                            .keyboardType(.decimalPad)
                     }
 
                     VStack(alignment: .leading, spacing: 4) {
@@ -77,7 +76,6 @@ struct SettingsScreen: View {
                         TextField("Enter password", text: $settings.turnPassword)
                             .textInputAutocapitalization(.never)
                             .autocorrectionDisabled()
-                            .keyboardType(.decimalPad)
                     }
 
                 }
