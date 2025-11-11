@@ -269,6 +269,7 @@ struct StandaloneSubscribeScreen: View {
     @StateObject private var subscribeManager = StandaloneSubscribeManager()
     @State private var statusMessage = "Ready"
     @State private var isFullscreen = false
+    @State private var showingLogs = false
 
     var body: some View {
         ZStack {
@@ -358,9 +359,33 @@ struct StandaloneSubscribeScreen: View {
                 .padding(.horizontal, 20)
                 .padding(.bottom, 40)
             }
+            
+            // Floating Logs Button
+            VStack {
+                HStack {
+                    Spacer()
+                    Button(action: {
+                        showingLogs = true
+                    }) {
+                        Image(systemName: "list.bullet.rectangle")
+                            .font(.system(size: 20))
+                            .foregroundColor(.white)
+                            .frame(width: 50, height: 50)
+                            .background(Color.blue.opacity(0.8))
+                            .clipShape(Circle())
+                            .shadow(color: .black.opacity(0.3), radius: 5, x: 0, y: 2)
+                    }
+                    .padding(.trailing, 20)
+                    .padding(.top, 80)
+                }
+                Spacer()
+            }
         }
         .navigationTitle("Subscribe")
         .navigationBarTitleDisplayMode(.inline)
+        .sheet(isPresented: $showingLogs) {
+            LogsView()
+        }
         .onAppear {
             setupSubscription()
         }

@@ -12,7 +12,7 @@ struct ContentView: View {
         if #available(iOS 16.0, *) {
             NavigationStack {
                 GridView()
-                    .navigationTitle("")
+                    .navigationTitle("WebRTC Test Bed")
             }
         } else {
             // Fallback on earlier versions
@@ -21,6 +21,8 @@ struct ContentView: View {
 }
 
 struct GridView: View {
+    @State private var showingLogs = false
+    
     let columns = [
         GridItem(.flexible()),
         GridItem(.flexible())
@@ -49,6 +51,18 @@ struct GridView: View {
             .padding()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button(action: {
+                    showingLogs = true
+                }) {
+                    Image(systemName: "list.bullet.rectangle")
+                }
+            }
+        }
+        .sheet(isPresented: $showingLogs) {
+            LogsView()
+        }
     }
 
     // Route to different screens based on item

@@ -22,6 +22,7 @@ struct ChatDemoView: View {
     @State private var showingError = false
     @State private var isLicenseValidated = false
     @State private var licenseCheckInProgress = false
+    @State private var showingLogs = false
 
     // Red5Pro WebRTC Client
     @State private var webrtcClient: Red5WebrtcClient?
@@ -52,15 +53,23 @@ struct ChatDemoView: View {
                 }
 
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(isConnected ? "Disconnect" : "Connect") {
-                        if isConnected {
-                            disconnectFromChat()
-                        } else {
-                            connectToChat()
+                    HStack(spacing: 12) {
+                        Button(action: {
+                            showingLogs = true
+                        }) {
+                            Image(systemName: "list.bullet.rectangle")
                         }
+                        
+                        Button(isConnected ? "Disconnect" : "Connect") {
+                            if isConnected {
+                                disconnectFromChat()
+                            } else {
+                                connectToChat()
+                            }
+                        }
+                        .foregroundColor(isConnected ? .red : (canConnect ? .blue : .gray))
+                        .disabled(!canConnect && !isConnected)
                     }
-                    .foregroundColor(isConnected ? .red : (canConnect ? .blue : .gray))
-                    .disabled(!canConnect && !isConnected)
                 }
             }
             .sheet(isPresented: $showingSettings) {
@@ -70,6 +79,9 @@ struct ChatDemoView: View {
                     pubKey: $pubKey,
                     subKey: $subKey
                 )
+            }
+            .sheet(isPresented: $showingLogs) {
+                LogsView()
             }
             .alert("Error", isPresented: $showingError) {
                 Button("OK") { }
