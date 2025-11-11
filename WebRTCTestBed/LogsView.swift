@@ -7,10 +7,18 @@
 
 import SwiftUI
 
+// MARK: - Log Source Filter
+enum LogSourceFilter: String, CaseIterable {
+    case all = "All Logs"
+    case appOnly = "App Only"
+    case systemOnly = "System Only"
+}
+
 // MARK: - Logs View
 struct LogsView: View {
     @ObservedObject var logManager = LogManager.shared
     @State private var selectedLevels: Set<LogLevel> = Set(LogLevel.allCases)
+    @State private var selectedSourceFilter: LogSourceFilter = .all
     @State private var searchText = ""
     @State private var showingExportSheet = false
     @State private var exportText = ""
@@ -19,12 +27,44 @@ struct LogsView: View {
     @State private var showSystemLogsToggle = false
     @Environment(\.dismiss) private var dismiss
     
+    private let appBundleIdentifier = Bundle.main.bundleIdentifier ?? "unknown"
+    private let appProcessIdentifier = ProcessInfo.processInfo.processIdentifier
+    
     var filteredLogs: [LogEntry] {
-        logManager.filteredLogs(
+        let levelFiltered = logManager.filteredLogs(
             levels: selectedLevels,
             categories: [],
             searchText: searchText
         )
+        
+        // Apply source filter
+        switch selectedSourceFilter {
+        case .all:
+            return levelFiltered
+        case .appOnly:
+            return levelFiltered.filter { log in
+                // Filter by subsystem matching app bundle identifier
+                // or by process ID matching current process
+                if let subsystem = log.subsystem, subsystem == appBundleIdentifier {
+                    return true
+                }
+                if let processID = log.processID, processID == Int(appProcessIdentifier) {
+                    return true
+                }
+                return false
+            }
+        case .systemOnly:
+            return levelFiltered.filter { log in
+                // Show logs that don't match app identifier
+                if let subsystem = log.subsystem, subsystem == appBundleIdentifier {
+                    return false
+                }
+                if let processID = log.processID, processID == Int(appProcessIdentifier) {
+                    return false
+                }
+                return true
+            }
+        }
     }
     
     var body: some View {
@@ -62,7 +102,7 @@ struct LogsView: View {
                 // Bottom toolbar
                 bottomToolbar
             }
-            .navigationTitle("Logs (\(filteredLogs.count))")
+            .navigationTitle("Logs (\(filteredLogs.count))" + (selectedSourceFilter != .all ? " - \(selectedSourceFilter.rawValue)" : ""))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
@@ -129,42 +169,85 @@ struct LogsView: View {
     }
     
     private var filterChips: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 8) {
-                ForEach(LogLevel.allCases, id: \.self) { level in
-                    FilterChip(
-                        title: level.rawValue,
-                        isSelected: selectedLevels.contains(level)
-                    ) {
-                        if selectedLevels.contains(level) {
-                            selectedLevels.remove(level)
-                        } else {
-                            selectedLevels.insert(level)
+        VStack(spacing: 0) {
+            // Source filter (App/System)
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) {
+                    Text("Source:")
+                        .font(.caption)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.secondary)
+                    
+                    ForEach(LogSourceFilter.allCases, id: \.self) { source in
+                        FilterChip(
+                            title: source.rawValue,
+                            isSelected: selectedSourceFilter == source,
+                            color: sourceFilterColor(for: source)
+                        ) {
+                            selectedSourceFilter = source
                         }
                     }
                 }
-                
-                // Select/Deselect All
-                Button(action: {
-                    if selectedLevels.count == LogLevel.allCases.count {
-                        selectedLevels.removeAll()
-                    } else {
-                        selectedLevels = Set(LogLevel.allCases)
-                    }
-                }) {
-                    Text(selectedLevels.count == LogLevel.allCases.count ? "Deselect All" : "Select All")
-                        .font(.caption)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 6)
-                        .background(Color.blue)
-                        .foregroundColor(.white)
-                        .cornerRadius(16)
-                }
+                .padding(.horizontal)
+                .padding(.vertical, 8)
             }
-            .padding(.horizontal)
-            .padding(.vertical, 8)
+            
+            Divider()
+            
+            // Log level filters
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) {
+                    Text("Levels:")
+                        .font(.caption)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.secondary)
+                    
+                    ForEach(LogLevel.allCases, id: \.self) { level in
+                        FilterChip(
+                            title: level.rawValue,
+                            isSelected: selectedLevels.contains(level)
+                        ) {
+                            if selectedLevels.contains(level) {
+                                selectedLevels.remove(level)
+                            } else {
+                                selectedLevels.insert(level)
+                            }
+                        }
+                    }
+                    
+                    // Select/Deselect All
+                    Button(action: {
+                        if selectedLevels.count == LogLevel.allCases.count {
+                            selectedLevels.removeAll()
+                        } else {
+                            selectedLevels = Set(LogLevel.allCases)
+                        }
+                    }) {
+                        Text(selectedLevels.count == LogLevel.allCases.count ? "Deselect All" : "Select All")
+                            .font(.caption)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 6)
+                            .background(Color.blue)
+                            .foregroundColor(.white)
+                            .cornerRadius(16)
+                    }
+                }
+                .padding(.horizontal)
+                .padding(.vertical, 8)
+            }
         }
         .background(Color(.systemGray6))
+    }
+    
+    private func sourceFilterColor(for source: LogSourceFilter) -> Color {
+        switch source {
+        case .all:
+            return .blue
+        case .appOnly:
+            return .green
+        case .systemOnly:
+            return .purple
+        }
     }
     
     private var bottomToolbar: some View {
@@ -206,6 +289,15 @@ struct LogRowView: View {
     let log: LogEntry
     @State private var isExpanded = false
     
+    private let appBundleIdentifier = Bundle.main.bundleIdentifier ?? "unknown"
+    
+    private var isAppLog: Bool {
+        if let subsystem = log.subsystem, subsystem == appBundleIdentifier {
+            return true
+        }
+        return false
+    }
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             HStack(alignment: .top, spacing: 8) {
@@ -226,8 +318,15 @@ struct LogRowView: View {
                             .foregroundColor(categoryColor(for: log.level))
                             .cornerRadius(4)
                         
-                        // Show subsystem if available
-                        if let subsystem = log.subsystem, subsystem != Bundle.main.bundleIdentifier {
+                        // App badge indicator
+                        if isAppLog {
+                            Image(systemName: "app.badge.checkmark.fill")
+                                .font(.caption2)
+                                .foregroundColor(.green)
+                        }
+                        
+                        // Show subsystem if available and different from app
+                        if let subsystem = log.subsystem, subsystem != appBundleIdentifier {
                             Text(subsystem)
                                 .font(.caption2)
                                 .padding(.horizontal, 6)
@@ -304,6 +403,7 @@ struct LogRowView: View {
 struct FilterChip: View {
     let title: String
     let isSelected: Bool
+    var color: Color = .blue
     let action: () -> Void
     
     var body: some View {
@@ -315,7 +415,7 @@ struct FilterChip: View {
             .fontWeight(isSelected ? .semibold : .regular)
             .padding(.horizontal, 12)
             .padding(.vertical, 6)
-            .background(isSelected ? Color.blue : Color(.systemGray5))
+            .background(isSelected ? color : Color(.systemGray5))
             .foregroundColor(isSelected ? .white : .primary)
             .cornerRadius(16)
         }
