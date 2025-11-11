@@ -274,15 +274,28 @@ struct ChatDemoView: View {
         }
         webrtcClient = nil
     }
+    
+    private func formatDate(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        
+        // Set the date format
+        formatter.dateFormat = "EEE MMM dd yyyy HH:mm:ss 'GMT'Z '(GMT'XXX')'"
+        
+        return formatter.string(from: date)
+    }
 
     private func sendMessage() {
         let trimmed = messageText.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty, let client = webrtcClient, isConnected else { return }
+        let now = Date()
 
         // Create message object
         let messageData: [String: Any] = [
             "username": currentUsername,
+            "name": currentUsername,
             "message": trimmed,
+            "eventType": "MESSAGE_RECEIVED",
+            "date": formatDate(now),
             "timestamp": Date().timeIntervalSince1970,
             "messageId": UUID().uuidString
         ]
