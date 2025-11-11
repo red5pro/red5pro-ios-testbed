@@ -295,7 +295,8 @@ struct StreamManagerPublishScreen: View {
     @State private var isAudioMuted = false
     @State private var isFrontCamera = true
     @State private var isPublishing = false
-    @State private var statusMessage = "Ready"
+    @State private var iceConnectionState = "Not Connected"
+    @State private var connectionState = "Disconnected"
     @State private var previewStarted = false
     @State private var cameraPermissionGranted = false
     @State private var showingLogs = false
@@ -351,9 +352,24 @@ struct StreamManagerPublishScreen: View {
                                 .font(.caption)
                                 .fontWeight(.bold)
                         }
-                        Text(statusMessage)
-                            .font(.caption2)
-                            .lineLimit(1)
+                        
+                        // ICE Connection State
+                        HStack(spacing: 5) {
+                            Text("ICE:")
+                                .font(.caption2)
+                                .fontWeight(.semibold)
+                            Text(iceConnectionState)
+                                .font(.caption2)
+                        }
+                        
+                        // Peer Connection State
+                        HStack(spacing: 5) {
+                            Text("Connection State:")
+                                .font(.caption2)
+                                .fontWeight(.semibold)
+                            Text(connectionState)
+                                .font(.caption2)
+                        }
                     }
                     .padding(10)
                     .background(Color.black.opacity(0.6))
@@ -438,11 +454,9 @@ struct StreamManagerPublishScreen: View {
                         if isPublishing {
                             publishManager.stopPublish()
                             isPublishing = false
-                            statusMessage = "Stopped"
                         } else {
                             publishManager.startPublish()
                             isPublishing = true
-                            statusMessage = "Publishing..."
                         }
                     }) {
                         Text(isPublishing ? "Stop Publish" : "Start Publish")
@@ -503,11 +517,21 @@ struct StreamManagerPublishScreen: View {
                 // Setup the publish manager
                 publishManager.setupDelegate { message in
                     DispatchQueue.main.async {
-                        statusMessage = message
-
-                        // Track when preview actually starts
-                        if message.contains("Preview") && message.contains("ready") {
+                        print("BOLA: \(message)");
+                        // Parse the message to detect state changes
+                        if message.hasPrefix("ICE:") {
+                            // Extract ICE state
+                            let state = message.replacingOccurrences(of: "ICE: ", with: "")
+                            iceConnectionState = state
+                        } else if message.contains("Preview") {
                             previewStarted = true
+                            iceConnectionState = "Ready"
+                            connectionState = "Ready"
+                        } else if message.contains("Publishing") || message.contains("Stopped") {
+                            connectionState = message
+                        } else if message.contains("Connecting") {
+                            iceConnectionState = message
+                            connectionState = message
                         }
                     }
                 }
