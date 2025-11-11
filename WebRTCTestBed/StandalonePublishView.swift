@@ -20,7 +20,6 @@ class StandalonePublishManager: NSObject, ObservableObject {
     @Published var localVideoRenderer: RTCMTLVideoView?
     @Published var isReady: Bool = false
 
-    private let config = Red5WebrtcClientConfig()
     private var isInitialized = false
 
     func setupDelegate(statusCallback: @escaping (String) -> Void) {
@@ -30,24 +29,6 @@ class StandalonePublishManager: NSObject, ObservableObject {
         self.localVideoRenderer?.contentMode = .scaleAspectFill
         self.localVideoRenderer?.videoContentMode = .scaleAspectFill
 
-        // Configure the client using SettingsManager
-        config.serverIp = SettingsManager.getStandaloneServerIp()
-        config.port = SettingsManager.getStandaloneServerPort()
-        config.appName = SettingsManager.getAppName()
-        config.streamName = SettingsManager.getStreamName()
-        config.userName = SettingsManager.getUserName()
-        config.password = SettingsManager.getPassword()
-        config.licenseKey = SettingsManager.getSdkLicenseKey()
-        config.videoEnabled = true
-        config.audioEnabled = true
-        config.videoWidth = 640
-        config.videoHeight = 480
-        config.videoFps = 30
-        config.videoBitrate = 750
-        config.nodeGroup = SettingsManager.getNodeGroup()
-
-        config.videoRenderer = self.localVideoRenderer
-
         // Initialize the client with builder pattern
         webrtcClient = Red5WebrtcClientBuilder()
             .setServerIp(SettingsManager.getStandaloneServerIp())
@@ -55,12 +36,12 @@ class StandalonePublishManager: NSObject, ObservableObject {
             .setAppName(SettingsManager.getAppName())
             .setStreamName(SettingsManager.getStreamName())
             .setLicenseKey(SettingsManager.getSdkLicenseKey())
-            .setVideoEnabled(config.videoEnabled)
-            .setAudioEnabled(config.audioEnabled)
-            .setVideoWidth(config.videoWidth)
-            .setVideoHeight(config.videoHeight)
-            .setVideoFps(config.videoFps)
-            .setVideoBitrate(config.videoBitrate)
+            .setVideoEnabled(true)
+            .setAudioEnabled(true)
+            .setVideoWidth(640)
+            .setVideoHeight(480)
+            .setVideoFps(30)
+            .setVideoBitrate(750)
             .setTurnServer(uri: SettingsManager.getTurnUrl(), username: SettingsManager.getTurnUsername(), password: SettingsManager.getTurnPassword())
             .setEventListener(self)
             .build()
