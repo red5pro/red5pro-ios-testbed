@@ -16,6 +16,7 @@ struct LogsView: View {
     @State private var exportText = ""
     @State private var autoScroll = true
     @State private var showingFilters = false
+    @State private var showSystemLogsToggle = false
     @Environment(\.dismiss) private var dismiss
     
     var filteredLogs: [LogEntry] {
@@ -133,7 +134,6 @@ struct LogsView: View {
                 ForEach(LogLevel.allCases, id: \.self) { level in
                     FilterChip(
                         title: level.rawValue,
-                        emoji: level.emoji,
                         isSelected: selectedLevels.contains(level)
                     ) {
                         if selectedLevels.contains(level) {
@@ -180,6 +180,17 @@ struct LogsView: View {
             
             Spacer()
             
+            Toggle(isOn: $logManager.isSystemLogsEnabled) {
+                HStack(spacing: 4) {
+                    Image(systemName: "gear.circle.fill")
+                    Text("System Logs")
+                }
+                .font(.caption)
+            }
+            .toggleStyle(SwitchToggleStyle(tint: .purple))
+            
+            Spacer()
+            
             Text("\(logManager.logs.count) total logs")
                 .font(.caption)
                 .foregroundColor(.gray)
@@ -198,10 +209,6 @@ struct LogRowView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             HStack(alignment: .top, spacing: 8) {
-                // Level emoji
-                Text(log.level.emoji)
-                    .font(.caption)
-                
                 VStack(alignment: .leading, spacing: 2) {
                     // Time and category
                     HStack(spacing: 8) {
@@ -218,6 +225,18 @@ struct LogRowView: View {
                             .background(categoryColor(for: log.level).opacity(0.2))
                             .foregroundColor(categoryColor(for: log.level))
                             .cornerRadius(4)
+                        
+                        // Show subsystem if available
+                        if let subsystem = log.subsystem, subsystem != Bundle.main.bundleIdentifier {
+                            Text(subsystem)
+                                .font(.caption2)
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 2)
+                                .background(Color.purple.opacity(0.2))
+                                .foregroundColor(.purple)
+                                .cornerRadius(4)
+                                .lineLimit(1)
+                        }
                     }
                     
                     // Message
@@ -225,6 +244,23 @@ struct LogRowView: View {
                         .font(.caption)
                         .lineLimit(isExpanded ? nil : 3)
                         .fixedSize(horizontal: false, vertical: true)
+                    
+                    // Extended info when expanded
+                    if isExpanded {
+                        VStack(alignment: .leading, spacing: 2) {
+                            if let pid = log.processID {
+                                Text("PID: \(pid)")
+                                    .font(.caption2)
+                                    .foregroundColor(.secondary)
+                            }
+                            if let tid = log.threadID {
+                                Text("Thread: \(tid)")
+                                    .font(.caption2)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                        .padding(.top, 4)
+                    }
                 }
                 
                 Spacer()
@@ -248,6 +284,7 @@ struct LogRowView: View {
         case .warning: return .orange
         case .error: return .red
         case .event: return .green
+        case .system: return .purple
         }
     }
     
@@ -258,6 +295,7 @@ struct LogRowView: View {
         case .warning: return Color.orange.opacity(0.05)
         case .error: return Color.red.opacity(0.05)
         case .event: return Color.green.opacity(0.05)
+        case .system: return Color.purple.opacity(0.05)
         }
     }
 }
@@ -265,14 +303,12 @@ struct LogRowView: View {
 // MARK: - Filter Chip
 struct FilterChip: View {
     let title: String
-    let emoji: String
     let isSelected: Bool
     let action: () -> Void
     
     var body: some View {
         Button(action: action) {
             HStack(spacing: 4) {
-                Text(emoji)
                 Text(title)
             }
             .font(.caption)

@@ -7,6 +7,7 @@
 
 import Foundation
 internal import Combine
+import OSLog
 
 // MARK: - Log Entry Model
 struct LogEntry: Identifiable, Equatable {
@@ -15,13 +16,19 @@ struct LogEntry: Identifiable, Equatable {
     let level: LogLevel
     let category: String
     let message: String
+    let subsystem: String?
+    let processID: Int?
+    let threadID: UInt64?
     
-    init(level: LogLevel, category: String, message: String) {
+    init(level: LogLevel, category: String, message: String, subsystem: String? = nil, processID: Int? = nil, threadID: UInt64? = nil) {
         self.id = UUID()
         self.timestamp = Date()
         self.level = level
         self.category = category
         self.message = message
+        self.subsystem = subsystem
+        self.processID = processID
+        self.threadID = threadID
     }
     
     var formattedTimestamp: String {
@@ -31,7 +38,23 @@ struct LogEntry: Identifiable, Equatable {
     }
     
     var displayText: String {
-        "[\(formattedTimestamp)] [\(level.emoji) \(level.rawValue)] [\(category)] \(message)"
+        var text = "[\(formattedTimestamp)] [\(level.rawValue)] [\(category)]"
+        if let subsystem = subsystem {
+            text += " [\(subsystem)]"
+        }
+        text += " \(message)"
+        return text
+    }
+    
+    var detailedText: String {
+        var text = displayText
+        if let pid = processID {
+            text += "\n  PID: \(pid)"
+        }
+        if let tid = threadID {
+            text += "\n  Thread: \(tid)"
+        }
+        return text
     }
 }
 
@@ -42,16 +65,7 @@ enum LogLevel: String, CaseIterable {
     case warning = "WARNING"
     case error = "ERROR"
     case event = "EVENT"
-    
-    var emoji: String {
-        switch self {
-        case .debug: return "🔍"
-        case .info: return "ℹ️"
-        case .warning: return "⚠️"
-        case .error: return "❌"
-        case .event: return "📡"
-        }
-    }
+    case system = "SYSTEM"
     
     var color: String {
         switch self {
@@ -60,6 +74,7 @@ enum LogLevel: String, CaseIterable {
         case .warning: return "orange"
         case .error: return "red"
         case .event: return "green"
+        case .system: return "purple"
         }
     }
 }
@@ -70,13 +85,182 @@ class LogManager: ObservableObject {
     
     @Published var logs: [LogEntry] = []
     @Published var isEnabled: Bool = true
+    @Published var isSystemLogsEnabled: Bool = false {
+        didSet {
+            if isSystemLogsEnabled {
+                startSystemLogCapture()
+            } else {
+                stopSystemLogCapture()
+            }
+        }
+    }
     
-    private let maxLogCount = 1000 // Keep last 1000 logs
+    private let maxLogCount = 2000 // Increased to accommodate system logs
     private let queue = DispatchQueue(label: "com.red5pro.logmanager", qos: .utility)
     
+    // System log capture
+    private var systemLogStore: OSLogStore?
+    private var systemLogTimer: Timer?
+    private var lastSystemLogPosition: OSLogPosition?
+    private let systemLogQueue = DispatchQueue(label: "com.red5pro.systemlogs", qos: .utility)
+    
+    // App identifier for filtering
+    private let appBundleIdentifier: String
+    private let appProcessIdentifier: Int32
+    
     private init() {
+        self.appBundleIdentifier = Bundle.main.bundleIdentifier ?? "unknown"
+        self.appProcessIdentifier = ProcessInfo.processInfo.processIdentifier
+        
         // Log system started
         log(.info, category: "System", message: "Log Manager initialized")
+        
+        // Setup system log store
+        setupSystemLogStore()
+    }
+    
+    // MARK: - System Log Capture
+    
+    private func setupSystemLogStore() {
+        do {
+            systemLogStore = try OSLogStore(scope: .currentProcessIdentifier)
+            log(.info, category: "SystemLogs", message: "System log store initialized")
+        } catch {
+            log(.error, category: "SystemLogs", message: "Failed to initialize system log store: \(error.localizedDescription)")
+        }
+    }
+    
+    func startSystemLogCapture() {
+        guard systemLogStore != nil else {
+            log(.error, category: "SystemLogs", message: "System log store not available")
+            return
+        }
+        
+        log(.info, category: "SystemLogs", message: "Starting system log capture")
+        
+        // Get current position
+        systemLogQueue.async { [weak self] in
+            self?.captureRecentSystemLogs()
+            
+            // Start periodic polling
+            DispatchQueue.main.async {
+                self?.systemLogTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
+                    self?.systemLogQueue.async {
+                        self?.captureNewSystemLogs()
+                    }
+                }
+            }
+        }
+    }
+    
+    func stopSystemLogCapture() {
+        log(.info, category: "SystemLogs", message: "Stopping system log capture")
+        systemLogTimer?.invalidate()
+        systemLogTimer = nil
+        lastSystemLogPosition = nil
+    }
+    
+    private func captureRecentSystemLogs() {
+        guard let store = systemLogStore else { return }
+        
+        do {
+            // Get logs from the last 10 seconds
+            let timeInterval: TimeInterval = -10
+            let startDate = Date(timeIntervalSinceNow: timeInterval)
+            
+            let position = store.position(date: startDate)
+            let entries = try store.getEntries(at: position)
+            
+            var count = 0
+            for entry in entries {
+                if count >= 100 { break } // Limit initial batch
+                
+                if let logEntry = entry as? OSLogEntryLog {
+                    processSystemLogEntry(logEntry)
+                    count += 1
+                }
+            }
+            
+            // Store the last position
+            lastSystemLogPosition = try store.position(date: Date())
+            
+            DispatchQueue.main.async {
+                self.log(.info, category: "SystemLogs", message: "Captured \(count) recent system log entries")
+            }
+        } catch {
+            DispatchQueue.main.async {
+                self.log(.error, category: "SystemLogs", message: "Failed to capture recent logs: \(error.localizedDescription)")
+            }
+        }
+    }
+    
+    private func captureNewSystemLogs() {
+        guard let store = systemLogStore else { return }
+        
+        do {
+            let position = lastSystemLogPosition ?? store.position(timeIntervalSinceLatestBoot: 0)
+            let entries = try store.getEntries(at: position)
+            
+            var newEntries: [OSLogEntryLog] = []
+            for entry in entries {
+                if let logEntry = entry as? OSLogEntryLog {
+                    newEntries.append(logEntry)
+                }
+            }
+            
+            // Process new entries
+            for logEntry in newEntries {
+                processSystemLogEntry(logEntry)
+            }
+            
+            // Update position
+            if !newEntries.isEmpty {
+                lastSystemLogPosition = try store.position(date: Date())
+            }
+        } catch {
+            // Silently fail to avoid spam
+        }
+    }
+    
+    private func processSystemLogEntry(_ entry: OSLogEntryLog) {
+        // Convert OSLogEntryLog.Level to our LogLevel
+        let level: LogLevel
+        switch entry.level {
+        case .debug:
+            level = .debug
+        case .info:
+            level = .info
+        case .notice:
+            level = .info
+        case .error:
+            level = .error
+        case .fault:
+            level = .error
+        default:
+            level = .system
+        }
+        
+        let logEntry = LogEntry(
+            level: level,
+            category: entry.category,
+            message: entry.composedMessage,
+            subsystem: entry.subsystem,
+            processID: Int(entry.process),
+            threadID: entry.threadIdentifier
+        )
+        
+        DispatchQueue.main.async {
+            self.addLogEntry(logEntry)
+        }
+    }
+    
+    private func addLogEntry(_ entry: LogEntry) {
+        logs.append(entry)
+        
+        // Trim logs if exceeding max count
+        if logs.count > maxLogCount {
+            logs.removeFirst(logs.count - maxLogCount)
+        }
     }
     
     // MARK: - Public Methods
@@ -85,19 +269,41 @@ class LogManager: ObservableObject {
         guard isEnabled else { return }
         
         queue.async {
-            let entry = LogEntry(level: level, category: category, message: message)
+            let entry = LogEntry(
+                level: level,
+                category: category,
+                message: message,
+                subsystem: self.appBundleIdentifier,
+                processID: Int(self.appProcessIdentifier),
+                threadID: UInt64(pthread_mach_thread_np(pthread_self()))
+            )
             
             // Also print to console for debugging
             print("[\(entry.formattedTimestamp)] [\(level.rawValue)] [\(category)] \(message)")
             
+            // Log to OSLog as well
+            self.logToOSLog(level: level, category: category, message: message)
+            
             DispatchQueue.main.async {
-                self.logs.append(entry)
-                
-                // Trim logs if exceeding max count
-                if self.logs.count > self.maxLogCount {
-                    self.logs.removeFirst(self.logs.count - self.maxLogCount)
-                }
+                self.addLogEntry(entry)
             }
+        }
+    }
+    
+    private func logToOSLog(level: LogLevel, category: String, message: String) {
+        let logger = Logger(subsystem: appBundleIdentifier, category: category)
+        
+        switch level {
+        case .debug:
+            logger.debug("\(message)")
+        case .info, .event:
+            logger.info("\(message)")
+        case .warning:
+            logger.warning("\(message)")
+        case .error:
+            logger.error("\(message)")
+        case .system:
+            logger.notice("\(message)")
         }
     }
     
@@ -139,5 +345,15 @@ class LogManager: ObservableObject {
             let searchMatch = searchText.isEmpty || entry.message.localizedCaseInsensitiveContains(searchText)
             return levelMatch && categoryMatch && searchMatch
         }
+    }
+    
+    // Get all unique categories
+    func getAllCategories() -> [String] {
+        Array(Set(logs.map { $0.category })).sorted()
+    }
+    
+    // Get all unique subsystems
+    func getAllSubsystems() -> [String] {
+        Array(Set(logs.compactMap { $0.subsystem })).sorted()
     }
 }
