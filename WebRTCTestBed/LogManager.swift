@@ -96,13 +96,13 @@ class LogManager: ObservableObject {
     }
     
     private let maxLogCount = 2000 // Increased to accommodate system logs
-    private let queue = DispatchQueue(label: "com.red5pro.logmanager", qos: .utility)
+    private let queue = DispatchQueue(label: "com.infared5.test.logmanager", qos: .utility)
     
     // System log capture
     private var systemLogStore: OSLogStore?
     private var systemLogTimer: Timer?
     private var lastSystemLogPosition: OSLogPosition?
-    private let systemLogQueue = DispatchQueue(label: "com.red5pro.systemlogs", qos: .utility)
+    private let systemLogQueue = DispatchQueue(label: "com.infared5.test.systemlogs", qos: .utility)
     
     // App identifier for filtering
     private let appBundleIdentifier: String
@@ -277,9 +277,6 @@ class LogManager: ObservableObject {
                 processID: Int(self.appProcessIdentifier),
                 threadID: UInt64(pthread_mach_thread_np(pthread_self()))
             )
-            
-            // Also print to console for debugging
-            print("[\(entry.formattedTimestamp)] [\(level.rawValue)] [\(category)] \(message)")
             
             // Log to OSLog as well
             self.logToOSLog(level: level, category: category, message: message)

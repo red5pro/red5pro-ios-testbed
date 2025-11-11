@@ -437,7 +437,7 @@ struct ChatDemoView: View {
 
     fileprivate func handleSendSuccess(channel: String, timetoken: NSNumber) {
         // Message was sent successfully
-        print("Message sent successfully with timetoken: \(timetoken)")
+        LogManager.shared.info("Chat", "Message sent successfully with timetoken: \(timetoken)")
     }
 }
 
@@ -558,7 +558,7 @@ class ChatEventListener: Red5ProWebrtcEventDelegate {
 
     // MARK: - WebRTC events (optional implementations)
     func onError(error: String) {
-        print("WebRTC Error: \(error)")
+        LogManager.shared.error("WebRTC", "WebRTC Error: \(error)")
     }
 
     // Other delegate methods can be left empty since we're only using chat

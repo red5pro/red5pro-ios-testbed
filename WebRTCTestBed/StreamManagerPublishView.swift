@@ -64,7 +64,7 @@ class StreamManagerPublishManager: NSObject, ObservableObject {
             .setEventListener(self)
             .build()
 
-        print("Client built")
+        LogManager.shared.info("Publish", "Client built")
 
         if let client = self.webrtcClient {
             client.setVideoRenderer(self.localVideoRenderer!)
@@ -77,7 +77,7 @@ class StreamManagerPublishManager: NSObject, ObservableObject {
     func startPreview() {
         guard let client = webrtcClient, !isInitialized else {
             if isInitialized {
-                print("Preview already initialized")
+                LogManager.shared.warning("Publish", "Preview already initialized")
             }
             return
         }
@@ -85,7 +85,7 @@ class StreamManagerPublishManager: NSObject, ObservableObject {
         // Check if license is validated
         if !client.isLicenseValidated() {
             statusCallback?("Waiting for license validation...")
-            print("Cannot start preview - license not validated yet")
+            LogManager.shared.warning("Publish", "Cannot start preview - license not validated yet")
             return
         }
 
@@ -167,52 +167,52 @@ class StreamManagerPublishManager: NSObject, ObservableObject {
 extension StreamManagerPublishManager: Red5ProWebrtcEventDelegate {
     func onChatMessageReceived(channel: String, message: any PubNubSDK.JSONCodable) {
         DispatchQueue.main.async {
-            print("chat message received")
+            LogManager.shared.info("Chat", "Message received on channel: \(channel)")
         }
     }
 
     func onChatConnected() {
         DispatchQueue.main.async {
-            print("chat connected")
+            LogManager.shared.info("Chat", "Connected")
         }
     }
 
     func onChatDisconnected() {
         DispatchQueue.main.async {
-            print("chat disconnected")
+            LogManager.shared.info("Chat", "Disconnected")
         }
     }
 
     func onChatSendError(channel: String, errorMessage: String) {
         DispatchQueue.main.async {
-            print("chat send error")
+            LogManager.shared.error("Chat", "Send error on channel \(channel): \(errorMessage)")
         }
     }
 
     func onChatSendSuccess(channel: String, timetoken: NSNumber) {
         DispatchQueue.main.async {
-            print("chat send success")
+            LogManager.shared.info("Chat", "Send success on channel \(channel) with timetoken: \(timetoken)")
         }
     }
 
     func onPublishStarted() {
         DispatchQueue.main.async {
             self.statusCallback?("Publishing...")
-            print("Publish started")
+            LogManager.shared.event("Publish", "Publish started")
         }
     }
 
     func onPublishStopped() {
         DispatchQueue.main.async {
             self.statusCallback?("Stopped")
-            print("Publish stopped")
+            LogManager.shared.event("Publish", "Publish stopped")
         }
     }
 
     func onPublishFailed(error: String) {
         DispatchQueue.main.async {
             self.statusCallback?("Error: \(error)")
-            print("Publish failed: \(error)")
+            LogManager.shared.error("Publish", "Publish failed: \(error)")
         }
     }
 
@@ -237,26 +237,26 @@ extension StreamManagerPublishManager: Red5ProWebrtcEventDelegate {
     func onIceConnectionStateChanged(state: IceConnectionState) {
         DispatchQueue.main.async {
             self.statusCallback?("ICE: \(state)")
-            print("ICE connection state: \(state)")
+            LogManager.shared.info("WebRTC", "ICE connection state: \(state)")
         }
     }
 
     func onConnectionStateChanged(state: PeerConnectionState) {
         DispatchQueue.main.async {
-            print("Connection state: \(state)")
+            LogManager.shared.info("WebRTC", "Connection state: \(state)")
         }
     }
 
     func onError(error: String) {
         DispatchQueue.main.async {
             self.statusCallback?("Error: \(error)")
-            print("Error: \(error)")
+            LogManager.shared.error("WebRTC", "Error: \(error)")
         }
     }
 
     func onPreviewStarted() {
         DispatchQueue.main.async {
-            print("[Delegate] Preview started!")
+            LogManager.shared.event("Publish", "Preview started!")
             self.isReady = true  // Set ready state
             self.statusCallback?("Preview ready")
             self.objectWillChange.send()  // Force UI update
@@ -266,14 +266,14 @@ extension StreamManagerPublishManager: Red5ProWebrtcEventDelegate {
     func onPreviewStopped() {
         DispatchQueue.main.async {
             self.statusCallback?("Preview stopped")
-            print("Preview stopped")
+            LogManager.shared.event("Publish", "Preview stopped")
         }
     }
 
     func onLicenseValidated(validated: Bool, message: String) {
         DispatchQueue.main.async {
             if validated {
-                print("License validated - ready to start")
+                LogManager.shared.info("License", "License validated - ready to start")
                 self.statusCallback?("Ready to start")
                 
                 // Auto-start preview after license validation
@@ -282,7 +282,7 @@ extension StreamManagerPublishManager: Red5ProWebrtcEventDelegate {
                 }
             } else {
                 self.statusCallback?("License error: \(message)")
-                print("License validation failed: \(message)")
+                LogManager.shared.error("License", "License validation failed: \(message)")
             }
         }
     }

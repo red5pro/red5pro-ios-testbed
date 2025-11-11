@@ -67,7 +67,7 @@ class StandaloneSubscribeManager: NSObject, ObservableObject {
             .setEventListener(self)
             .build()
 
-        print("Subscribe Client built")
+        LogManager.shared.info("Subscribe", "Subscribe Client built")
 
         if let client = self.webrtcClient {
             client.setVideoRenderer(self.remoteVideoRenderer!)
@@ -122,31 +122,31 @@ class StandaloneSubscribeManager: NSObject, ObservableObject {
 extension StandaloneSubscribeManager: Red5ProWebrtcEventDelegate {
     func onChatMessageReceived(channel: String, message: any PubNubSDK.JSONCodable) {
         DispatchQueue.main.async {
-            print("chat message received")
+            LogManager.shared.info("Chat", "Message received on channel: \(channel)")
         }
     }
 
     func onChatConnected() {
         DispatchQueue.main.async {
-            print("chat connected")
+            LogManager.shared.info("Chat", "Connected")
         }
     }
 
     func onChatDisconnected() {
         DispatchQueue.main.async {
-            print("chat disconnected")
+            LogManager.shared.info("Chat", "Disconnected")
         }
     }
 
     func onChatSendError(channel: String, errorMessage: String) {
         DispatchQueue.main.async {
-            print("chat send error")
+            LogManager.shared.error("Chat", "Send error on channel \(channel): \(errorMessage)")
         }
     }
 
     func onChatSendSuccess(channel: String, timetoken: NSNumber) {
         DispatchQueue.main.async {
-            print("chat send success")
+            LogManager.shared.info("Chat", "Send success on channel \(channel) with timetoken: \(timetoken)")
         }
     }
 
@@ -172,7 +172,7 @@ extension StandaloneSubscribeManager: Red5ProWebrtcEventDelegate {
         DispatchQueue.main.async {
             self.statusCallback?("Receiving stream...")
             self.isSubscribing = true
-            print("Subscribe started")
+            LogManager.shared.event("Subscribe", "Subscribe started")
         }
     }
 
@@ -180,7 +180,7 @@ extension StandaloneSubscribeManager: Red5ProWebrtcEventDelegate {
         DispatchQueue.main.async {
             self.statusCallback?("Stopped")
             self.isSubscribing = false
-            print("Subscribe stopped")
+            LogManager.shared.event("Subscribe", "Subscribe stopped")
         }
     }
 
@@ -188,14 +188,14 @@ extension StandaloneSubscribeManager: Red5ProWebrtcEventDelegate {
         DispatchQueue.main.async {
             self.statusCallback?("Error: \(error)")
             self.isSubscribing = false
-            print("Subscribe failed: \(error)")
+            LogManager.shared.error("Subscribe", "Subscribe failed: \(error)")
         }
     }
 
     func onIceConnectionStateChanged(state: IceConnectionState) {
         DispatchQueue.main.async {
             self.statusCallback?("ICE: \(state)")
-            print("ICE connection state: \(state)")
+            LogManager.shared.info("WebRTC", "ICE connection state: \(state)")
 
             // Update connection status based on ICE state
             switch state {
@@ -217,7 +217,7 @@ extension StandaloneSubscribeManager: Red5ProWebrtcEventDelegate {
 
     func onConnectionStateChanged(state: PeerConnectionState) {
         DispatchQueue.main.async {
-            print("Connection state: \(state)")
+            LogManager.shared.info("WebRTC", "Connection state: \(state)")
 
             // Update status based on peer connection state
             switch state {
@@ -241,7 +241,7 @@ extension StandaloneSubscribeManager: Red5ProWebrtcEventDelegate {
         DispatchQueue.main.async {
             self.statusCallback?("Error: \(error)")
             self.isSubscribing = false
-            print("Error: \(error)")
+            LogManager.shared.error("WebRTC", "Error: \(error)")
         }
     }
 
