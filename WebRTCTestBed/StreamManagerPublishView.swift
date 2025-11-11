@@ -532,6 +532,8 @@ struct StreamManagerPublishScreen: View {
                         } else if message.contains("Connecting") {
                             iceConnectionState = message
                             connectionState = message
+                        } else if message.contains("Error:") {
+                            connectionState = message
                         }
                     }
                 }
