@@ -20,6 +20,9 @@ struct ChatDemoView: View {
     @State private var showingSettings = false
     @State private var errorMessage: String?
     @State private var showingError = false
+    @State private var isLicenseValidated = false
+    @State private var licenseCheckInProgress = false
+    @State private var showingLogs = false
 
     // Red5Pro WebRTC Client
     @State private var webrtcClient: Red5WebrtcClient?
@@ -50,14 +53,23 @@ struct ChatDemoView: View {
                 }
 
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(isConnected ? "Disconnect" : "Connect") {
-                        if isConnected {
-                            disconnectFromChat()
-                        } else {
-                            connectToChat()
+                    HStack(spacing: 12) {
+                        Button(action: {
+                            showingLogs = true
+                        }) {
+                            Image(systemName: "list.bullet.rectangle")
                         }
+                        
+                        Button(isConnected ? "Disconnect" : "Connect") {
+                            if isConnected {
+                                disconnectFromChat()
+                            } else {
+                                connectToChat()
+                            }
+                        }
+                        .foregroundColor(isConnected ? .red : (canConnect ? .blue : .gray))
+                        .disabled(!canConnect && !isConnected)
                     }
-                    .foregroundColor(isConnected ? .red : .blue)
                 }
             }
             .sheet(isPresented: $showingSettings) {
@@ -68,6 +80,9 @@ struct ChatDemoView: View {
                     subKey: $subKey
                 )
             }
+            .sheet(isPresented: $showingLogs) {
+                LogsView()
+            }
             .alert("Error", isPresented: $showingError) {
                 Button("OK") { }
             } message: {
@@ -76,6 +91,10 @@ struct ChatDemoView: View {
             .onAppear {
                 currentChannel = SettingsManager.getPubnubChannel()
                 loadDemoMessages()
+                initializeClient()
+            }
+            .onDisappear {
+                cleanup()
             }
         }
     }
@@ -86,11 +105,11 @@ struct ChatDemoView: View {
         HStack {
             HStack(spacing: 6) {
                 Circle()
-                    .fill(isConnected ? Color.green : Color.red)
+                    .fill(statusIndicatorColor)
                     .frame(width: 8, height: 8)
                 Text(connectionStatus)
                     .font(.caption)
-                    .foregroundColor(isConnected ? .green : .red)
+                    .foregroundColor(statusTextColor)
             }
 
             Spacer()
@@ -107,6 +126,30 @@ struct ChatDemoView: View {
                 .foregroundColor(Color(.separator)),
             alignment: .bottom
         )
+    }
+
+    private var statusIndicatorColor: Color {
+        if isConnected {
+            return .green
+        } else if licenseCheckInProgress {
+            return .orange
+        } else if isLicenseValidated {
+            return .gray
+        } else {
+            return .red
+        }
+    }
+
+    private var statusTextColor: Color {
+        if isConnected {
+            return .green
+        } else if licenseCheckInProgress {
+            return .orange
+        } else if isLicenseValidated {
+            return .gray
+        } else {
+            return .red
+        }
     }
 
     private var messagesScrollView: some View {
@@ -146,7 +189,8 @@ struct ChatDemoView: View {
                             sendMessage()
                         }
                 } else {
-                    // Fallback on earlier versions
+                    TextField("Type a message...", text: $messageText)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
                 }
 
                 Button(action: sendMessage) {
@@ -165,15 +209,21 @@ struct ChatDemoView: View {
         isConnected && !messageText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 
-    // MARK: - Chat Functions
+    private var canConnect: Bool {
+        isLicenseValidated && !licenseCheckInProgress
+    }
 
-    private func connectToChat() {
+    // MARK: - Initialization
+
+    private func initializeClient() {
         guard !SettingsManager.getPubnubPubKey().isEmpty && !SettingsManager.getPubnubSubKey().isEmpty else {
-            showError("Please configure PubNub keys in Settings")
+            addSystemMessage("Please configure PubNub keys in Settings")
+            connectionStatus = "Configuration Required"
             return
         }
 
-        connectionStatus = "Connecting..."
+        licenseCheckInProgress = true
+        connectionStatus = "Validating license..."
 
         // Create Red5WebRTC client configuration
         let config = Red5WebrtcClientConfig()
@@ -192,6 +242,29 @@ struct ChatDemoView: View {
 
         webrtcClient = client
 
+        addSystemMessage("Initializing chat client...")
+    }
+
+    // MARK: - Chat Functions
+
+    private func connectToChat() {
+        guard let client = webrtcClient else {
+            showError("Client not initialized. Please restart the app.")
+            return
+        }
+
+        guard isLicenseValidated else {
+            showError("License not validated. Please wait for validation to complete.")
+            return
+        }
+
+        guard !SettingsManager.getPubnubPubKey().isEmpty && !SettingsManager.getPubnubSubKey().isEmpty else {
+            showError("Please configure PubNub keys in Settings")
+            return
+        }
+
+        connectionStatus = "Connecting..."
+
         // Subscribe to chat channel
         client.subscribeChatChannel(channelName: currentChannel)
 
@@ -200,22 +273,41 @@ struct ChatDemoView: View {
 
     private func disconnectFromChat() {
         webrtcClient?.disconnectChat()
-        webrtcClient = nil
 
         isConnected = false
-        connectionStatus = "Disconnected"
+        connectionStatus = isLicenseValidated ? "Disconnected" : "License Validation Required"
 
         addSystemMessage("Disconnected from chat")
+    }
+
+    private func cleanup() {
+        if isConnected {
+            disconnectFromChat()
+        }
+        webrtcClient = nil
+    }
+    
+    private func formatDate(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        
+        // Set the date format
+        formatter.dateFormat = "EEE MMM dd yyyy HH:mm:ss 'GMT'Z '(GMT'XXX')'"
+        
+        return formatter.string(from: date)
     }
 
     private func sendMessage() {
         let trimmed = messageText.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty, let client = webrtcClient, isConnected else { return }
+        let now = Date()
 
         // Create message object
         let messageData: [String: Any] = [
             "username": currentUsername,
+            "name": currentUsername,
             "message": trimmed,
+            "eventType": "MESSAGE_RECEIVED",
+            "date": formatDate(now),
             "timestamp": Date().timeIntervalSince1970,
             "messageId": UUID().uuidString
         ]
@@ -272,7 +364,7 @@ struct ChatDemoView: View {
                 messageType: .system
             ),
             ChatMessage(
-                content: "Configure your PubNub keys in Settings and tap Connect to start chatting.",
+                content: "Validating license...",
                 username: "System",
                 messageType: .system
             )
@@ -281,18 +373,35 @@ struct ChatDemoView: View {
 
     // MARK: - Event Handling
 
+    fileprivate func handleLicenseValidated(validated: Bool, message: String) {
+        DispatchQueue.main.async {
+            self.licenseCheckInProgress = false
+            self.isLicenseValidated = validated
+
+            if validated {
+                self.connectionStatus = "Ready to Connect"
+                self.addSystemMessage("✓ License validated successfully!")
+                self.addSystemMessage("Configure your PubNub keys in Settings and tap Connect to start chatting.")
+            } else {
+                self.connectionStatus = "License Error"
+                self.addSystemMessage("✗ License validation failed: \(message)")
+                self.showError("License validation failed: \(message)")
+            }
+        }
+    }
+
     fileprivate func handleChatConnected() {
         DispatchQueue.main.async {
             self.isConnected = true
             self.connectionStatus = "Connected"
-            self.addSystemMessage("Connected to chat!")
+            self.addSystemMessage("✓ Connected to chat!")
         }
     }
 
     fileprivate func handleChatDisconnected() {
         DispatchQueue.main.async {
             self.isConnected = false
-            self.connectionStatus = "Disconnected"
+            self.connectionStatus = self.isLicenseValidated ? "Disconnected" : "License Validation Required"
             self.addSystemMessage("Disconnected from chat")
         }
     }
@@ -328,7 +437,7 @@ struct ChatDemoView: View {
 
     fileprivate func handleSendSuccess(channel: String, timetoken: NSNumber) {
         // Message was sent successfully
-        print("Message sent successfully with timetoken: \(timetoken)")
+        LogManager.shared.info("Chat", "Message sent successfully with timetoken: \(timetoken)")
     }
 }
 
@@ -421,6 +530,11 @@ class ChatEventListener: Red5ProWebrtcEventDelegate {
         self.chatView = chatView
     }
 
+    // MARK: - License Validation
+    func onLicenseValidated(validated: Bool, message: String) {
+        chatView?.handleLicenseValidated(validated: validated, message: message)
+    }
+
     // MARK: - Chat-specific events
     func onChatConnected() {
         chatView?.handleChatConnected()
@@ -444,7 +558,7 @@ class ChatEventListener: Red5ProWebrtcEventDelegate {
 
     // MARK: - WebRTC events (optional implementations)
     func onError(error: String) {
-        print("WebRTC Error: \(error)")
+        LogManager.shared.error("WebRTC", "WebRTC Error: \(error)")
     }
 
     // Other delegate methods can be left empty since we're only using chat
@@ -458,7 +572,6 @@ class ChatEventListener: Red5ProWebrtcEventDelegate {
     func onConnectionStateChanged(state: PeerConnectionState) {}
     func onPreviewStarted() {}
     func onPreviewStopped() {}
-    func onLicenseValidated(validated: Bool, message: String) {}
 }
 
 // MARK: - Chat Settings View

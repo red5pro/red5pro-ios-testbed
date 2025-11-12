@@ -20,7 +20,6 @@ class StreamManagerPublishManager: NSObject, ObservableObject {
     @Published var localVideoRenderer: RTCMTLVideoView?
     @Published var isReady: Bool = false
 
-    private let config = Red5WebrtcClientConfig()
     private var isInitialized = false
 
     func setupDelegate(statusCallback: @escaping (String) -> Void) {
@@ -30,41 +29,24 @@ class StreamManagerPublishManager: NSObject, ObservableObject {
         self.localVideoRenderer?.contentMode = .scaleAspectFill
         self.localVideoRenderer?.videoContentMode = .scaleAspectFill
 
-        // Configure the client using SettingsManager
-        config.streamManagerHost = SettingsManager.getStreamManagerHost()
-        config.appName = SettingsManager.getAppName()
-        config.streamName = SettingsManager.getStreamName()
-        config.userName = SettingsManager.getUserName()
-        config.password = SettingsManager.getPassword()
-        config.licenseKey = SettingsManager.getSdkLicenseKey()
-        config.videoEnabled = true
-        config.audioEnabled = true
-        config.videoWidth = 640
-        config.videoHeight = 480
-        config.videoFps = 30
-        config.videoBitrate = 750
-        config.nodeGroup = SettingsManager.getNodeGroup()
-
-        config.videoRenderer = self.localVideoRenderer
-
         // Initialize the client with builder pattern
         webrtcClient = Red5WebrtcClientBuilder()
             .setAppName(SettingsManager.getAppName())
             .setStreamManagerHost(SettingsManager.getStreamManagerHost())
             .setNodeGroup(SettingsManager.getNodeGroup())
             .setStreamName(SettingsManager.getStreamName())
-            .setVideoEnabled(config.videoEnabled)
-            .setAudioEnabled(config.audioEnabled)
-            .setVideoWidth(config.videoWidth)
-            .setVideoHeight(config.videoHeight)
-            .setVideoFps(config.videoFps)
-            .setVideoBitrate(config.videoBitrate)
+            .setVideoEnabled(true)
+            .setAudioEnabled(true)
+            .setVideoWidth(640)
+            .setVideoHeight(480)
+            .setVideoFps(30)
+            .setVideoBitrate(750)
             .setLicenseKey(SettingsManager.getSdkLicenseKey())
             .setTurnServer(uri: SettingsManager.getTurnUrl(), username: SettingsManager.getTurnUsername(), password: SettingsManager.getTurnPassword())
             .setEventListener(self)
             .build()
 
-        print("Client built")
+        LogManager.shared.info("Publish", "Client built")
 
         if let client = self.webrtcClient {
             client.setVideoRenderer(self.localVideoRenderer!)
@@ -77,7 +59,7 @@ class StreamManagerPublishManager: NSObject, ObservableObject {
     func startPreview() {
         guard let client = webrtcClient, !isInitialized else {
             if isInitialized {
-                print("Preview already initialized")
+                LogManager.shared.warning("Publish", "Preview already initialized")
             }
             return
         }
@@ -85,7 +67,7 @@ class StreamManagerPublishManager: NSObject, ObservableObject {
         // Check if license is validated
         if !client.isLicenseValidated() {
             statusCallback?("Waiting for license validation...")
-            print("Cannot start preview - license not validated yet")
+            LogManager.shared.warning("Publish", "Cannot start preview - license not validated yet")
             return
         }
 
@@ -167,52 +149,52 @@ class StreamManagerPublishManager: NSObject, ObservableObject {
 extension StreamManagerPublishManager: Red5ProWebrtcEventDelegate {
     func onChatMessageReceived(channel: String, message: any PubNubSDK.JSONCodable) {
         DispatchQueue.main.async {
-            print("chat message received")
+            LogManager.shared.info("Chat", "Message received on channel: \(channel)")
         }
     }
 
     func onChatConnected() {
         DispatchQueue.main.async {
-            print("chat connected")
+            LogManager.shared.info("Chat", "Connected")
         }
     }
 
     func onChatDisconnected() {
         DispatchQueue.main.async {
-            print("chat disconnected")
+            LogManager.shared.info("Chat", "Disconnected")
         }
     }
 
     func onChatSendError(channel: String, errorMessage: String) {
         DispatchQueue.main.async {
-            print("chat send error")
+            LogManager.shared.error("Chat", "Send error on channel \(channel): \(errorMessage)")
         }
     }
 
     func onChatSendSuccess(channel: String, timetoken: NSNumber) {
         DispatchQueue.main.async {
-            print("chat send success")
+            LogManager.shared.info("Chat", "Send success on channel \(channel) with timetoken: \(timetoken)")
         }
     }
 
     func onPublishStarted() {
         DispatchQueue.main.async {
             self.statusCallback?("Publishing...")
-            print("Publish started")
+            LogManager.shared.event("Publish", "Publish started")
         }
     }
 
     func onPublishStopped() {
         DispatchQueue.main.async {
             self.statusCallback?("Stopped")
-            print("Publish stopped")
+            LogManager.shared.event("Publish", "Publish stopped")
         }
     }
 
     func onPublishFailed(error: String) {
         DispatchQueue.main.async {
             self.statusCallback?("Error: \(error)")
-            print("Publish failed: \(error)")
+            LogManager.shared.error("Publish", "Publish failed: \(error)")
         }
     }
 
@@ -237,26 +219,26 @@ extension StreamManagerPublishManager: Red5ProWebrtcEventDelegate {
     func onIceConnectionStateChanged(state: IceConnectionState) {
         DispatchQueue.main.async {
             self.statusCallback?("ICE: \(state)")
-            print("ICE connection state: \(state)")
+            LogManager.shared.info("WebRTC", "ICE connection state: \(state)")
         }
     }
 
     func onConnectionStateChanged(state: PeerConnectionState) {
         DispatchQueue.main.async {
-            print("Connection state: \(state)")
+            LogManager.shared.info("WebRTC", "Connection state: \(state)")
         }
     }
 
     func onError(error: String) {
         DispatchQueue.main.async {
             self.statusCallback?("Error: \(error)")
-            print("Error: \(error)")
+            LogManager.shared.error("WebRTC", "Error: \(error)")
         }
     }
 
     func onPreviewStarted() {
         DispatchQueue.main.async {
-            print("[Delegate] Preview started!")
+            LogManager.shared.event("Publish", "Preview started!")
             self.isReady = true  // Set ready state
             self.statusCallback?("Preview ready")
             self.objectWillChange.send()  // Force UI update
@@ -266,14 +248,14 @@ extension StreamManagerPublishManager: Red5ProWebrtcEventDelegate {
     func onPreviewStopped() {
         DispatchQueue.main.async {
             self.statusCallback?("Preview stopped")
-            print("Preview stopped")
+            LogManager.shared.event("Publish", "Preview stopped")
         }
     }
 
     func onLicenseValidated(validated: Bool, message: String) {
         DispatchQueue.main.async {
             if validated {
-                print("License validated - ready to start")
+                LogManager.shared.info("License", "License validated - ready to start")
                 self.statusCallback?("Ready to start")
                 
                 // Auto-start preview after license validation
@@ -282,7 +264,7 @@ extension StreamManagerPublishManager: Red5ProWebrtcEventDelegate {
                 }
             } else {
                 self.statusCallback?("License error: \(message)")
-                print("License validation failed: \(message)")
+                LogManager.shared.error("License", "License validation failed: \(message)")
             }
         }
     }
@@ -295,9 +277,11 @@ struct StreamManagerPublishScreen: View {
     @State private var isAudioMuted = false
     @State private var isFrontCamera = true
     @State private var isPublishing = false
-    @State private var statusMessage = "Ready"
+    @State private var iceConnectionState = "Not Connected"
+    @State private var connectionState = "Disconnected"
     @State private var previewStarted = false
     @State private var cameraPermissionGranted = false
+    @State private var showingLogs = false
 
     var body: some View {
         ZStack {
@@ -350,9 +334,24 @@ struct StreamManagerPublishScreen: View {
                                 .font(.caption)
                                 .fontWeight(.bold)
                         }
-                        Text(statusMessage)
-                            .font(.caption2)
-                            .lineLimit(1)
+                        
+                        // ICE Connection State
+                        HStack(spacing: 5) {
+                            Text("ICE:")
+                                .font(.caption2)
+                                .fontWeight(.semibold)
+                            Text(iceConnectionState)
+                                .font(.caption2)
+                        }
+                        
+                        // Peer Connection State
+                        HStack(spacing: 5) {
+                            Text("Connection State:")
+                                .font(.caption2)
+                                .fontWeight(.semibold)
+                            Text(connectionState)
+                                .font(.caption2)
+                        }
                     }
                     .padding(10)
                     .background(Color.black.opacity(0.6))
@@ -437,11 +436,9 @@ struct StreamManagerPublishScreen: View {
                         if isPublishing {
                             publishManager.stopPublish()
                             isPublishing = false
-                            statusMessage = "Stopped"
                         } else {
                             publishManager.startPublish()
                             isPublishing = true
-                            statusMessage = "Publishing..."
                         }
                     }) {
                         Text(isPublishing ? "Stop Publish" : "Start Publish")
@@ -458,9 +455,33 @@ struct StreamManagerPublishScreen: View {
                 .padding(.horizontal, 20)
                 .padding(.bottom, 40)
             }
+            
+            // Floating Logs Button
+            VStack {
+                HStack {
+                    Spacer()
+                    Button(action: {
+                        showingLogs = true
+                    }) {
+                        Image(systemName: "list.bullet.rectangle")
+                            .font(.system(size: 20))
+                            .foregroundColor(.white)
+                            .frame(width: 50, height: 50)
+                            .background(Color.blue.opacity(0.8))
+                            .clipShape(Circle())
+                            .shadow(color: .black.opacity(0.3), radius: 5, x: 0, y: 2)
+                    }
+                    .padding(.trailing, 20)
+                    .padding(.top, 80)
+                }
+                Spacer()
+            }
         }
         .navigationTitle("Publish")
         .navigationBarTitleDisplayMode(.inline)
+        .sheet(isPresented: $showingLogs) {
+            LogsView()
+        }
         .onAppear {
             setupPublishing()
         }
@@ -478,11 +499,22 @@ struct StreamManagerPublishScreen: View {
                 // Setup the publish manager
                 publishManager.setupDelegate { message in
                     DispatchQueue.main.async {
-                        statusMessage = message
-
-                        // Track when preview actually starts
-                        if message.contains("Preview") && message.contains("ready") {
+                        // Parse the message to detect state changes
+                        if message.hasPrefix("ICE:") {
+                            // Extract ICE state
+                            let state = message.replacingOccurrences(of: "ICE: ", with: "")
+                            iceConnectionState = state
+                        } else if message.contains("Preview") {
                             previewStarted = true
+                            iceConnectionState = "Ready"
+                            connectionState = "Ready"
+                        } else if message.contains("Publishing") || message.contains("Stopped") {
+                            connectionState = message
+                        } else if message.contains("Connecting") {
+                            iceConnectionState = message
+                            connectionState = message
+                        } else if message.contains("Error:") {
+                            connectionState = message
                         }
                     }
                 }
@@ -516,5 +548,46 @@ struct StreamManagerPublishScreen: View {
         @unknown default:
             completion(false)
         }
+    }
+}
+
+// MARK: - Logs Button View Modifier
+struct LogsButtonModifier: ViewModifier {
+    @State private var showingLogs = false
+    
+    func body(content: Content) -> some View {
+        ZStack {
+            content
+            
+            // Floating Logs Button
+            VStack {
+                HStack {
+                    Spacer()
+                    Button(action: {
+                        showingLogs = true
+                    }) {
+                        Image(systemName: "list.bullet.rectangle")
+                            .font(.system(size: 20))
+                            .foregroundColor(.white)
+                            .frame(width: 50, height: 50)
+                            .background(Color.blue.opacity(0.8))
+                            .clipShape(Circle())
+                            .shadow(color: .black.opacity(0.3), radius: 5, x: 0, y: 2)
+                    }
+                    .padding(.trailing, 20)
+                    .padding(.top, 80)
+                }
+                Spacer()
+            }
+        }
+        .sheet(isPresented: $showingLogs) {
+            LogsView()
+        }
+    }
+}
+
+extension View {
+    func logsButton() -> some View {
+        modifier(LogsButtonModifier())
     }
 }
