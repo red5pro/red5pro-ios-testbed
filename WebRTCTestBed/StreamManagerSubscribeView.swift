@@ -26,9 +26,15 @@ class StreamManagerSubscribeManager: NSObject, ObservableObject {
     func setupDelegate(statusCallback: @escaping (String) -> Void) {
         self.statusCallback = statusCallback
 
+        // Create video renderer FIRST
         self.remoteVideoRenderer = RTCMTLVideoView()
         self.remoteVideoRenderer?.contentMode = .scaleAspectFill
         self.remoteVideoRenderer?.videoContentMode = .scaleAspectFill
+        
+        // IMPORTANT: Ensure the renderer is on the main thread and visible
+        DispatchQueue.main.async {
+            self.remoteVideoRenderer?.layoutIfNeeded()
+        }
 
         // Initialize the client with builder pattern
         webrtcClient = Red5WebrtcClientBuilder()
@@ -49,8 +55,12 @@ class StreamManagerSubscribeManager: NSObject, ObservableObject {
 
         LogManager.shared.info("Subscribe", "Subscribe Client built")
 
-        if let client = self.webrtcClient {
-            client.setVideoRenderer(self.remoteVideoRenderer!)
+        // Set the video renderer on the client
+        if let client = self.webrtcClient, let renderer = self.remoteVideoRenderer {
+            client.setVideoRenderer(renderer)
+            LogManager.shared.info("Subscribe", "Video renderer attached to client")
+        } else {
+            LogManager.shared.error("Subscribe", "Failed to attach video renderer")
         }
 
         self.statusCallback?("Ready to subscribe")
@@ -65,10 +75,10 @@ class StreamManagerSubscribeManager: NSObject, ObservableObject {
         }
 
         statusCallback?("Connecting to stream...")
+        LogManager.shared.info("Subscribe", "Starting subscription...")
 
-        // Start subscribing
+        // Start subscribing - don't set isSubscribing here, wait for callback
         client.subscribe()
-        isSubscribing = true
     }
 
     func stopSubscribe() {
