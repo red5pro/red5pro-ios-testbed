@@ -20,6 +20,7 @@ class StandaloneSubscribeManager: NSObject, ObservableObject {
     @Published var remoteVideoRenderer: RTCMTLVideoView?
     @Published var isReady: Bool = false
     @Published var isSubscribing: Bool = false
+    @Published var shouldClearView: Bool = false
 
     private var isInitialized = false
 
@@ -29,6 +30,10 @@ class StandaloneSubscribeManager: NSObject, ObservableObject {
         self.remoteVideoRenderer = RTCMTLVideoView()
         self.remoteVideoRenderer?.contentMode = .scaleAspectFill
         self.remoteVideoRenderer?.videoContentMode = .scaleAspectFill
+        
+        DispatchQueue.main.async {
+            self.remoteVideoRenderer?.layoutIfNeeded()
+        }
 
         // Initialize the client with builder pattern
         webrtcClient = Red5WebrtcClientBuilder()
@@ -49,8 +54,12 @@ class StandaloneSubscribeManager: NSObject, ObservableObject {
 
         LogManager.shared.info("Subscribe", "Subscribe Client built")
 
-        if let client = self.webrtcClient {
-            client.setVideoRenderer(self.remoteVideoRenderer!)
+        // Set the video renderer on the client
+        if let client = self.webrtcClient, let renderer = self.remoteVideoRenderer {
+            client.setVideoRenderer(renderer)
+            LogManager.shared.info("Subscribe", "Video renderer attached to client")
+        } else {
+            LogManager.shared.error("Subscribe", "Failed to attach video renderer")
         }
 
         self.statusCallback?("Ready to subscribe")
@@ -65,10 +74,10 @@ class StandaloneSubscribeManager: NSObject, ObservableObject {
         }
 
         statusCallback?("Connecting to stream...")
+        LogManager.shared.info("Subscribe", "Starting subscription...")
 
         // Start subscribing
         client.subscribe()
-        isSubscribing = true
     }
 
     func stopSubscribe() {
@@ -77,6 +86,7 @@ class StandaloneSubscribeManager: NSObject, ObservableObject {
         // Stop subscribing
         client.stopSubscribe()
         isSubscribing = false
+        shouldClearView = true
 
         statusCallback?("Stopped subscribing")
     }
@@ -152,6 +162,7 @@ extension StandaloneSubscribeManager: Red5ProWebrtcEventDelegate {
         DispatchQueue.main.async {
             self.statusCallback?("Receiving stream...")
             self.isSubscribing = true
+            self.shouldClearView = false
             LogManager.shared.event("Subscribe", "Subscribe started")
         }
     }
@@ -160,6 +171,7 @@ extension StandaloneSubscribeManager: Red5ProWebrtcEventDelegate {
         DispatchQueue.main.async {
             self.statusCallback?("Stopped")
             self.isSubscribing = false
+            self.shouldClearView = true
             LogManager.shared.event("Subscribe", "Subscribe stopped")
         }
     }
@@ -257,7 +269,7 @@ struct StandaloneSubscribeScreen: View {
 
             // Full-size WebRTC subscribe view
             if subscribeManager.isReady, let renderer = subscribeManager.remoteVideoRenderer {
-                WebRTCPreviewView(renderer: renderer)
+                WebRTCPreviewView(renderer: renderer, shouldClear: subscribeManager.shouldClearView)
                     .ignoresSafeArea()
             } else {
                 Color.black
