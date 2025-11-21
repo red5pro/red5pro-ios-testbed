@@ -11,21 +11,39 @@ import WebRTC
 // MARK: - WebRTC Preview View
 struct WebRTCPreviewView: UIViewRepresentable {
     let renderer: RTCMTLVideoView
+    var shouldClear: Bool = false
 
-    func makeUIView(context: Context) -> RTCMTLVideoView {
-        renderer.contentMode = .scaleAspectFill
-        renderer.videoContentMode = .scaleAspectFill
+    func makeUIView(context: Context) -> UIView {
+        let containerView = UIView()
+        containerView.backgroundColor = .black
         
-        renderer.isHidden = false
-        renderer.alpha = 1.0
-        renderer.backgroundColor = .clear
+        renderer.contentMode = .scaleAspectFit
+        renderer.videoContentMode = .scaleAspectFit
+        renderer.backgroundColor = .black
+        renderer.translatesAutoresizingMaskIntoConstraints = false
         
-        return renderer
+        containerView.addSubview(renderer)
+        
+        NSLayoutConstraint.activate([
+            renderer.topAnchor.constraint(equalTo: containerView.topAnchor),
+            renderer.bottomAnchor.constraint(equalTo: containerView.bottomAnchor),
+            renderer.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
+            renderer.trailingAnchor.constraint(equalTo: containerView.trailingAnchor)
+        ])
+        
+        return containerView
     }
 
-    func updateUIView(_ uiView: RTCMTLVideoView, context: Context) {
-        uiView.isHidden = false
-        uiView.alpha = 1.0
+    func updateUIView(_ uiView: UIView, context: Context) {
+        if shouldClear {
+            // Hide the renderer to show black background
+            renderer.isHidden = true
+            renderer.alpha = 0
+        } else {
+            // Show the renderer
+            renderer.isHidden = false
+            renderer.alpha = 1.0
+        }
     }
 }
 
