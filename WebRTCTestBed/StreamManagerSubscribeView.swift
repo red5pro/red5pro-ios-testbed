@@ -26,12 +26,10 @@ class StreamManagerSubscribeManager: NSObject, ObservableObject {
     func setupDelegate(statusCallback: @escaping (String) -> Void) {
         self.statusCallback = statusCallback
 
-        // Create video renderer FIRST
         self.remoteVideoRenderer = RTCMTLVideoView()
         self.remoteVideoRenderer?.contentMode = .scaleAspectFill
         self.remoteVideoRenderer?.videoContentMode = .scaleAspectFill
         
-        // IMPORTANT: Ensure the renderer is on the main thread and visible
         DispatchQueue.main.async {
             self.remoteVideoRenderer?.layoutIfNeeded()
         }
@@ -77,7 +75,7 @@ class StreamManagerSubscribeManager: NSObject, ObservableObject {
         statusCallback?("Connecting to stream...")
         LogManager.shared.info("Subscribe", "Starting subscription...")
 
-        // Start subscribing - don't set isSubscribing here, wait for callback
+        // Start subscribing
         client.subscribe()
     }
 
