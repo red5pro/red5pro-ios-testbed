@@ -266,7 +266,7 @@ extension StreamManagerSubscribeManager: Red5ProWebrtcEventDelegate {
 
 // MARK: - Standalone Subscribe Screen
 struct StreamManagerSubscribeScreen: View {
-    @StateObject private var subscribeManager = StandaloneSubscribeManager()
+    @StateObject private var subscribeManager = StreamManagerSubscribeManager()
     @State private var statusMessage = "Ready"
     @State private var isFullscreen = false
 

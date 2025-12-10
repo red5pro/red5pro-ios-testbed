@@ -1,0 +1,54 @@
+name: WebRTCTestBed
+options:
+  bundleIdPrefix: com.infrared5.test.testbed
+
+packages:
+  WebRTC:
+    url: https://github.com/stasel/WebRTC
+    from: 140.0.0
+  PubNubSDK:
+    url: https://github.com/pubnub/swift
+    from: 10.0.1
+
+targets:
+  WebRTCTestBed:
+    type: application
+    platform: iOS
+    deploymentTarget: "15.0"
+    sources:
+      - path: WebRTCTestBed
+    info:
+      path: Resources/Info.plist
+      properties:
+        LSRequiresIPhoneOS: true
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: true
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        "UISupportedInterfaceOrientations~ipad":
+          - UIInterfaceOrientationPortrait
+        NSCameraUsageDescription: "This app needs camera access for video calls"
+        NSMicrophoneUsageDescription: "This app needs microphone access for audio calls"
+    settings:
+      base:
+        PRODUCT_NAME: WebRTCTestBed
+        FRAMEWORK_SEARCH_PATHS: ["$(inherited)", "$(PROJECT_DIR)/Frameworks"]
+    dependencies:
+      - package: WebRTC
+      - package: PubNubSDK
+      - framework: Frameworks/Red5WebRTCKit.xcframework
+        embed: true
+      - sdk: AudioToolbox.framework
+      - sdk: AVFoundation.framework
+      - sdk: CoreMedia.framework
+      - sdk: CoreAudio.framework
+      - sdk: VideoToolbox.framework
+
+schemes:
+  WebRTCTestBed:
+    build:
+      targets:
+        WebRTCTestBed: all
+    run:
+      config: Debug

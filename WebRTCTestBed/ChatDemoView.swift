@@ -225,11 +225,11 @@ struct ChatDemoView: View {
            let jsonMessage = try? JSONDecoder().decode(AnyJSON.self, from: jsonData) {
 
             // Send via PubNub
-            client.sendChatJsonMessage(
-                channelName: currentChannel,
-                jsonObject: jsonMessage,
-                metaData: nil
-            )
+//            client.sendChatJsonMessage(
+//                channelName: currentChannel,
+//                jsonObject: jsonMessage,
+//                metaData: nil
+//            )
 
             // Add to local messages immediately
             let chatMessage = ChatMessage(
