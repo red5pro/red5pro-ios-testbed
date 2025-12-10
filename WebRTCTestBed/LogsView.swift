@@ -1,0 +1,477 @@
+//
+//  LogsView.swift
+//  WebRTCTestBed
+//
+//  Created by Mustafa BOLEKEN on 11.11.2025.
+//
+
+import SwiftUI
+
+// MARK: - Log Source Filter
+enum LogSourceFilter: String, CaseIterable {
+    case all = "All Logs"
+    case appOnly = "App Only"
+    case systemOnly = "System Only"
+}
+
+// MARK: - Logs View
+struct LogsView: View {
+    @ObservedObject var logManager = LogManager.shared
+    @State private var selectedLevels: Set<LogLevel> = Set(LogLevel.allCases)
+    @State private var selectedSourceFilter: LogSourceFilter = .all
+    @State private var searchText = ""
+    @State private var showingExportSheet = false
+    @State private var exportText = ""
+    @State private var autoScroll = true
+    @State private var showingFilters = false
+    @State private var showSystemLogsToggle = false
+    @Environment(\.dismiss) private var dismiss
+    
+    private let appBundleIdentifier = Bundle.main.bundleIdentifier ?? "unknown"
+    private let appProcessIdentifier = ProcessInfo.processInfo.processIdentifier
+    
+    var filteredLogs: [LogEntry] {
+        let levelFiltered = logManager.filteredLogs(
+            levels: selectedLevels,
+            categories: [],
+            searchText: searchText
+        )
+        
+        // Apply source filter
+        switch selectedSourceFilter {
+        case .all:
+            return levelFiltered
+        case .appOnly:
+            return levelFiltered.filter { log in
+                // Filter by subsystem matching app bundle identifier
+                // or by process ID matching current process
+                if let subsystem = log.subsystem, subsystem == appBundleIdentifier {
+                    return true
+                }
+                if let processID = log.processID, processID == Int(appProcessIdentifier) {
+                    return true
+                }
+                return false
+            }
+        case .systemOnly:
+            return levelFiltered.filter { log in
+                // Show logs that don't match app identifier
+                if let subsystem = log.subsystem, subsystem == appBundleIdentifier {
+                    return false
+                }
+                if let processID = log.processID, processID == Int(appProcessIdentifier) {
+                    return false
+                }
+                return true
+            }
+        }
+    }
+    
+    var body: some View {
+        NavigationView {
+            VStack(spacing: 0) {
+                // Search bar
+                searchBar
+                
+                // Filter chips
+                if showingFilters {
+                    filterChips
+                }
+                
+                // Logs list
+                ScrollViewReader { proxy in
+                    ScrollView {
+                        LazyVStack(alignment: .leading, spacing: 4) {
+                            ForEach(filteredLogs) { log in
+                                LogRowView(log: log)
+                                    .id(log.id)
+                            }
+                        }
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 8)
+                    }
+                    .onChange(of: logManager.logs.count) { _ in
+                        if autoScroll, let lastLog = filteredLogs.last {
+                            withAnimation {
+                                proxy.scrollTo(lastLog.id, anchor: .bottom)
+                            }
+                        }
+                    }
+                }
+                
+                // Bottom toolbar
+                bottomToolbar
+            }
+            .navigationTitle("Logs (\(filteredLogs.count))" + (selectedSourceFilter != .all ? " - \(selectedSourceFilter.rawValue)" : ""))
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button("Close") {
+                        dismiss()
+                    }
+                }
+                
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    HStack(spacing: 12) {
+                        Button(action: {
+                            withAnimation {
+                                showingFilters.toggle()
+                            }
+                        }) {
+                            Image(systemName: showingFilters ? "line.3.horizontal.decrease.circle.fill" : "line.3.horizontal.decrease.circle")
+                        }
+                        
+                        Button(action: {
+                            exportText = logManager.exportLogs()
+                            showingExportSheet = true
+                        }) {
+                            Image(systemName: "square.and.arrow.up")
+                        }
+                        
+                        Button(action: {
+                            logManager.clear()
+                        }) {
+                            Image(systemName: "trash")
+                        }
+                    }
+                }
+            }
+            .sheet(isPresented: $showingExportSheet) {
+                ExportLogsView(logsText: exportText)
+            }
+        }
+    }
+    
+    // MARK: - UI Components
+    
+    private var searchBar: some View {
+        HStack {
+            Image(systemName: "magnifyingglass")
+                .foregroundColor(.gray)
+            
+            TextField("Search logs...", text: $searchText)
+                .textFieldStyle(.plain)
+            
+            if !searchText.isEmpty {
+                Button(action: {
+                    searchText = ""
+                }) {
+                    Image(systemName: "xmark.circle.fill")
+                        .foregroundColor(.gray)
+                }
+            }
+        }
+        .padding(8)
+        .background(Color(.systemGray6))
+        .cornerRadius(10)
+        .padding(.horizontal)
+        .padding(.vertical, 8)
+    }
+    
+    private var filterChips: some View {
+        VStack(spacing: 0) {
+            // Source filter (App/System)
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) {
+                    Text("Source:")
+                        .font(.caption)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.secondary)
+                    
+                    ForEach(LogSourceFilter.allCases, id: \.self) { source in
+                        FilterChip(
+                            title: source.rawValue,
+                            isSelected: selectedSourceFilter == source,
+                            color: sourceFilterColor(for: source)
+                        ) {
+                            selectedSourceFilter = source
+                        }
+                    }
+                }
+                .padding(.horizontal)
+                .padding(.vertical, 8)
+            }
+            
+            Divider()
+            
+            // Log level filters
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) {
+                    Text("Levels:")
+                        .font(.caption)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.secondary)
+                    
+                    ForEach(LogLevel.allCases, id: \.self) { level in
+                        FilterChip(
+                            title: level.rawValue,
+                            isSelected: selectedLevels.contains(level)
+                        ) {
+                            if selectedLevels.contains(level) {
+                                selectedLevels.remove(level)
+                            } else {
+                                selectedLevels.insert(level)
+                            }
+                        }
+                    }
+                    
+                    // Select/Deselect All
+                    Button(action: {
+                        if selectedLevels.count == LogLevel.allCases.count {
+                            selectedLevels.removeAll()
+                        } else {
+                            selectedLevels = Set(LogLevel.allCases)
+                        }
+                    }) {
+                        Text(selectedLevels.count == LogLevel.allCases.count ? "Deselect All" : "Select All")
+                            .font(.caption)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 6)
+                            .background(Color.blue)
+                            .foregroundColor(.white)
+                            .cornerRadius(16)
+                    }
+                }
+                .padding(.horizontal)
+                .padding(.vertical, 8)
+            }
+        }
+        .background(Color(.systemGray6))
+    }
+    
+    private func sourceFilterColor(for source: LogSourceFilter) -> Color {
+        switch source {
+        case .all:
+            return .blue
+        case .appOnly:
+            return .green
+        case .systemOnly:
+            return .purple
+        }
+    }
+    
+    private var bottomToolbar: some View {
+        HStack {
+            Toggle(isOn: $autoScroll) {
+                HStack(spacing: 4) {
+                    Image(systemName: "arrow.down.circle.fill")
+                    Text("Auto-scroll")
+                }
+                .font(.caption)
+            }
+            .toggleStyle(SwitchToggleStyle(tint: .blue))
+            
+            Spacer()
+            
+            Toggle(isOn: $logManager.isSystemLogsEnabled) {
+                HStack(spacing: 4) {
+                    Image(systemName: "gear.circle.fill")
+                    Text("System Logs")
+                }
+                .font(.caption)
+            }
+            .toggleStyle(SwitchToggleStyle(tint: .purple))
+            
+            Spacer()
+            
+            Text("\(logManager.logs.count) total logs")
+                .font(.caption)
+                .foregroundColor(.gray)
+        }
+        .padding(.horizontal)
+        .padding(.vertical, 8)
+        .background(Color(.systemGray6))
+    }
+}
+
+// MARK: - Log Row View
+struct LogRowView: View {
+    let log: LogEntry
+    @State private var isExpanded = false
+    
+    private let appBundleIdentifier = Bundle.main.bundleIdentifier ?? "unknown"
+    
+    private var isAppLog: Bool {
+        if let subsystem = log.subsystem, subsystem == appBundleIdentifier {
+            return true
+        }
+        return false
+    }
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack(alignment: .top, spacing: 8) {
+                VStack(alignment: .leading, spacing: 2) {
+                    // Time and category
+                    HStack(spacing: 8) {
+                        Text(log.formattedTimestamp)
+                            .font(.caption2)
+                            .foregroundColor(.gray)
+                            .monospaced()
+                        
+                        Text(log.category)
+                            .font(.caption2)
+                            .fontWeight(.medium)
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 2)
+                            .background(categoryColor(for: log.level).opacity(0.2))
+                            .foregroundColor(categoryColor(for: log.level))
+                            .cornerRadius(4)
+                        
+                        // App badge indicator
+                        if isAppLog {
+                            Image(systemName: "app.badge.checkmark.fill")
+                                .font(.caption2)
+                                .foregroundColor(.green)
+                        }
+                        
+                        // Show subsystem if available and different from app
+                        if let subsystem = log.subsystem, subsystem != appBundleIdentifier {
+                            Text(subsystem)
+                                .font(.caption2)
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 2)
+                                .background(Color.purple.opacity(0.2))
+                                .foregroundColor(.purple)
+                                .cornerRadius(4)
+                                .lineLimit(1)
+                        }
+                    }
+                    
+                    // Message
+                    Text(log.message)
+                        .font(.caption)
+                        .lineLimit(isExpanded ? nil : 3)
+                        .fixedSize(horizontal: false, vertical: true)
+                    
+                    // Extended info when expanded
+                    if isExpanded {
+                        VStack(alignment: .leading, spacing: 2) {
+                            if let pid = log.processID {
+                                Text("PID: \(pid)")
+                                    .font(.caption2)
+                                    .foregroundColor(.secondary)
+                            }
+                            if let tid = log.threadID {
+                                Text("Thread: \(tid)")
+                                    .font(.caption2)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                        .padding(.top, 4)
+                    }
+                }
+                
+                Spacer()
+            }
+            .padding(.vertical, 6)
+            .padding(.horizontal, 8)
+            .background(levelBackground(for: log.level))
+            .cornerRadius(6)
+            .onTapGesture {
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    isExpanded.toggle()
+                }
+            }
+        }
+    }
+    
+    private func categoryColor(for level: LogLevel) -> Color {
+        switch level {
+        case .debug: return .gray
+        case .info: return .blue
+        case .warning: return .orange
+        case .error: return .red
+        case .event: return .green
+        case .system: return .purple
+        }
+    }
+    
+    private func levelBackground(for level: LogLevel) -> Color {
+        switch level {
+        case .debug: return Color(.systemGray6)
+        case .info: return Color.blue.opacity(0.05)
+        case .warning: return Color.orange.opacity(0.05)
+        case .error: return Color.red.opacity(0.05)
+        case .event: return Color.green.opacity(0.05)
+        case .system: return Color.purple.opacity(0.05)
+        }
+    }
+}
+
+// MARK: - Filter Chip
+struct FilterChip: View {
+    let title: String
+    let isSelected: Bool
+    var color: Color = .blue
+    let action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 4) {
+                Text(title)
+            }
+            .font(.caption)
+            .fontWeight(isSelected ? .semibold : .regular)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 6)
+            .background(isSelected ? color : Color(.systemGray5))
+            .foregroundColor(isSelected ? .white : .primary)
+            .cornerRadius(16)
+        }
+    }
+}
+
+// MARK: - Export Logs View
+struct ExportLogsView: View {
+    let logsText: String
+    @Environment(\.dismiss) private var dismiss
+    @State private var showingShareSheet = false
+    
+    var body: some View {
+        NavigationView {
+            ScrollView {
+                Text(logsText)
+                    .font(.system(.caption, design: .monospaced))
+                    .padding()
+                    .textSelection(.enabled)
+            }
+            .navigationTitle("Export Logs")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button("Done") {
+                        dismiss()
+                    }
+                }
+                
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: {
+                        showingShareSheet = true
+                    }) {
+                        Image(systemName: "square.and.arrow.up")
+                    }
+                }
+            }
+            .sheet(isPresented: $showingShareSheet) {
+                ShareSheet(items: [logsText])
+            }
+        }
+    }
+}
+
+// MARK: - Share Sheet
+struct ShareSheet: UIViewControllerRepresentable {
+    let items: [Any]
+    
+    func makeUIViewController(context: Context) -> UIActivityViewController {
+        let controller = UIActivityViewController(activityItems: items, applicationActivities: nil)
+        return controller
+    }
+    
+    func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
+}
+
+#Preview {
+    LogsView()
+}

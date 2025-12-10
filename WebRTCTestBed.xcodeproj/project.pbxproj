@@ -14,6 +14,8 @@
 		2D39C1F5F077E431C7F8D819 /* PubNubSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 9BD6482AC8A27A72530C5F43 /* PubNubSDK */; };
 		33251EBAB2BB9F56AAEC598A /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3E9AB2FAB3AC627C017907E /* AVFoundation.framework */; };
 		48DD8AD82EE8D93F003F0FBE /* Red5WebRTCKit in Frameworks */ = {isa = PBXBuildFile; productRef = 48DD8AD72EE8D93F003F0FBE /* Red5WebRTCKit */; };
+		48DD8B0E2EE9C427003F0FBE /* LogManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48DD8B0C2EE9C427003F0FBE /* LogManager.swift */; };
+		48DD8B0F2EE9C427003F0FBE /* LogsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48DD8B0D2EE9C427003F0FBE /* LogsView.swift */; };
 		4E15AD64634B48B33E05EB71 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9DF0C7399F7BBA86291220D /* SettingsView.swift */; };
 		9FC65FB517F99AC1C2ECE2E3 /* WebRTC in Frameworks */ = {isa = PBXBuildFile; productRef = 83AC18E85224689302FF7E33 /* WebRTC */; };
 		AEE75507275FA7A6E37B5DFA /* WebRTCTestBedApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 478E532AF7D9D36C37A63267 /* WebRTCTestBedApp.swift */; };
@@ -35,6 +37,8 @@
 		3B3889663CE1C758CD755F18 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		3D5A586C7A7BE68B4DF63DAA /* StreamManagerSubscribeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamManagerSubscribeView.swift; sourceTree = "<group>"; };
 		478E532AF7D9D36C37A63267 /* WebRTCTestBedApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebRTCTestBedApp.swift; sourceTree = "<group>"; };
+		48DD8B0C2EE9C427003F0FBE /* LogManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogManager.swift; sourceTree = "<group>"; };
+		48DD8B0D2EE9C427003F0FBE /* LogsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogsView.swift; sourceTree = "<group>"; };
 		74D2F61758CFB631FC0CC7A1 /* WebRTCTestBed.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WebRTCTestBed.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		764165F7193A8CDC65C363F3 /* StandalonePublishView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StandalonePublishView.swift; sourceTree = "<group>"; };
 		83A8CF0C4BE7BE550DCEFBAA /* StandaloneSubscribeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StandaloneSubscribeView.swift; sourceTree = "<group>"; };
@@ -74,6 +78,8 @@
 				E62C5FA15559F3A3004B45CE /* Assets.xcassets */,
 				E99448BA2E37ADD8C9E7CD8E /* ChatDemoView.swift */,
 				3B3889663CE1C758CD755F18 /* ContentView.swift */,
+				48DD8B0C2EE9C427003F0FBE /* LogManager.swift */,
+				48DD8B0D2EE9C427003F0FBE /* LogsView.swift */,
 				FB7DDBECC1F09ADE21520CD0 /* SettingsManager.swift */,
 				A9DF0C7399F7BBA86291220D /* SettingsView.swift */,
 				764165F7193A8CDC65C363F3 /* StandalonePublishView.swift */,
@@ -199,6 +205,8 @@
 				F9B52E89F9A2C11F7F8A1E3F /* StreamManagerSubscribeView.swift in Sources */,
 				16783026D9F90C08FF2F8E8B /* WebRTCPreviewView.swift in Sources */,
 				AEE75507275FA7A6E37B5DFA /* WebRTCTestBedApp.swift in Sources */,
+				48DD8B0E2EE9C427003F0FBE /* LogManager.swift in Sources */,
+				48DD8B0F2EE9C427003F0FBE /* LogsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -289,15 +297,37 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				AUTOMATION_APPLE_EVENTS = NO;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 14;
 				DEVELOPMENT_TEAM = E964K44BWW;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Frameworks",
-					"\"Frameworks\"",
-				);
-				INFOPLIST_FILE = Resources/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = YES;
+				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
+				ENABLE_RESOURCE_ACCESS_CAMERA = YES;
+				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
+				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
+				ENABLE_RESOURCE_ACCESS_PHOTO_LIBRARY = YES;
+				ENABLE_USER_SELECTED_FILES = readonly;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOLIST_KEY_NSPhotoLibraryUsageDescription = "This app needs access to your photo library to save captured videos.";
+				INFOPLIST_FILE = WebRTCTestBed/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = WebRTCTestBed;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.video";
+				INFOPLIST_KEY_NSAppTransportSecurity = "<dict><key>NSAllowsArbitraryLoads</key><true/></dict>";
+				INFOPLIST_KEY_NSCameraUsageDescription = "This app needs camera access to capture video streams.";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSMainCameraUsageDescription = "This app needs camera access to capture video streams.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "This app needs microphone access to capture audio streams.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "This app needs access to your photo library to save captured videos.";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				IPHONEOS_DEPLOYMENT_TARGET = 16;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -313,54 +343,47 @@
 		E1A383835F7F0BE63F77AF22 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = dwarf;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_TESTABILITY = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"$(inherited)",
-					"DEBUG=1",
-				);
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				AUTOMATION_APPLE_EVENTS = NO;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 14;
+				DEVELOPMENT_TEAM = E964K44BWW;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = YES;
+				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
+				ENABLE_RESOURCE_ACCESS_CAMERA = YES;
+				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
+				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
+				ENABLE_RESOURCE_ACCESS_PHOTO_LIBRARY = NO;
+				ENABLE_USER_SELECTED_FILES = readonly;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = WebRTCTestBed/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = WebRTCTestBed;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.video";
+				INFOPLIST_KEY_NSAppTransportSecurity = "<dict><key>NSAllowsArbitraryLoads</key><true/></dict>";
+				INFOPLIST_KEY_NSCameraUsageDescription = "This app needs camera access to capture video streams.";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSMainCameraUsageDescription = "This app needs camera access to capture video streams.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "This app needs microphone access to capture audio streams.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "This app needs access to your photo library to save captured videos.";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				IPHONEOS_DEPLOYMENT_TARGET = 16;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;

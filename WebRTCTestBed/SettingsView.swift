@@ -12,6 +12,7 @@ struct SettingsScreen: View {
     @StateObject private var settings = SettingsManager.shared
     @Environment(\.dismiss) private var dismiss
     @State private var showingSaveAlert = false
+    @State private var showingLogs = false
 
     var body: some View {
         NavigationView {
@@ -67,7 +68,6 @@ struct SettingsScreen: View {
                         TextField("Enter username", text: $settings.turnUsername)
                             .textInputAutocapitalization(.never)
                             .autocorrectionDisabled()
-                            .keyboardType(.decimalPad)
                     }
 
                     VStack(alignment: .leading, spacing: 4) {
@@ -77,7 +77,6 @@ struct SettingsScreen: View {
                         TextField("Enter password", text: $settings.turnPassword)
                             .textInputAutocapitalization(.never)
                             .autocorrectionDisabled()
-                            .keyboardType(.decimalPad)
                     }
 
                 }
@@ -201,6 +200,17 @@ struct SettingsScreen: View {
                         dismiss()
                     }
                 }
+                
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: {
+                        showingLogs = true
+                    }) {
+                        Image(systemName: "list.bullet.rectangle")
+                    }
+                }
+            }
+            .sheet(isPresented: $showingLogs) {
+                LogsView()
             }
             .alert("Success", isPresented: $showingSaveAlert) {
                 Button("OK", role: .cancel) { }

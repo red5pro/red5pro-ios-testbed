@@ -20,8 +20,8 @@ class StreamManagerSubscribeManager: NSObject, ObservableObject {
     @Published var remoteVideoRenderer: RTCMTLVideoView?
     @Published var isReady: Bool = false
     @Published var isSubscribing: Bool = false
+    @Published var shouldClearView: Bool = false
 
-    private let config = Red5WebrtcClientConfig()
     private var isInitialized = false
 
     func setupDelegate(statusCallback: @escaping (String) -> Void) {
@@ -30,25 +30,10 @@ class StreamManagerSubscribeManager: NSObject, ObservableObject {
         self.remoteVideoRenderer = RTCMTLVideoView()
         self.remoteVideoRenderer?.contentMode = .scaleAspectFill
         self.remoteVideoRenderer?.videoContentMode = .scaleAspectFill
-
-        // Configure the client using SettingsManager
-        config.streamManagerHost = SettingsManager.getStreamManagerHost()
-        config.serverIp = SettingsManager.getStandaloneServerIp()
-        config.port = SettingsManager.getStandaloneServerPort()
-        config.appName = SettingsManager.getAppName()
-        config.streamName = SettingsManager.getStreamName()
-        config.userName = SettingsManager.getUserName()
-        config.password = SettingsManager.getPassword()
-        config.licenseKey = SettingsManager.getSdkLicenseKey()
-        config.videoEnabled = true
-        config.audioEnabled = true
-        config.videoWidth = 640
-        config.videoHeight = 480
-        config.videoFps = 30
-        config.videoBitrate = 750
-        config.nodeGroup = SettingsManager.getNodeGroup()
-
-        config.videoRenderer = self.remoteVideoRenderer
+        
+        DispatchQueue.main.async {
+            self.remoteVideoRenderer?.layoutIfNeeded()
+        }
 
         // Initialize the client with builder pattern
         webrtcClient = Red5WebrtcClientBuilder()
@@ -56,21 +41,25 @@ class StreamManagerSubscribeManager: NSObject, ObservableObject {
             .setStreamManagerHost(SettingsManager.getStreamManagerHost())
             .setNodeGroup(SettingsManager.getNodeGroup())
             .setStreamName(SettingsManager.getStreamName())
-            .setVideoEnabled(config.videoEnabled)
-            .setAudioEnabled(config.audioEnabled)
-            .setVideoWidth(config.videoWidth)
-            .setVideoHeight(config.videoHeight)
-            .setVideoFps(config.videoFps)
-            .setVideoBitrate(config.videoBitrate)
+            .setVideoEnabled(true)
+            .setAudioEnabled(true)
+            .setVideoWidth(640)
+            .setVideoHeight(480)
+            .setVideoFps(30)
+            .setVideoBitrate(750)
             .setLicenseKey(SettingsManager.getSdkLicenseKey())
             .setTurnServer(uri: SettingsManager.getTurnUrl(), username: SettingsManager.getTurnUsername(), password: SettingsManager.getTurnPassword())
             .setEventListener(self)
             .build()
 
-        print("Subscribe Client built")
+        LogManager.shared.info("Subscribe", "Subscribe Client built")
 
-        if let client = self.webrtcClient {
-            client.setVideoRenderer(self.remoteVideoRenderer!)
+        // Set the video renderer on the client
+        if let client = self.webrtcClient, let renderer = self.remoteVideoRenderer {
+            client.setVideoRenderer(renderer)
+            LogManager.shared.info("Subscribe", "Video renderer attached to client")
+        } else {
+            LogManager.shared.error("Subscribe", "Failed to attach video renderer")
         }
 
         self.statusCallback?("Ready to subscribe")
@@ -85,10 +74,10 @@ class StreamManagerSubscribeManager: NSObject, ObservableObject {
         }
 
         statusCallback?("Connecting to stream...")
+        LogManager.shared.info("Subscribe", "Starting subscription...")
 
         // Start subscribing
         client.subscribe()
-        isSubscribing = true
     }
 
     func stopSubscribe() {
@@ -97,6 +86,7 @@ class StreamManagerSubscribeManager: NSObject, ObservableObject {
         // Stop subscribing
         client.stopSubscribe()
         isSubscribing = false
+        shouldClearView = true
 
         statusCallback?("Stopped subscribing")
     }
@@ -122,31 +112,31 @@ class StreamManagerSubscribeManager: NSObject, ObservableObject {
 extension StreamManagerSubscribeManager: Red5ProWebrtcEventDelegate {
     func onChatMessageReceived(channel: String, message: any PubNubSDK.JSONCodable) {
         DispatchQueue.main.async {
-            print("chat message received")
+            LogManager.shared.info("Chat", "Message received on channel: \(channel)")
         }
     }
 
     func onChatConnected() {
         DispatchQueue.main.async {
-            print("chat connected")
+            LogManager.shared.info("Chat", "Connected")
         }
     }
 
     func onChatDisconnected() {
         DispatchQueue.main.async {
-            print("chat disconnected")
+            LogManager.shared.info("Chat", "Disconnected")
         }
     }
 
     func onChatSendError(channel: String, errorMessage: String) {
         DispatchQueue.main.async {
-            print("chat send error")
+            LogManager.shared.error("Chat", "Send error on channel \(channel): \(errorMessage)")
         }
     }
 
     func onChatSendSuccess(channel: String, timetoken: NSNumber) {
         DispatchQueue.main.async {
-            print("chat send success")
+            LogManager.shared.info("Chat", "Send success on channel \(channel) with timetoken: \(timetoken)")
         }
     }
 
@@ -172,7 +162,8 @@ extension StreamManagerSubscribeManager: Red5ProWebrtcEventDelegate {
         DispatchQueue.main.async {
             self.statusCallback?("Receiving stream...")
             self.isSubscribing = true
-            print("Subscribe started")
+            self.shouldClearView = false
+            LogManager.shared.event("Subscribe", "Subscribe started")
         }
     }
 
@@ -180,7 +171,8 @@ extension StreamManagerSubscribeManager: Red5ProWebrtcEventDelegate {
         DispatchQueue.main.async {
             self.statusCallback?("Stopped")
             self.isSubscribing = false
-            print("Subscribe stopped")
+            self.shouldClearView = true
+            LogManager.shared.event("Subscribe", "Subscribe stopped")
         }
     }
 
@@ -188,14 +180,14 @@ extension StreamManagerSubscribeManager: Red5ProWebrtcEventDelegate {
         DispatchQueue.main.async {
             self.statusCallback?("Error: \(error)")
             self.isSubscribing = false
-            print("Subscribe failed: \(error)")
+            LogManager.shared.error("Subscribe", "Subscribe failed: \(error)")
         }
     }
 
     func onIceConnectionStateChanged(state: IceConnectionState) {
         DispatchQueue.main.async {
             self.statusCallback?("ICE: \(state)")
-            print("ICE connection state: \(state)")
+            LogManager.shared.info("WebRTC", "ICE connection state: \(state)")
 
             // Update connection status based on ICE state
             switch state {
@@ -217,7 +209,7 @@ extension StreamManagerSubscribeManager: Red5ProWebrtcEventDelegate {
 
     func onConnectionStateChanged(state: PeerConnectionState) {
         DispatchQueue.main.async {
-            print("Connection state: \(state)")
+            LogManager.shared.info("WebRTC", "Connection state: \(state)")
 
             // Update status based on peer connection state
             switch state {
@@ -241,7 +233,7 @@ extension StreamManagerSubscribeManager: Red5ProWebrtcEventDelegate {
         DispatchQueue.main.async {
             self.statusCallback?("Error: \(error)")
             self.isSubscribing = false
-            print("Error: \(error)")
+            LogManager.shared.error("WebRTC", "Error: \(error)")
         }
     }
 
@@ -269,6 +261,7 @@ struct StreamManagerSubscribeScreen: View {
     @StateObject private var subscribeManager = StreamManagerSubscribeManager()
     @State private var statusMessage = "Ready"
     @State private var isFullscreen = false
+    @State private var showingLogs = false
 
     var body: some View {
         ZStack {
@@ -276,7 +269,7 @@ struct StreamManagerSubscribeScreen: View {
 
             // Full-size WebRTC subscribe view
             if subscribeManager.isReady, let renderer = subscribeManager.remoteVideoRenderer {
-                WebRTCPreviewView(renderer: renderer)
+                WebRTCPreviewView(renderer: renderer, shouldClear: subscribeManager.shouldClearView)
                     .ignoresSafeArea()
             } else {
                 Color.black
@@ -358,9 +351,33 @@ struct StreamManagerSubscribeScreen: View {
                 .padding(.horizontal, 20)
                 .padding(.bottom, 40)
             }
+            
+            // Floating Logs Button
+            VStack {
+                HStack {
+                    Spacer()
+                    Button(action: {
+                        showingLogs = true
+                    }) {
+                        Image(systemName: "list.bullet.rectangle")
+                            .font(.system(size: 20))
+                            .foregroundColor(.white)
+                            .frame(width: 50, height: 50)
+                            .background(Color.blue.opacity(0.8))
+                            .clipShape(Circle())
+                            .shadow(color: .black.opacity(0.3), radius: 5, x: 0, y: 2)
+                    }
+                    .padding(.trailing, 20)
+                    .padding(.top, 80)
+                }
+                Spacer()
+            }
         }
         .navigationTitle("Subscribe")
         .navigationBarTitleDisplayMode(.inline)
+        .sheet(isPresented: $showingLogs) {
+            LogsView()
+        }
         .onAppear {
             setupSubscription()
         }
@@ -386,6 +403,6 @@ struct StreamManagerSubscribeScreen: View {
 
 #Preview {
     NavigationView {
-        StandaloneSubscribeScreen()
+        StreamManagerSubscribeScreen()
     }
 }

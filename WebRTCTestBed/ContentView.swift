@@ -12,7 +12,7 @@ struct ContentView: View {
         if #available(iOS 16.0, *) {
             NavigationStack {
                 GridView()
-                    .navigationTitle("")
+                    .navigationTitle("WebRTC Test Bed")
             }
         } else {
             // Fallback on earlier versions
@@ -21,6 +21,8 @@ struct ContentView: View {
 }
 
 struct GridView: View {
+    @State private var showingLogs = false
+    
     let columns = [
         GridItem(.flexible()),
         GridItem(.flexible())
@@ -49,6 +51,18 @@ struct GridView: View {
             .padding()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button(action: {
+                    showingLogs = true
+                }) {
+                    Image(systemName: "list.bullet.rectangle")
+                }
+            }
+        }
+        .sheet(isPresented: $showingLogs) {
+            LogsView()
+        }
     }
 
     // Route to different screens based on item
@@ -70,131 +84,5 @@ struct GridView: View {
         default:
             SettingsScreen()
         }
-    }
-}
-
-// Screen 1: Profile
-struct ProfileScreen: View {
-    var body: some View {
-        VStack(spacing: 20) {
-            Image(systemName: "person.circle.fill")
-                .resizable()
-                .frame(width: 100, height: 100)
-                .foregroundColor(.blue)
-
-            Text("Profile Screen")
-                .font(.largeTitle)
-                .fontWeight(.bold)
-
-            Text("View and edit your profile")
-                .font(.body)
-                .foregroundColor(.gray)
-
-            Spacer()
-        }
-        .padding()
-        .navigationTitle("Profile")
-        .navigationBarTitleDisplayMode(.inline)
-    }
-}
-
-// Screen 3: Notifications
-struct NotificationsScreen: View {
-    var body: some View {
-        VStack(spacing: 20) {
-            Image(systemName: "bell.fill")
-                .resizable()
-                .frame(width: 100, height: 100)
-                .foregroundColor(.orange)
-
-            Text("Notifications Screen")
-                .font(.largeTitle)
-                .fontWeight(.bold)
-
-            Text("Check your notifications")
-                .font(.body)
-                .foregroundColor(.gray)
-
-            Spacer()
-        }
-        .padding()
-        .navigationTitle("Notifications")
-        .navigationBarTitleDisplayMode(.inline)
-    }
-}
-
-// Screen 4: Messages
-struct MessagesScreen: View {
-    var body: some View {
-        VStack(spacing: 20) {
-            Image(systemName: "message.fill")
-                .resizable()
-                .frame(width: 100, height: 100)
-                .foregroundColor(.green)
-
-            Text("Messages Screen")
-                .font(.largeTitle)
-                .fontWeight(.bold)
-
-            Text("Read your messages")
-                .font(.body)
-                .foregroundColor(.gray)
-
-            Spacer()
-        }
-        .padding()
-        .navigationTitle("Messages")
-        .navigationBarTitleDisplayMode(.inline)
-    }
-}
-
-// Screen 5: Favorites
-struct FavoritesScreen: View {
-    var body: some View {
-        VStack(spacing: 20) {
-            Image(systemName: "star.fill")
-                .resizable()
-                .frame(width: 100, height: 100)
-                .foregroundColor(.yellow)
-
-            Text("Favorites Screen")
-                .font(.largeTitle)
-                .fontWeight(.bold)
-
-            Text("Your favorite items")
-                .font(.body)
-                .foregroundColor(.gray)
-
-            Spacer()
-        }
-        .padding()
-        .navigationTitle("Favorites")
-        .navigationBarTitleDisplayMode(.inline)
-    }
-}
-
-// Default screen for other items
-struct DefaultDetailScreen: View {
-    let item: String
-
-    var body: some View {
-        VStack(spacing: 20) {
-            Image(systemName: "doc.text.fill")
-                .resizable()
-                .frame(width: 100, height: 100)
-                .foregroundColor(.purple)
-
-            Text("Detail Screen")
-                .font(.largeTitle)
-                .fontWeight(.bold)
-
-            Text("You selected: \(item)")
-                .font(.title2)
-
-            Spacer()
-        }
-        .padding()
-        .navigationTitle(item)
-        .navigationBarTitleDisplayMode(.inline)
     }
 }
