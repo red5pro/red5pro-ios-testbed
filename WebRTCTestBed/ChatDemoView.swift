@@ -8,6 +8,7 @@
 import SwiftUI
 import PubNubSDK
 import Red5WebRTCKit
+import Red5PubNubClient
 
 // MARK: - Chat Demo View
 struct ChatDemoView: View {
@@ -25,11 +26,12 @@ struct ChatDemoView: View {
     @State private var showingLogs = false
 
     // Red5Pro WebRTC Client
-    @State private var webrtcClient: Red5WebrtcClient?
+//    @State private var webrtcClient: Red5WebrtcClient?
+    @State private var webrtcClient: Red5PubNubClient?
 
     // Configuration
-    @State private var pubKey = ""
-    @State private var subKey = ""
+    @State private var pubKey = SettingsManager.shared.pubnubPubKey
+    @State private var subKey = SettingsManager.shared.pubnubSubKey
 
     var body: some View {
         NavigationView {
@@ -231,16 +233,10 @@ struct ChatDemoView: View {
         config.pubnubSubscribeKey = SettingsManager.getPubnubSubKey()
         config.eventListener = ChatEventListener(chatView: self)
         config.licenseKey = SettingsManager.getSdkLicenseKey()
+        
+        let pubNubClient = Red5PubNubClient(config: config, webrtcClientListener: ChatEventListener(chatView: self))
 
-        // Create WebRTC client
-        let client = Red5WebrtcClientBuilder()
-            .setPubnubPublishKey(config.pubnubPublishKey ?? "")
-            .setPubnubSubscribeKey(config.pubnubSubscribeKey ?? "")
-            .setLicenseKey(config.licenseKey ?? "")
-            .setEventListener(ChatEventListener(chatView: self))
-            .build()
-
-        webrtcClient = client
+        webrtcClient = pubNubClient
 
         addSystemMessage("Initializing chat client...")
     }
@@ -266,13 +262,13 @@ struct ChatDemoView: View {
         connectionStatus = "Connecting..."
 
         // Subscribe to chat channel
-        client.subscribeChatChannel(channelName: currentChannel)
+        client.subscribeChannel(channelName: currentChannel)
 
         addSystemMessage("Connecting to channel '\(currentChannel)'...")
     }
 
     private func disconnectFromChat() {
-        webrtcClient?.disconnectChat()
+        webrtcClient?.disconnect()
 
         isConnected = false
         connectionStatus = isLicenseValidated ? "Disconnected" : "License Validation Required"
@@ -317,7 +313,7 @@ struct ChatDemoView: View {
            let jsonMessage = try? JSONDecoder().decode(AnyJSON.self, from: jsonData) {
 
             // Send via PubNub
-//            client.sendChatJsonMessage(
+//            client.sendJsonMessage(
 //                channelName: currentChannel,
 //                jsonObject: jsonMessage,
 //                metaData: nil
@@ -544,8 +540,8 @@ class ChatEventListener: Red5ProWebrtcEventDelegate {
         chatView?.handleChatDisconnected()
     }
 
-    func onChatMessageReceived(channel: String, message: JSONCodable) {
-        chatView?.handleMessageReceived(channel: channel, message: message)
+    func onChatMessageReceived(channel: String, message: Any) {
+        chatView?.handleMessageReceived(channel: channel, message: message as! JSONCodable)
     }
 
     func onChatSendError(channel: String, errorMessage: String) {

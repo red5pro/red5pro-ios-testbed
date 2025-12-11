@@ -13,9 +13,10 @@
 		29DEA8ED6E56D6F9AE0C3546 /* StreamManagerPublishView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EFEFA187852D1D95EB11CD9 /* StreamManagerPublishView.swift */; };
 		2D39C1F5F077E431C7F8D819 /* PubNubSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 9BD6482AC8A27A72530C5F43 /* PubNubSDK */; };
 		33251EBAB2BB9F56AAEC598A /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3E9AB2FAB3AC627C017907E /* AVFoundation.framework */; };
-		48DD8AD82EE8D93F003F0FBE /* Red5WebRTCKit in Frameworks */ = {isa = PBXBuildFile; productRef = 48DD8AD72EE8D93F003F0FBE /* Red5WebRTCKit */; };
 		48DD8B0E2EE9C427003F0FBE /* LogManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48DD8B0C2EE9C427003F0FBE /* LogManager.swift */; };
 		48DD8B0F2EE9C427003F0FBE /* LogsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48DD8B0D2EE9C427003F0FBE /* LogsView.swift */; };
+		48DD8B282EEB097D003F0FBE /* Red5WebRTCKit in Frameworks */ = {isa = PBXBuildFile; productRef = 48DD8B272EEB097D003F0FBE /* Red5WebRTCKit */; };
+		48DD8B2B2EEB0B28003F0FBE /* Red5PubNubClient in Frameworks */ = {isa = PBXBuildFile; productRef = 48DD8B2A2EEB0B28003F0FBE /* Red5PubNubClient */; };
 		4E15AD64634B48B33E05EB71 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9DF0C7399F7BBA86291220D /* SettingsView.swift */; };
 		9FC65FB517F99AC1C2ECE2E3 /* WebRTC in Frameworks */ = {isa = PBXBuildFile; productRef = 83AC18E85224689302FF7E33 /* WebRTC */; };
 		AEE75507275FA7A6E37B5DFA /* WebRTCTestBedApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 478E532AF7D9D36C37A63267 /* WebRTCTestBedApp.swift */; };
@@ -49,7 +50,6 @@
 		CECA135343E9A01A38A194B2 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		E62C5FA15559F3A3004B45CE /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E99448BA2E37ADD8C9E7CD8E /* ChatDemoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatDemoView.swift; sourceTree = "<group>"; };
-		F67E46D64D8AA6A93FB19D50 /* Red5WebRTCKit.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Red5WebRTCKit.xcframework; path = Frameworks/Red5WebRTCKit.xcframework; sourceTree = "<group>"; };
 		FB7DDBECC1F09ADE21520CD0 /* SettingsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -62,8 +62,9 @@
 				2D39C1F5F077E431C7F8D819 /* PubNubSDK in Frameworks */,
 				BE863D03A537FAEE98717EBF /* AudioToolbox.framework in Frameworks */,
 				33251EBAB2BB9F56AAEC598A /* AVFoundation.framework in Frameworks */,
-				48DD8AD82EE8D93F003F0FBE /* Red5WebRTCKit in Frameworks */,
+				48DD8B282EEB097D003F0FBE /* Red5WebRTCKit in Frameworks */,
 				B5666726A3A4D251B7ABB378 /* CoreMedia.framework in Frameworks */,
+				48DD8B2B2EEB0B28003F0FBE /* Red5PubNubClient in Frameworks */,
 				BB697D18D17B722E83A7DD30 /* CoreAudio.framework in Frameworks */,
 				DF33C75DC92E223A50C6EB12 /* VideoToolbox.framework in Frameworks */,
 			);
@@ -116,7 +117,6 @@
 				C3E9AB2FAB3AC627C017907E /* AVFoundation.framework */,
 				856CB60FDEF7109479ED20A1 /* CoreAudio.framework */,
 				004ED9961F6AE06224A59003 /* CoreMedia.framework */,
-				F67E46D64D8AA6A93FB19D50 /* Red5WebRTCKit.xcframework */,
 				01F429C31453AC8C8434E335 /* VideoToolbox.framework */,
 			);
 			name = Frameworks;
@@ -142,6 +142,9 @@
 				83AC18E85224689302FF7E33 /* WebRTC */,
 				9BD6482AC8A27A72530C5F43 /* PubNubSDK */,
 				48DD8AD72EE8D93F003F0FBE /* Red5WebRTCKit */,
+				48DD8B272EEB097D003F0FBE /* Red5WebRTCKit */,
+				48DD8B2A2EEB0B28003F0FBE /* Red5PubNubClient */,
+				48DD8B2C2EEB0B28003F0FBE /* Red5WebRTCKit */,
 			);
 			productName = WebRTCTestBed;
 			productReference = 74D2F61758CFB631FC0CC7A1 /* WebRTCTestBed.app */;
@@ -169,7 +172,7 @@
 			packageReferences = (
 				C4822941DA12FFC2F4D506B1 /* XCRemoteSwiftPackageReference "swift" */,
 				67267988C19A153227D36125 /* XCRemoteSwiftPackageReference "WebRTC" */,
-				48DD8AD62EE8D93F003F0FBE /* XCLocalSwiftPackageReference "../red5pro-ios-sdk/distribution" */,
+				48DD8B292EEB0B28003F0FBE /* XCLocalSwiftPackageReference "../red5pro-ios-sdk/distribution" */,
 			);
 			projectDirPath = "";
 			projectRoot = "";
@@ -419,7 +422,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		48DD8AD62EE8D93F003F0FBE /* XCLocalSwiftPackageReference "../red5pro-ios-sdk/distribution" */ = {
+		48DD8B292EEB0B28003F0FBE /* XCLocalSwiftPackageReference "../red5pro-ios-sdk/distribution" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = "../red5pro-ios-sdk/distribution";
 		};
@@ -446,6 +449,18 @@
 
 /* Begin XCSwiftPackageProductDependency section */
 		48DD8AD72EE8D93F003F0FBE /* Red5WebRTCKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Red5WebRTCKit;
+		};
+		48DD8B272EEB097D003F0FBE /* Red5WebRTCKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Red5WebRTCKit;
+		};
+		48DD8B2A2EEB0B28003F0FBE /* Red5PubNubClient */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Red5PubNubClient;
+		};
+		48DD8B2C2EEB0B28003F0FBE /* Red5WebRTCKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Red5WebRTCKit;
 		};
