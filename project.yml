@@ -19,9 +19,13 @@ targets:
     deploymentTarget: "16.0"
     sources:
       - path: WebRTCTestBed
+        excludes:
+          - Info.plist
     info:
       path: Resources/Info.plist
       properties:
+        CFBundleShortVersionString: "1.0"
+        CFBundleVersion: "1"
         LSRequiresIPhoneOS: true
         UIApplicationSceneManifest:
           UIApplicationSupportsMultipleScenes: true
@@ -30,12 +34,16 @@ targets:
           - UIInterfaceOrientationPortrait
         "UISupportedInterfaceOrientations~ipad":
           - UIInterfaceOrientationPortrait
+        NSAppTransportSecurity:
+          NSAllowsArbitraryLoads: true
         NSCameraUsageDescription: "This app needs camera access for video calls"
         NSMicrophoneUsageDescription: "This app needs microphone access for audio calls"
     settings:
       base:
         PRODUCT_NAME: WebRTCTestBed
         FRAMEWORK_SEARCH_PATHS: ["$(inherited)", "$(PROJECT_DIR)/Frameworks"]
+        DEVELOPMENT_TEAM: E964K44BWW
+        CODE_SIGN_STYLE: Automatic
     dependencies:
       - package: WebRTC
       - package: PubNubSDK

@@ -100,3 +100,4 @@ WebRTCTestBed.xcodeproj/xcuserdata/
 WebRTCTestBed.xcodeproj/project.xcworkspace/
 
 Frameworks/*.xcframework
+build/
