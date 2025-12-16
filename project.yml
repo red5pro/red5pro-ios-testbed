@@ -8,13 +8,15 @@ packages:
     from: 140.0.0
   PubNubSDK:
     url: https://github.com/pubnub/swift
-    from: 10.0.1
+    from: 10.0.0
+  Red5ProSDK:
+    path: ../red5pro-ios-sdk/distribution
 
 targets:
   WebRTCTestBed:
     type: application
     platform: iOS
-    deploymentTarget: "15.0"
+    deploymentTarget: "16.0"
     sources:
       - path: WebRTCTestBed
     info:
@@ -37,8 +39,10 @@ targets:
     dependencies:
       - package: WebRTC
       - package: PubNubSDK
-      - framework: Frameworks/Red5WebRTCKit.xcframework
-        embed: true
+      - package: Red5ProSDK
+        product: Red5WebRTCKit
+      - package: Red5ProSDK
+        product: Red5PubNubClient
       - sdk: AudioToolbox.framework
       - sdk: AVFoundation.framework
       - sdk: CoreMedia.framework
