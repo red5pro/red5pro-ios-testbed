@@ -10,7 +10,7 @@ packages:
     url: https://github.com/pubnub/swift
     from: 10.0.0
   Red5ProSDK:
-    path: ../red5pro-ios-sdk/distribution
+    path: ./red5pro-ios-sdk
 
 targets:
   WebRTCTestBed:
