@@ -32,7 +32,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "1478"
             endingLineNumber = "1478"
-            landmarkName = "subscribeChatChannel(channelName:)"
+            landmarkName = "getSubscribedChatChannels()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -47,9 +47,7 @@
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "2061"
-            endingLineNumber = "2061"
-            landmarkName = "loadLicenseCache()"
-            landmarkType = "7">
+            endingLineNumber = "2061">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -80,7 +78,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "440"
             endingLineNumber = "440"
-            landmarkName = "subscribe(streamName:)"
+            landmarkName = "createSubscribeOffer()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -96,7 +94,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "497"
             endingLineNumber = "497"
-            landmarkName = "createSubscribeOffer()"
+            landmarkName = "subscribe()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -225,6 +223,22 @@
             startingLineNumber = "126"
             endingLineNumber = "126"
             landmarkName = "getStreamManagerHost()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "5388551C-FCB1-4E32-B0B5-47BA5AC7B27B"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "WebRTCTestBed/ConferenceManager.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "91"
+            endingLineNumber = "91"
+            landmarkName = "init()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
