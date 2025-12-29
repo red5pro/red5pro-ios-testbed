@@ -48,7 +48,7 @@ struct ConferenceView: View {
     
     var joinScreen: some View {
         VStack(spacing: 20) {
-            Text("Red5Pro Conference")
+            Text("Red5 Conference")
                 .font(.title)
                 .foregroundColor(.white)
             

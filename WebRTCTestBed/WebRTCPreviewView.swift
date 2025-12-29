@@ -41,14 +41,32 @@ struct WebRTCPreviewView: UIViewRepresentable {
     }
 
     func updateUIView(_ uiView: UIView, context: Context) {
-        if let videoView = renderer as? UIView {
-            if shouldClear {
-                videoView.isHidden = true
-                videoView.alpha = 0
-            } else {
-                videoView.isHidden = false
-                videoView.alpha = 1.0
+        guard let videoView = renderer as? UIView else { return }
+        
+        if videoView.superview != uiView {
+            uiView.subviews.forEach { $0.removeFromSuperview() }
+            
+            if let mtlView = videoView as? RTCMTLVideoView {
+                mtlView.videoContentMode = .scaleAspectFit
             }
+            
+            videoView.translatesAutoresizingMaskIntoConstraints = false
+            uiView.addSubview(videoView)
+            
+            NSLayoutConstraint.activate([
+                videoView.topAnchor.constraint(equalTo: uiView.topAnchor),
+                videoView.bottomAnchor.constraint(equalTo: uiView.bottomAnchor),
+                videoView.leadingAnchor.constraint(equalTo: uiView.leadingAnchor),
+                videoView.trailingAnchor.constraint(equalTo: uiView.trailingAnchor)
+            ])
+        }
+        
+        if shouldClear {
+            videoView.isHidden = true
+            videoView.alpha = 0
+        } else {
+            videoView.isHidden = false
+            videoView.alpha = 1.0
         }
     }
 }
