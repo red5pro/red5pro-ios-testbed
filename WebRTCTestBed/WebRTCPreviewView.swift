@@ -10,39 +10,45 @@ import WebRTC
 
 // MARK: - WebRTC Preview View
 struct WebRTCPreviewView: UIViewRepresentable {
-    let renderer: RTCMTLVideoView
+    let renderer: RTCVideoRenderer
     var shouldClear: Bool = false
 
     func makeUIView(context: Context) -> UIView {
         let containerView = UIView()
         containerView.backgroundColor = .black
         
-        renderer.contentMode = .scaleAspectFit
-        renderer.videoContentMode = .scaleAspectFit
-        renderer.backgroundColor = .black
-        renderer.translatesAutoresizingMaskIntoConstraints = false
-        
-        containerView.addSubview(renderer)
-        
-        NSLayoutConstraint.activate([
-            renderer.topAnchor.constraint(equalTo: containerView.topAnchor),
-            renderer.bottomAnchor.constraint(equalTo: containerView.bottomAnchor),
-            renderer.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
-            renderer.trailingAnchor.constraint(equalTo: containerView.trailingAnchor)
-        ])
+        if let videoView = renderer as? UIView {
+            
+            if let mtlView = videoView as? RTCMTLVideoView {
+                mtlView.videoContentMode = .scaleAspectFit
+            }
+            
+            videoView.contentMode = .scaleAspectFit
+            videoView.backgroundColor = .black
+            videoView.translatesAutoresizingMaskIntoConstraints = false
+            
+            containerView.addSubview(videoView)
+            
+            NSLayoutConstraint.activate([
+                videoView.topAnchor.constraint(equalTo: containerView.topAnchor),
+                videoView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor),
+                videoView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
+                videoView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor)
+            ])
+        }
         
         return containerView
     }
 
     func updateUIView(_ uiView: UIView, context: Context) {
-        if shouldClear {
-            // Hide the renderer to show black background
-            renderer.isHidden = true
-            renderer.alpha = 0
-        } else {
-            // Show the renderer
-            renderer.isHidden = false
-            renderer.alpha = 1.0
+        if let videoView = renderer as? UIView {
+            if shouldClear {
+                videoView.isHidden = true
+                videoView.alpha = 0
+            } else {
+                videoView.isHidden = false
+                videoView.alpha = 1.0
+            }
         }
     }
 }

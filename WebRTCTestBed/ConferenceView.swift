@@ -7,9 +7,10 @@
 
 import SwiftUI
 import Red5WebRTCKit
+import WebRTC
 
 struct ConferenceView: View {
-    @StateObject private var manager = ConferenceManager()
+    @StateObject private var viewModel = ConferenceViewModel()
     
     @State private var roomId: String = "room1"
     @State private var userName: String = "user1"
@@ -28,7 +29,7 @@ struct ConferenceView: View {
         ZStack {
             Color.black.ignoresSafeArea()
             
-            if !manager.isJoined {
+            if !viewModel.isJoined {
                 // MARK: - Join Screen
                 joinScreen
             } else {
@@ -41,7 +42,7 @@ struct ConferenceView: View {
             userName = "user_\(Int.random(in: 100...999))"
         }
         .onDisappear {
-            manager.cleanup()
+            viewModel.cleanup()
         }
     }
     
@@ -77,8 +78,8 @@ struct ConferenceView: View {
             .padding()
             
             Button(action: {
-                manager.setupClient(role: role)
-                manager.joinRoom(roomId: roomId, userId: userName)
+                viewModel.setupClient(role: role)
+                viewModel.joinRoom(roomId: roomId, userId: userName, role: role)
             }) {
                 Text("Join Room")
                     .font(.headline)
@@ -90,7 +91,7 @@ struct ConferenceView: View {
             }
             .padding()
             
-            Text(manager.statusMessage)
+            Text(viewModel.statusMessage)
                 .font(.caption)
                 .foregroundColor(.gray)
         }
@@ -100,12 +101,12 @@ struct ConferenceView: View {
         VStack {
             // Header
             HStack {
-                Text("Room: \(manager.roomName)")
+                Text("Room: \(viewModel.roomName)")
                     .font(.headline)
                     .foregroundColor(.white)
                 Spacer()
                 Button("Leave") {
-                    manager.leaveRoom()
+                    viewModel.leaveRoom()
                 }
                 .foregroundColor(.red)
             }
@@ -117,7 +118,7 @@ struct ConferenceView: View {
                 LazyVGrid(columns: columns, spacing: 10) {
                     
                     // 1. Local Preview (if publisher)
-                    if role == "publisher", let localRenderer = manager.localVideoRenderer {
+                    if role == "publisher", let localRenderer = viewModel.localVideoRenderer {
                         ZStack {
                             WebRTCPreviewView(renderer: localRenderer)
                                 .aspectRatio(3/4, contentMode: .fill)
@@ -142,7 +143,7 @@ struct ConferenceView: View {
                     }
                     
                     // 2. Remote Participants
-                    ForEach(manager.participantRenderers.sorted(by: { $0.key < $1.key }), id: \.key) { streamId, renderer in
+                    ForEach(viewModel.participantRenderers.sorted(by: { $0.key < $1.key }), id: \.key) { streamId, renderer in
                         ZStack {
                             WebRTCPreviewView(renderer: renderer)
                                 .aspectRatio(3/4, contentMode: .fill)
@@ -174,6 +175,7 @@ struct ConferenceView: View {
                 HStack(spacing: 30) {
                     Button(action: {
                         micEnabled.toggle()
+                        viewModel.toggleMic()
                     }) {
                         Image(systemName: micEnabled ? "mic.fill" : "mic.slash.fill")
                             .font(.title)
@@ -185,6 +187,7 @@ struct ConferenceView: View {
                     
                     Button(action: {
                         cameraEnabled.toggle()
+                        viewModel.toggleCamera()
                     }) {
                         Image(systemName: cameraEnabled ? "video.fill" : "video.slash.fill")
                             .font(.title)
@@ -195,7 +198,7 @@ struct ConferenceView: View {
                     }
                     
                     Button(action: {
-                        //manager.switchCamera()
+                        // viewModel.switchCamera()
                     }) {
                         Image(systemName: "camera.rotate.fill")
                             .font(.title)
