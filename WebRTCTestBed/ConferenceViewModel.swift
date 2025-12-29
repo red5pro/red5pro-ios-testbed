@@ -200,5 +200,12 @@ class ConferenceViewModel: ObservableObject, Red5ProWebrtcEventDelegate, Confere
     func onParticipantMediaUpdate(uid: String, videoEnabled: Bool, audioEnabled: Bool, timestamp: Int64) {
         // Update UI icons if we had corresponding state
     }
+    
+    func onParticipantRendererUpdate(uid: String, renderer: RTCVideoRenderer) {
+        DispatchQueue.main.async {
+            print("ViewModel: Renderer update for \(uid)")
+            self.participantRenderers[uid] = renderer
+        }
+    }
 }
 
