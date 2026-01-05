@@ -14,6 +14,8 @@
 		2D0E0B83005DD955FF2D6040 /* Red5WebRTCKit in Frameworks */ = {isa = PBXBuildFile; productRef = E5EE20E7FCD880032D7C503B /* Red5WebRTCKit */; };
 		2D39C1F5F077E431C7F8D819 /* PubNubSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 9BD6482AC8A27A72530C5F43 /* PubNubSDK */; };
 		33251EBAB2BB9F56AAEC598A /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3E9AB2FAB3AC627C017907E /* AVFoundation.framework */; };
+		4818EDE92F0C190100BCBED1 /* ConferenceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4818EDE72F0C190100BCBED1 /* ConferenceView.swift */; };
+		4818EDEA2F0C190100BCBED1 /* ConferenceViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4818EDE82F0C190100BCBED1 /* ConferenceViewModel.swift */; };
 		48DD8B312EF3012D003F0FBE /* Red5PubNubClient in Frameworks */ = {isa = PBXBuildFile; productRef = 48DD8B302EF3012D003F0FBE /* Red5PubNubClient */; };
 		48DD8B332EF3012D003F0FBE /* Red5WebRTCKit in Frameworks */ = {isa = PBXBuildFile; productRef = 48DD8B322EF3012D003F0FBE /* Red5WebRTCKit */; };
 		4E15AD64634B48B33E05EB71 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9DF0C7399F7BBA86291220D /* SettingsView.swift */; };
@@ -41,6 +43,8 @@
 		3B3889663CE1C758CD755F18 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		3D5A586C7A7BE68B4DF63DAA /* StreamManagerSubscribeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamManagerSubscribeView.swift; sourceTree = "<group>"; };
 		478E532AF7D9D36C37A63267 /* WebRTCTestBedApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebRTCTestBedApp.swift; sourceTree = "<group>"; };
+		4818EDE72F0C190100BCBED1 /* ConferenceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConferenceView.swift; sourceTree = "<group>"; };
+		4818EDE82F0C190100BCBED1 /* ConferenceViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConferenceViewModel.swift; sourceTree = "<group>"; };
 		74D2F61758CFB631FC0CC7A1 /* WebRTCTestBed.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = WebRTCTestBed.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		764165F7193A8CDC65C363F3 /* StandalonePublishView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StandalonePublishView.swift; sourceTree = "<group>"; };
 		83A8CF0C4BE7BE550DCEFBAA /* StandaloneSubscribeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StandaloneSubscribeView.swift; sourceTree = "<group>"; };
@@ -81,6 +85,8 @@
 			isa = PBXGroup;
 			children = (
 				E62C5FA15559F3A3004B45CE /* Assets.xcassets */,
+				4818EDE72F0C190100BCBED1 /* ConferenceView.swift */,
+				4818EDE82F0C190100BCBED1 /* ConferenceViewModel.swift */,
 				E99448BA2E37ADD8C9E7CD8E /* ChatDemoView.swift */,
 				3B3889663CE1C758CD755F18 /* ContentView.swift */,
 				225E87937A62F66C23264705 /* LogManager.swift */,
@@ -218,6 +224,8 @@
 				FD051EC7B987882A12C8F961 /* StandaloneSubscribeView.swift in Sources */,
 				29DEA8ED6E56D6F9AE0C3546 /* StreamManagerPublishView.swift in Sources */,
 				F9B52E89F9A2C11F7F8A1E3F /* StreamManagerSubscribeView.swift in Sources */,
+				4818EDE92F0C190100BCBED1 /* ConferenceView.swift in Sources */,
+				4818EDEA2F0C190100BCBED1 /* ConferenceViewModel.swift in Sources */,
 				16783026D9F90C08FF2F8E8B /* WebRTCPreviewView.swift in Sources */,
 				AEE75507275FA7A6E37B5DFA /* WebRTCTestBedApp.swift in Sources */,
 			);
