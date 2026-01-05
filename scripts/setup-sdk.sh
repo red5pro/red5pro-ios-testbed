@@ -3,14 +3,16 @@
 #===============================================================================
 # SDK Setup Script
 #
-# Downloads and extracts the Red5 Pro iOS SDK from a provided URL,
-# and updates project.yml to use the local SDK path.
+# Downloads/copies and extracts the Red5 Pro iOS SDK from a provided URL
+# or local file path, and updates project.yml to use the local SDK path.
 #
 # Usage:
-#   ./scripts/setup-sdk.sh <zip-url>
+#   ./scripts/setup-sdk.sh <zip-url-or-path>
 #
-# Example:
+# Examples:
 #   ./scripts/setup-sdk.sh https://example.com/red5pro-ios-sdk-v1.0.0.zip
+#   ./scripts/setup-sdk.sh /path/to/red5pro-ios-sdk.zip
+#   ./scripts/setup-sdk.sh ~/Downloads/red5pro-ios-sdk.zip
 #===============================================================================
 
 set -euo pipefail
@@ -48,13 +50,15 @@ log_error() {
 }
 
 usage() {
-    echo "Usage: $0 <zip-url>"
+    echo "Usage: $0 <zip-url-or-path>"
     echo ""
     echo "Arguments:"
-    echo "  zip-url    URL to the Red5 Pro iOS SDK zip file"
+    echo "  zip-url-or-path    URL or local file path to the Red5 Pro iOS SDK zip file"
     echo ""
-    echo "Example:"
+    echo "Examples:"
     echo "  $0 https://example.com/red5pro-ios-sdk-v1.0.0.zip"
+    echo "  $0 /path/to/red5pro-ios-sdk.zip"
+    echo "  $0 ~/Downloads/red5pro-ios-sdk.zip"
     exit 1
 }
 
@@ -63,42 +67,59 @@ usage() {
 #-------------------------------------------------------------------------------
 
 if [[ $# -lt 1 ]]; then
-    log_error "Missing required argument: zip URL"
+    log_error "Missing required argument: zip URL or path"
     usage
 fi
 
-ZIP_URL="$1"
-
-# Basic URL validation
-if [[ ! "${ZIP_URL}" =~ ^https?:// ]]; then
-    log_error "Invalid URL: ${ZIP_URL}"
-    log_error "URL must start with http:// or https://"
-    exit 1
-fi
-
-#-------------------------------------------------------------------------------
-# Download the SDK zip
-#-------------------------------------------------------------------------------
-
+ZIP_SOURCE="$1"
 ZIP_FILE="${PROJECT_DIR}/red5pro-ios-sdk.zip"
 
-log_info "Downloading SDK from: ${ZIP_URL}"
+#-------------------------------------------------------------------------------
+# Get the SDK zip (download or copy)
+#-------------------------------------------------------------------------------
 
-if command -v curl &> /dev/null; then
-    curl -L -o "${ZIP_FILE}" "${ZIP_URL}" --progress-bar
-elif command -v wget &> /dev/null; then
-    wget -O "${ZIP_FILE}" "${ZIP_URL}"
+if [[ "${ZIP_SOURCE}" =~ ^https?:// ]]; then
+    # Source is a URL - download it
+    log_info "Downloading SDK from: ${ZIP_SOURCE}"
+
+    if command -v curl &> /dev/null; then
+        curl -L -o "${ZIP_FILE}" "${ZIP_SOURCE}" --progress-bar
+    elif command -v wget &> /dev/null; then
+        wget -O "${ZIP_FILE}" "${ZIP_SOURCE}"
+    else
+        log_error "Neither curl nor wget found. Please install one of them."
+        exit 1
+    fi
+
+    if [[ ! -f "${ZIP_FILE}" ]]; then
+        log_error "Download failed - zip file not created"
+        exit 1
+    fi
+
+    log_success "Downloaded SDK zip file"
 else
-    log_error "Neither curl nor wget found. Please install one of them."
-    exit 1
-fi
+    # Source is a local file path - expand ~ and validate
+    ZIP_SOURCE="${ZIP_SOURCE/#\~/$HOME}"
+    
+    if [[ ! -f "${ZIP_SOURCE}" ]]; then
+        log_error "File not found: ${ZIP_SOURCE}"
+        exit 1
+    fi
 
-if [[ ! -f "${ZIP_FILE}" ]]; then
-    log_error "Download failed - zip file not created"
-    exit 1
-fi
+    if [[ ! "${ZIP_SOURCE}" =~ \.zip$ ]]; then
+        log_warning "File does not have .zip extension: ${ZIP_SOURCE}"
+    fi
 
-log_success "Downloaded SDK zip file"
+    log_info "Copying SDK from: ${ZIP_SOURCE}"
+    cp "${ZIP_SOURCE}" "${ZIP_FILE}"
+
+    if [[ ! -f "${ZIP_FILE}" ]]; then
+        log_error "Copy failed - zip file not created"
+        exit 1
+    fi
+
+    log_success "Copied SDK zip file"
+fi
 
 #-------------------------------------------------------------------------------
 # Clean up existing SDK directory
