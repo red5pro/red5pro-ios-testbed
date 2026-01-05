@@ -32,7 +32,7 @@ NC='\033[0m' # No Color
 
 # Default values
 SCHEME="WebRTCTestBed"
-CONFIGURATION="Release"
+CONFIGURATION="Debug"
 UPLOAD_TO_TESTFLIGHT=false
 PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 BUILD_DIR="${PROJECT_DIR}/build"

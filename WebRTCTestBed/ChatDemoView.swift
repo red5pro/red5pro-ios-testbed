@@ -26,7 +26,6 @@ struct ChatDemoView: View {
     @State private var showingLogs = false
 
     // Red5Pro WebRTC Client
-//    @State private var webrtcClient: Red5WebrtcClient?
     @State private var webrtcClient: Red5PubNubClient?
 
     // Configuration

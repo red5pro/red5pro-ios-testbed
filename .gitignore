@@ -102,3 +102,5 @@ WebRTCTestBed.xcodeproj/project.xcworkspace/
 Frameworks/*.xcframework
 build/
 red5pro-ios-sdk/
+scripts/opts.txt
+*.p8
