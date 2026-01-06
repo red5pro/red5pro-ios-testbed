@@ -198,7 +198,7 @@ struct ConferenceView: View {
                     }
                     
                     Button(action: {
-                        // viewModel.switchCamera()
+                        viewModel.switchCamera()
                     }) {
                         Image(systemName: "camera.rotate.fill")
                             .font(.title)

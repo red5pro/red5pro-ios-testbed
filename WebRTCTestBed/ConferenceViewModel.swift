@@ -105,14 +105,22 @@ class ConferenceViewModel: ObservableObject, Red5ProWebrtcEventDelegate, Confere
     }
     
     func toggleMic() {
-        // Red5WebrtcClient has toggleSendAudio/toggleReceiveAudio?
-        // Check interface.
-        // It has `toggleSendAudio(_ enabled: Bool)`
-        // We need to track current state
+        guard let client = client else { return }
+        let isEnabled = client.isLocalAudioTrackEnabled()
+        client.toggleSendAudio(!isEnabled)
+        print("ViewModel: Toggled mic to \(!isEnabled)")
     }
     
     func toggleCamera() {
-        // client?.toggleSendVideo(...)
+        guard let client = client else { return }
+        let isEnabled = client.isLocalVideoTrackEnabled()
+        client.toggleSendVideo(!isEnabled)
+        print("ViewModel: Toggled camera to \(!isEnabled)")
+    }
+    
+    func switchCamera() {
+        client?.switchCamera()
+        print("ViewModel: Switch camera")
     }
     
     func cleanup() {
