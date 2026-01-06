@@ -82,14 +82,17 @@ class ConferenceViewModel: ObservableObject, Red5ProWebrtcEventDelegate, Confere
         self.statusMessage = "Client setup complete for role: \(role)"
     }
     
-    func joinRoom(roomId: String, userId: String, role: String) {
+    func joinRoom(roomId: String, userId: String, role: String, metadata: [String: Any]) {
         self.roomName = roomId
         self.statusMessage = "Joining \(roomId) as \(userId)..."
         
-        // Pass empty token/metadata for now or fetch if needed
-        let metadata = "{\"username\": \"\(userId)\"}"
+        var metadataString = ""
+        if let jsonData = try? JSONSerialization.data(withJSONObject: metadata, options: []),
+           let jsonString = String(data: jsonData, encoding: .utf8) {
+            metadataString = jsonString
+        }
         
-        client?.join(roomId: roomId, streamName: userId, role: role, metadata: metadata)
+        client?.join(roomId: roomId, streamName: userId, role: role, metadata: metadataString)
     }
     
     func leaveRoom() {
