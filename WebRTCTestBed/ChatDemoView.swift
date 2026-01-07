@@ -31,6 +31,7 @@ struct ChatDemoView: View {
     // Configuration
     @State private var pubKey = SettingsManager.shared.pubnubPubKey
     @State private var subKey = SettingsManager.shared.pubnubSubKey
+    @State private var token = SettingsManager.shared.pubnubToken
 
     var body: some View {
         NavigationView {
@@ -78,7 +79,8 @@ struct ChatDemoView: View {
                     username: $currentUsername,
                     channel: $currentChannel,
                     pubKey: $pubKey,
-                    subKey: $subKey
+                    subKey: $subKey,
+                    token: $token
                 )
             }
             .sheet(isPresented: $showingLogs) {
@@ -576,6 +578,7 @@ struct ChatSettingsView: View {
     @Binding var channel: String
     @Binding var pubKey: String
     @Binding var subKey: String
+    @Binding var token: String
 
     @Environment(\.dismiss) private var dismiss
 
@@ -606,6 +609,12 @@ struct ChatSettingsView: View {
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Subscribe Key")
                         TextField("Enter your PubNub subscribe key", text: $subKey)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                    }
+
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Token")
+                        TextField("Enter your PubNub token", text: $token)
                             .textFieldStyle(RoundedBorderTextFieldStyle())
                     }
                 }
