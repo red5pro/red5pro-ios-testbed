@@ -175,6 +175,13 @@ class ConferenceViewModel: ObservableObject, Red5ProWebrtcEventDelegate, Confere
     func onConnectionStateChanged(state: PeerConnectionState) {
          print("ViewModel: Connection State: \(state)")
     }
+
+    func onIceCandidate(candidate: RTCIceCandidate) {
+        DispatchQueue.main.async {
+            LogManager.shared.info("WebRTC", "ICE Candidate: \(candidate.sdp) sdpMid: \(candidate.sdpMid ?? "nil") sdpMLineIndex: \(candidate.sdpMLineIndex)")
+            print("ViewModel: ICE Candidate: \(candidate.sdp)")
+        }
+    }
     
     // MARK: - ConferenceDelegate
     
@@ -216,6 +223,13 @@ class ConferenceViewModel: ObservableObject, Red5ProWebrtcEventDelegate, Confere
         DispatchQueue.main.async {
             print("ViewModel: Renderer update for \(uid)")
             self.participantRenderers[uid] = renderer
+        }
+    }
+
+    func onIceCandidate(candidate: RTCIceCandidate, uid: String) {
+        DispatchQueue.main.async {
+            LogManager.shared.info("WebRTC", "ICE Candidate (participant \(uid)): \(candidate.sdp) sdpMid: \(candidate.sdpMid ?? "nil") sdpMLineIndex: \(candidate.sdpMLineIndex)")
+            print("ViewModel: ICE Candidate for \(uid): \(candidate.sdp)")
         }
     }
 }
