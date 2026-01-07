@@ -17,7 +17,7 @@ class ConferenceViewModel: ObservableObject, Red5ProWebrtcEventDelegate, Confere
         print("ViewModel: License validated: \(validated) - \(message)")
     }
     
-    func onChatMessageReceived(channel: String, message: any PubNubSDK.JSONCodable) {
+    func onChatMessageReceived(channel: String, message: Any) {
     }
     
     func onChatConnected() {

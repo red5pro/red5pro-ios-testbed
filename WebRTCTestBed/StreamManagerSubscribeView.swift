@@ -110,7 +110,7 @@ class StreamManagerSubscribeManager: NSObject, ObservableObject {
 
 // MARK: - Red5ProWebrtcEventDelegate Implementation
 extension StreamManagerSubscribeManager: Red5ProWebrtcEventDelegate {
-    func onChatMessageReceived(channel: String, message: any PubNubSDK.JSONCodable) {
+    func onChatMessageReceived(channel: String, message: Any) {
         DispatchQueue.main.async {
             LogManager.shared.info("Chat", "Message received on channel: \(channel)")
         }
