@@ -4,7 +4,6 @@
 //
 //  Created by Mustafa BOLEKEN on 27.10.2025.
 //
-/*
 
 import SwiftUI
 import PubNubSDK
@@ -231,6 +230,7 @@ struct ChatDemoView: View {
         let config = Red5WebrtcClientConfig()
         config.pubnubPublishKey = SettingsManager.getPubnubPubKey()
         config.pubnubSubscribeKey = SettingsManager.getPubnubSubKey()
+        config.pubnubAuthKey = SettingsManager.getPubnubToken()
         config.eventListener = ChatEventListener(chatView: self)
         config.licenseKey = SettingsManager.getSdkLicenseKey()
         
@@ -637,4 +637,3 @@ struct ChatDemoView_Previews: PreviewProvider {
     }
 }
 #endif
-*/

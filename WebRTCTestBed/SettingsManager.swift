@@ -31,6 +31,7 @@ class SettingsManager: ObservableObject {
         static let pubnubChannel = "pubnub_channel_name"
         static let pubnubPubKey = "pubnub_publish_key"
         static let pubnubSubKey = "pubnub_subscribe_key"
+        static let pubnubToken = "pubnub_token"
         static let enableDebug = "enable_debug"
         static let dtlsSetup = "dtls_setup"
     }
@@ -96,6 +97,10 @@ class SettingsManager: ObservableObject {
         didSet { defaults.set(pubnubSubKey, forKey: Keys.pubnubSubKey) }
     }
 
+    @Published var pubnubToken: String {
+        didSet { defaults.set(pubnubToken, forKey: Keys.pubnubToken) }
+    }
+
     @Published var dtlsSetup: DTLSSetup {
         didSet { defaults.set(dtlsSetup.rawValue, forKey: Keys.dtlsSetup) }
     }
@@ -116,6 +121,7 @@ class SettingsManager: ObservableObject {
         self.pubnubChannel = defaults.string(forKey: Keys.pubnubChannel) ?? "room1"
         self.pubnubPubKey = defaults.string(forKey: Keys.pubnubPubKey) ?? ""
         self.pubnubSubKey = defaults.string(forKey: Keys.pubnubSubKey) ?? ""
+        self.pubnubToken = defaults.string(forKey: Keys.pubnubToken) ?? ""
 
         let dtlsValue = defaults.string(forKey: Keys.dtlsSetup) ?? "actpass"
         self.dtlsSetup = DTLSSetup(rawValue: dtlsValue) ?? .actpass
@@ -186,6 +192,10 @@ class SettingsManager: ObservableObject {
         return shared.pubnubSubKey
     }
 
+    static func getPubnubToken() -> String {
+        return shared.pubnubToken
+    }
+
     static func getDtlsSetup() -> String {
         return shared.dtlsSetup.rawValue
     }
@@ -207,6 +217,7 @@ class SettingsManager: ObservableObject {
         pubnubChannel = pubnubChannel.trimmingCharacters(in: .whitespaces)
         pubnubPubKey = pubnubPubKey.trimmingCharacters(in: .whitespaces)
         pubnubSubKey = pubnubSubKey.trimmingCharacters(in: .whitespaces)
+        pubnubToken = pubnubToken.trimmingCharacters(in: .whitespaces)
 
         if appName.trimmingCharacters(in: .whitespaces).isEmpty {
             appName = "live"
