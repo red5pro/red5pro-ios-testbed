@@ -4,6 +4,7 @@
 //
 //  Created by Mustafa BOLEKEN on 27.10.2025.
 //
+/*
 
 import SwiftUI
 import PubNubSDK
@@ -636,3 +637,4 @@ struct ChatDemoView_Previews: PreviewProvider {
     }
 }
 #endif
+*/

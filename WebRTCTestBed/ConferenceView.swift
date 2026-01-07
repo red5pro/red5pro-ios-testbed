@@ -9,6 +9,15 @@ import SwiftUI
 import Red5WebRTCKit
 import WebRTC
 
+
+struct MetaDataKeys {
+    static let NAME = "name"
+    static let IS_RAISED_HAND = "isRaisedHand"
+    static let IS_SCREEN_SHARING = "isScreenSharing"
+    static let OWNER_STREAM_ID = "ownerStreamId"
+    static let OWNER_NAME = "ownerName"
+}
+
 struct ConferenceView: View {
     @StateObject private var viewModel = ConferenceViewModel()
     
@@ -79,7 +88,14 @@ struct ConferenceView: View {
             
             Button(action: {
                 viewModel.setupClient(role: role)
-                viewModel.joinRoom(roomId: roomId, userId: userName, role: role)
+                let metadata: [String: Any] = [
+                    MetaDataKeys.NAME: userName,
+                    MetaDataKeys.IS_RAISED_HAND: false,
+                    MetaDataKeys.IS_SCREEN_SHARING: false,
+                    MetaDataKeys.OWNER_STREAM_ID: userName,
+                    MetaDataKeys.OWNER_NAME: userName
+                ]
+                viewModel.joinRoom(roomId: roomId, userId: userName, role: role, metadata: metadata)
             }) {
                 Text("Join Room")
                     .font(.headline)
@@ -198,7 +214,7 @@ struct ConferenceView: View {
                     }
                     
                     Button(action: {
-                        // viewModel.switchCamera()
+                        viewModel.switchCamera()
                     }) {
                         Image(systemName: "camera.rotate.fill")
                             .font(.title)

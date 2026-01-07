@@ -254,6 +254,12 @@ extension StandaloneSubscribeManager: Red5ProWebrtcEventDelegate {
             self.statusCallback?(validated ? "License valid" : "License invalid: \(message)")
         }
     }
+
+    func onIceCandidate(candidate: RTCIceCandidate) {
+        DispatchQueue.main.async {
+            LogManager.shared.info("WebRTC", "ICE Candidate: \(candidate.sdp) sdpMid: \(candidate.sdpMid ?? "nil") sdpMLineIndex: \(candidate.sdpMLineIndex)")
+        }
+    }
 }
 
 // MARK: - Standalone Subscribe Screen

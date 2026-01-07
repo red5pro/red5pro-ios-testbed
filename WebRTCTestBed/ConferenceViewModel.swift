@@ -82,14 +82,17 @@ class ConferenceViewModel: ObservableObject, Red5ProWebrtcEventDelegate, Confere
         self.statusMessage = "Client setup complete for role: \(role)"
     }
     
-    func joinRoom(roomId: String, userId: String, role: String) {
+    func joinRoom(roomId: String, userId: String, role: String, metadata: [String: Any]) {
         self.roomName = roomId
         self.statusMessage = "Joining \(roomId) as \(userId)..."
         
-        // Pass empty token/metadata for now or fetch if needed
-        let metadata = "{\"username\": \"\(userId)\"}"
+        var metadataString = ""
+        if let jsonData = try? JSONSerialization.data(withJSONObject: metadata, options: []),
+           let jsonString = String(data: jsonData, encoding: .utf8) {
+            metadataString = jsonString
+        }
         
-        client?.join(roomId: roomId, streamName: userId, role: role, metadata: metadata)
+        client?.join(roomId: roomId, streamName: userId, role: role, metadata: metadataString)
     }
     
     func leaveRoom() {
@@ -105,14 +108,22 @@ class ConferenceViewModel: ObservableObject, Red5ProWebrtcEventDelegate, Confere
     }
     
     func toggleMic() {
-        // Red5WebrtcClient has toggleSendAudio/toggleReceiveAudio?
-        // Check interface.
-        // It has `toggleSendAudio(_ enabled: Bool)`
-        // We need to track current state
+        guard let client = client else { return }
+        let isEnabled = client.isLocalAudioTrackEnabled()
+        client.toggleSendAudio(!isEnabled)
+        print("ViewModel: Toggled mic to \(!isEnabled)")
     }
     
     func toggleCamera() {
-        // client?.toggleSendVideo(...)
+        guard let client = client else { return }
+        let isEnabled = client.isLocalVideoTrackEnabled()
+        client.toggleSendVideo(!isEnabled)
+        print("ViewModel: Toggled camera to \(!isEnabled)")
+    }
+    
+    func switchCamera() {
+        client?.switchCamera()
+        print("ViewModel: Switch camera")
     }
     
     func cleanup() {
@@ -164,6 +175,13 @@ class ConferenceViewModel: ObservableObject, Red5ProWebrtcEventDelegate, Confere
     func onConnectionStateChanged(state: PeerConnectionState) {
          print("ViewModel: Connection State: \(state)")
     }
+
+    func onIceCandidate(candidate: RTCIceCandidate) {
+        DispatchQueue.main.async {
+            LogManager.shared.info("WebRTC", "ICE Candidate: \(candidate.sdp) sdpMid: \(candidate.sdpMid ?? "nil") sdpMLineIndex: \(candidate.sdpMLineIndex)")
+            print("ViewModel: ICE Candidate: \(candidate.sdp)")
+        }
+    }
     
     // MARK: - ConferenceDelegate
     
@@ -205,6 +223,13 @@ class ConferenceViewModel: ObservableObject, Red5ProWebrtcEventDelegate, Confere
         DispatchQueue.main.async {
             print("ViewModel: Renderer update for \(uid)")
             self.participantRenderers[uid] = renderer
+        }
+    }
+
+    func onIceCandidate(candidate: RTCIceCandidate, uid: String) {
+        DispatchQueue.main.async {
+            LogManager.shared.info("WebRTC", "ICE Candidate (participant \(uid)): \(candidate.sdp) sdpMid: \(candidate.sdpMid ?? "nil") sdpMLineIndex: \(candidate.sdpMLineIndex)")
+            print("ViewModel: ICE Candidate for \(uid): \(candidate.sdp)")
         }
     }
 }

@@ -268,6 +268,12 @@ extension StandalonePublishManager: Red5ProWebrtcEventDelegate {
             }
         }
     }
+
+    func onIceCandidate(candidate: RTCIceCandidate) {
+        DispatchQueue.main.async {
+            LogManager.shared.info("WebRTC", "ICE Candidate: \(candidate.sdp) sdpMid: \(candidate.sdpMid ?? "nil") sdpMLineIndex: \(candidate.sdpMLineIndex)")
+        }
+    }
 }
 
 // MARK: - Standalone Publish Screen
