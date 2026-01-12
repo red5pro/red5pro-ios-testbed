@@ -43,11 +43,6 @@ class StandalonePublishManager: NSObject, ObservableObject {
             .setVideoFps(30)
             .setVideoBitrate(750)
             .setTurnServer(uri: SettingsManager.getTurnUrl(), username: SettingsManager.getTurnUsername(), password: SettingsManager.getTurnPassword())
-            .addIceServer(RTCIceServer(urlStrings: ["stun:stun.relay.metered.ca:80"]))
-            .addIceServer(RTCIceServer(urlStrings: ["turn:global.relay.metered.ca:80"], username: "b63647c5881dedea717434e0", credential: "FhiDUyJg/EbcPMlN"))
-            .addIceServer(RTCIceServer(urlStrings: ["turn:global.relay.metered.ca:80?transport=tcp"], username: "b63647c5881dedea717434e0", credential: "FhiDUyJg/EbcPMlN"))
-            .addIceServer(RTCIceServer(urlStrings: ["turn:global.relay.metered.ca:443"], username: "b63647c5881dedea717434e0", credential: "FhiDUyJg/EbcPMlN"))
-            .addIceServer(RTCIceServer(urlStrings: ["turns:global.relay.metered.ca:443?transport=tcp"], username: "b63647c5881dedea717434e0", credential: "FhiDUyJg/EbcPMlN"))
             .setEventListener(self)
             .build()
 
