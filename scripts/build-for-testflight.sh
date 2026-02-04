@@ -118,6 +118,8 @@ done
 
 log_info "Checking prerequisites..."
 
+XCODE_GEN=xcodegen
+
 # Check for Xcode
 if ! command -v xcodebuild &> /dev/null; then
     log_error "xcodebuild not found. Please install Xcode and command line tools."
@@ -125,19 +127,23 @@ if ! command -v xcodebuild &> /dev/null; then
 fi
 
 # Check for XcodeGen
-if ! command -v xcodegen &> /dev/null; then
-    log_warning "XcodeGen not found. Attempting to install via Homebrew..."
-    if command -v brew &> /dev/null; then
-        brew install xcodegen
-    else
-        log_error "Homebrew not found. Please install XcodeGen manually: brew install xcodegen"
-        exit 1
+if ! command -v ${XCODE_GEN} &> /dev/null; then
+    XCODE_GEN=/opt/homebrew/bin/xcodegen
+    if ! command -v ${XCODE_GEN} &> /dev/null; then
+        log_warning "XcodeGen not found. Attempting to install via Homebrew..."
+        if command -v brew &> /dev/null; then
+            brew install xcodegen
+            XCODE_GEN=xcodegen
+        else
+            log_error "Homebrew not found. Please install XcodeGen manually: brew install xcodegen"
+            exit 1
+        fi
     fi
 fi
 
 # Print versions
 log_info "Xcode version: $(xcodebuild -version | head -n 1)"
-log_info "XcodeGen version: $(xcodegen --version)"
+log_info "XcodeGen version: $($XCODE_GEN --version)"
 
 #-------------------------------------------------------------------------------
 # CI Setup: Install certificate and provisioning profile (if provided)
@@ -222,7 +228,7 @@ if [[ ! -f "project.yml" ]]; then
     exit 1
 fi
 
-xcodegen generate --spec project.yml
+${XCODE_GEN} generate --spec project.yml
 
 if [[ ! -d "${SCHEME}.xcodeproj" ]]; then
     log_error "Failed to generate Xcode project"
