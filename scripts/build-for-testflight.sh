@@ -27,6 +27,8 @@
 #   - R5PRO_LICENSE_MANAGER: License manager URL to inject into the build
 #   - R5PRO_VERSION: Marketing version string (CFBundleShortVersionString, e.g., "2.0")
 #   - R5PRO_BUILD: Build number (CFBundleVersion, e.g., "23")
+#   - DEVELOPMENT_TEAM: Apple Developer Team ID (defaults to E964K44BWW)
+#   - BUNDLE_ID: App bundle identifier (defaults to com.infrared5.test.testbed.WebRTCTestBed)
 #
 # Usage:
 #   ./scripts/build-for-testflight.sh [--upload] [--scheme SCHEME] [--config CONFIG]
@@ -50,6 +52,8 @@ BUILD_DIR="${PROJECT_DIR}/build"
 ARCHIVE_PATH="${BUILD_DIR}/${SCHEME}.xcarchive"
 EXPORT_PATH="${BUILD_DIR}/export"
 IPA_PATH="${EXPORT_PATH}/${SCHEME}.ipa"
+TEAM_ID="${DEVELOPMENT_TEAM:-E964K44BWW}"
+APP_BUNDLE_ID="${BUNDLE_ID:-com.infrared5.test.testbed.WebRTCTestBed}"
 
 #-------------------------------------------------------------------------------
 # Helper functions
@@ -158,6 +162,7 @@ log_info "XcodeGen version: $($XCODE_GEN --version)"
 MANUAL_SIGNING=false
 KEYCHAIN_NAME="build.keychain"
 KEYCHAIN_PASSWORD="build_password"
+PROFILE_UUID=""
 
 if [[ -n "${CERTIFICATE_PATH:-}" ]] && [[ -n "${PROVISIONING_PROFILE_PATH:-}" ]]; then
     log_info "CI environment detected - setting up manual signing..."
@@ -298,7 +303,7 @@ EXPORT_OPTIONS_PATH="${BUILD_DIR}/ExportOptions.plist"
 log_info "Creating ExportOptions.plist..."
 
 if [[ "${MANUAL_SIGNING}" == true ]]; then
-    cat > "${EXPORT_OPTIONS_PATH}" << 'EOF'
+    cat > "${EXPORT_OPTIONS_PATH}" << EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -307,6 +312,13 @@ if [[ "${MANUAL_SIGNING}" == true ]]; then
     <string>app-store</string>
     <key>signingStyle</key>
     <string>manual</string>
+    <key>teamID</key>
+    <string>${TEAM_ID}</string>
+    <key>provisioningProfiles</key>
+    <dict>
+        <key>${APP_BUNDLE_ID}</key>
+        <string>${PROFILE_UUID}</string>
+    </dict>
     <key>uploadSymbols</key>
     <true/>
     <key>compileBitcode</key>
@@ -341,6 +353,9 @@ log_info "Building archive for scheme: ${SCHEME}, configuration: ${CONFIGURATION
 
 if [[ "${MANUAL_SIGNING}" == true ]]; then
     log_info "Using manual signing for CI..."
+    log_info "  Team ID: ${TEAM_ID}"
+    log_info "  Bundle ID: ${APP_BUNDLE_ID}"
+    log_info "  Profile UUID: ${PROFILE_UUID}"
     ARCHIVE_CMD="xcodebuild archive \
         -project ${SCHEME}.xcodeproj \
         -scheme ${SCHEME} \
@@ -349,7 +364,9 @@ if [[ "${MANUAL_SIGNING}" == true ]]; then
         -destination generic/platform=iOS \
         -clonedSourcePackagesDirPath ${BUILD_DIR}/SourcePackages \
         CODE_SIGN_STYLE=Manual \
-        CODE_SIGN_IDENTITY=\"Apple Distribution\""
+        CODE_SIGN_IDENTITY=\"Apple Distribution\" \
+        DEVELOPMENT_TEAM=\"${TEAM_ID}\" \
+        PROVISIONING_PROFILE_SPECIFIER=\"${PROFILE_UUID}\""
 else
     log_info "Using automatic signing..."
     ARCHIVE_CMD="xcodebuild archive \
