@@ -22,6 +22,12 @@
 #   - CERTIFICATE_PASSWORD: Password for the .p12 certificate
 #   - PROVISIONING_PROFILE_PATH: Path to .mobileprovision file
 #
+# Environment Variables (optional, for app configuration):
+#   - R5PRO_LICENSE: SDK license key to inject into the build
+#   - R5PRO_LICENSE_MANAGER: License manager URL to inject into the build
+#   - R5PRO_VERSION: Marketing version string (CFBundleShortVersionString, e.g., "2.0")
+#   - R5PRO_BUILD: Build number (CFBundleVersion, e.g., "23")
+#
 # Usage:
 #   ./scripts/build-for-testflight.sh [--upload] [--scheme SCHEME] [--config CONFIG]
 #===============================================================================
@@ -118,6 +124,8 @@ done
 
 log_info "Checking prerequisites..."
 
+XCODE_GEN=xcodegen
+
 # Check for Xcode
 if ! command -v xcodebuild &> /dev/null; then
     log_error "xcodebuild not found. Please install Xcode and command line tools."
@@ -125,19 +133,23 @@ if ! command -v xcodebuild &> /dev/null; then
 fi
 
 # Check for XcodeGen
-if ! command -v xcodegen &> /dev/null; then
-    log_warning "XcodeGen not found. Attempting to install via Homebrew..."
-    if command -v brew &> /dev/null; then
-        brew install xcodegen
-    else
-        log_error "Homebrew not found. Please install XcodeGen manually: brew install xcodegen"
-        exit 1
+if ! command -v ${XCODE_GEN} &> /dev/null; then
+    XCODE_GEN=/opt/homebrew/bin/xcodegen
+    if ! command -v ${XCODE_GEN} &> /dev/null; then
+        log_warning "XcodeGen not found. Attempting to install via Homebrew..."
+        if command -v brew &> /dev/null; then
+            brew install xcodegen
+            XCODE_GEN=xcodegen
+        else
+            log_error "Homebrew not found. Please install XcodeGen manually: brew install xcodegen"
+            exit 1
+        fi
     fi
 fi
 
 # Print versions
 log_info "Xcode version: $(xcodebuild -version | head -n 1)"
-log_info "XcodeGen version: $(xcodegen --version)"
+log_info "XcodeGen version: $($XCODE_GEN --version)"
 
 #-------------------------------------------------------------------------------
 # CI Setup: Install certificate and provisioning profile (if provided)
@@ -211,6 +223,13 @@ if [[ -n "${CERTIFICATE_PATH:-}" ]] && [[ -n "${PROVISIONING_PROFILE_PATH:-}" ]]
 fi
 
 #-------------------------------------------------------------------------------
+# Generate build configuration with injected values
+#-------------------------------------------------------------------------------
+
+log_info "Generating build configuration..."
+"${PROJECT_DIR}/scripts/generate-build-config.sh"
+
+#-------------------------------------------------------------------------------
 # Generate Xcode project
 #-------------------------------------------------------------------------------
 
@@ -222,7 +241,7 @@ if [[ ! -f "project.yml" ]]; then
     exit 1
 fi
 
-xcodegen generate --spec project.yml
+${XCODE_GEN} generate --spec project.yml
 
 if [[ ! -d "${SCHEME}.xcodeproj" ]]; then
     log_error "Failed to generate Xcode project"
@@ -230,6 +249,26 @@ if [[ ! -d "${SCHEME}.xcodeproj" ]]; then
 fi
 
 log_success "Xcode project generated successfully"
+
+#-------------------------------------------------------------------------------
+# Inject version numbers into Info.plist (if provided)
+#-------------------------------------------------------------------------------
+
+INFO_PLIST="${PROJECT_DIR}/Resources/Info.plist"
+
+if [[ -f "${INFO_PLIST}" ]]; then
+    if [[ -n "${R5PRO_VERSION:-}" ]]; then
+        log_info "Setting CFBundleShortVersionString to: ${R5PRO_VERSION}"
+        /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString ${R5PRO_VERSION}" "${INFO_PLIST}"
+    fi
+
+    if [[ -n "${R5PRO_BUILD:-}" ]]; then
+        log_info "Setting CFBundleVersion to: ${R5PRO_BUILD}"
+        /usr/libexec/PlistBuddy -c "Set :CFBundleVersion ${R5PRO_BUILD}" "${INFO_PLIST}"
+    fi
+else
+    log_warning "Info.plist not found at ${INFO_PLIST} - skipping version injection"
+fi
 
 #-------------------------------------------------------------------------------
 # Resolve Swift Package Manager dependencies

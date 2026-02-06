@@ -112,7 +112,7 @@ class SettingsManager: ObservableObject {
         self.turnUrl = defaults.string(forKey: Keys.turnUrl) ?? ""
         self.turnUsername = defaults.string(forKey: Keys.turnUsername) ?? ""
         self.turnPassword = defaults.string(forKey: Keys.turnPassword) ?? ""
-        self.sdkLicenseKey = defaults.string(forKey: Keys.sdkLicenseKey) ?? ""
+        self.sdkLicenseKey = defaults.string(forKey: Keys.sdkLicenseKey) ?? BuildConfig.license
         self.appName = defaults.string(forKey: Keys.appName) ?? "live"
         self.nodeGroup = defaults.string(forKey: Keys.nodeGroup) ?? "default"
         self.streamName = defaults.string(forKey: Keys.streamName) ?? "stream1"
@@ -129,7 +129,7 @@ class SettingsManager: ObservableObject {
 
     // Static getter methods
     static func getStreamManagerHost() -> String {
-        return shared.streamManagerHost
+       return shared.streamManagerHost
     }
 
     static func getStandaloneServerIp() -> String {
@@ -153,7 +153,8 @@ class SettingsManager: ObservableObject {
     }
 
     static func getSdkLicenseKey() -> String {
-        return shared.sdkLicenseKey
+        let value = shared.sdkLicenseKey.trimmingCharacters(in: .whitespaces)
+        return value.isEmpty ? BuildConfig.license : value
     }
 
     static func getAppName() -> String {
