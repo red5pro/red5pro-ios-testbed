@@ -57,7 +57,7 @@ EOF
 
 echo "[INFO] Generated BuildConfig.swift"
 if [[ -n "${LICENSE}" ]]; then
-    echo "[INFO]   - License: [REDACTED - ${#LICENSE} chars]"
+    echo "[INFO]   - License: ${LICENSE}"
 else
     echo "[INFO]   - License: (not set)"
 fi
