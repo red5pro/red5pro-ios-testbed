@@ -201,7 +201,7 @@ if [[ -n "${CERTIFICATE_PATH:-}" ]] && [[ -n "${PROVISIONING_PROFILE_PATH:-}" ]]
 
     # Install provisioning profile
     log_info "Installing provisioning profile..."
-    PROFILE_UUID=$(grep -aA1 'UUID' "${PROVISIONING_PROFILE_PATH}" | grep -o '[-A-Z0-9]\{36\}' | head -1)
+    PROFILE_UUID=$(grep -aA1 'UUID' "${PROVISIONING_PROFILE_PATH}" | grep -oE '[a-fA-F0-9-]{36}' | head -1)
     
     if [[ -z "${PROFILE_UUID}" ]]; then
         log_error "Could not extract UUID from provisioning profile"
