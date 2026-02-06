@@ -25,6 +25,8 @@
 # Environment Variables (optional, for app configuration):
 #   - R5PRO_LICENSE: SDK license key to inject into the build
 #   - R5PRO_LICENSE_MANAGER: License manager URL to inject into the build
+#   - R5PRO_VERSION: Marketing version string (CFBundleShortVersionString, e.g., "2.0")
+#   - R5PRO_BUILD: Build number (CFBundleVersion, e.g., "23")
 #
 # Usage:
 #   ./scripts/build-for-testflight.sh [--upload] [--scheme SCHEME] [--config CONFIG]
@@ -247,6 +249,26 @@ if [[ ! -d "${SCHEME}.xcodeproj" ]]; then
 fi
 
 log_success "Xcode project generated successfully"
+
+#-------------------------------------------------------------------------------
+# Inject version numbers into Info.plist (if provided)
+#-------------------------------------------------------------------------------
+
+INFO_PLIST="${PROJECT_DIR}/Resources/Info.plist"
+
+if [[ -f "${INFO_PLIST}" ]]; then
+    if [[ -n "${R5PRO_VERSION:-}" ]]; then
+        log_info "Setting CFBundleShortVersionString to: ${R5PRO_VERSION}"
+        /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString ${R5PRO_VERSION}" "${INFO_PLIST}"
+    fi
+
+    if [[ -n "${R5PRO_BUILD:-}" ]]; then
+        log_info "Setting CFBundleVersion to: ${R5PRO_BUILD}"
+        /usr/libexec/PlistBuddy -c "Set :CFBundleVersion ${R5PRO_BUILD}" "${INFO_PLIST}"
+    fi
+else
+    log_warning "Info.plist not found at ${INFO_PLIST} - skipping version injection"
+fi
 
 #-------------------------------------------------------------------------------
 # Resolve Swift Package Manager dependencies
