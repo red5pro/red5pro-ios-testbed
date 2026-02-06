@@ -22,6 +22,10 @@
 #   - CERTIFICATE_PASSWORD: Password for the .p12 certificate
 #   - PROVISIONING_PROFILE_PATH: Path to .mobileprovision file
 #
+# Environment Variables (optional, for app configuration):
+#   - R5PRO_LICENSE: SDK license key to inject into the build
+#   - R5PRO_LICENSE_MANAGER: License manager URL to inject into the build
+#
 # Usage:
 #   ./scripts/build-for-testflight.sh [--upload] [--scheme SCHEME] [--config CONFIG]
 #===============================================================================
@@ -215,6 +219,13 @@ if [[ -n "${CERTIFICATE_PATH:-}" ]] && [[ -n "${PROVISIONING_PROFILE_PATH:-}" ]]
     }
     trap cleanup_keychain EXIT
 fi
+
+#-------------------------------------------------------------------------------
+# Generate build configuration with injected values
+#-------------------------------------------------------------------------------
+
+log_info "Generating build configuration..."
+"${PROJECT_DIR}/scripts/generate-build-config.sh"
 
 #-------------------------------------------------------------------------------
 # Generate Xcode project

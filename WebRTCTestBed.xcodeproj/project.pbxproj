@@ -16,6 +16,7 @@
 		33251EBAB2BB9F56AAEC598A /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3E9AB2FAB3AC627C017907E /* AVFoundation.framework */; };
 		4818EDE92F0C190100BCBED1 /* ConferenceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4818EDE72F0C190100BCBED1 /* ConferenceView.swift */; };
 		4818EDEA2F0C190100BCBED1 /* ConferenceViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4818EDE82F0C190100BCBED1 /* ConferenceViewModel.swift */; };
+		4818EE332F36900500BCBED1 /* BuildConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4818EE322F36900500BCBED1 /* BuildConfig.swift */; };
 		48DD8B312EF3012D003F0FBE /* Red5PubNubClient in Frameworks */ = {isa = PBXBuildFile; productRef = 48DD8B302EF3012D003F0FBE /* Red5PubNubClient */; };
 		48DD8B332EF3012D003F0FBE /* Red5WebRTCKit in Frameworks */ = {isa = PBXBuildFile; productRef = 48DD8B322EF3012D003F0FBE /* Red5WebRTCKit */; };
 		4E15AD64634B48B33E05EB71 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9DF0C7399F7BBA86291220D /* SettingsView.swift */; };
@@ -45,6 +46,7 @@
 		478E532AF7D9D36C37A63267 /* WebRTCTestBedApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebRTCTestBedApp.swift; sourceTree = "<group>"; };
 		4818EDE72F0C190100BCBED1 /* ConferenceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConferenceView.swift; sourceTree = "<group>"; };
 		4818EDE82F0C190100BCBED1 /* ConferenceViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConferenceViewModel.swift; sourceTree = "<group>"; };
+		4818EE322F36900500BCBED1 /* BuildConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuildConfig.swift; sourceTree = "<group>"; };
 		74D2F61758CFB631FC0CC7A1 /* WebRTCTestBed.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = WebRTCTestBed.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		764165F7193A8CDC65C363F3 /* StandalonePublishView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StandalonePublishView.swift; sourceTree = "<group>"; };
 		83A8CF0C4BE7BE550DCEFBAA /* StandaloneSubscribeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StandaloneSubscribeView.swift; sourceTree = "<group>"; };
@@ -84,6 +86,7 @@
 		7473C993943BFA5567BF83DF /* WebRTCTestBed */ = {
 			isa = PBXGroup;
 			children = (
+				4818EE322F36900500BCBED1 /* BuildConfig.swift */,
 				E62C5FA15559F3A3004B45CE /* Assets.xcassets */,
 				4818EDE72F0C190100BCBED1 /* ConferenceView.swift */,
 				4818EDE82F0C190100BCBED1 /* ConferenceViewModel.swift */,
@@ -226,6 +229,7 @@
 				F9B52E89F9A2C11F7F8A1E3F /* StreamManagerSubscribeView.swift in Sources */,
 				4818EDE92F0C190100BCBED1 /* ConferenceView.swift in Sources */,
 				4818EDEA2F0C190100BCBED1 /* ConferenceViewModel.swift in Sources */,
+				4818EE332F36900500BCBED1 /* BuildConfig.swift in Sources */,
 				16783026D9F90C08FF2F8E8B /* WebRTCPreviewView.swift in Sources */,
 				AEE75507275FA7A6E37B5DFA /* WebRTCTestBedApp.swift in Sources */,
 			);

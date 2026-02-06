@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Red5WebRTCKit
 
 // MARK: - Settings Screen
 struct SettingsScreen: View {
@@ -188,6 +189,13 @@ struct SettingsScreen: View {
                                 .fontWeight(.semibold)
                             Spacer()
                         }
+                    }
+                }
+
+                Section(header: Text("Build Configuration")) {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("SDK Version: \(Red5WebrtcClientConfig.getVersion())")
+                        Text("License Manager: \(BuildConfig.licenseManager)")
                     }
                 }
             }

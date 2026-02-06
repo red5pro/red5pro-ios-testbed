@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Red5WebRTCKit
 
 struct ContentView: View {
     var body: some View {
@@ -30,8 +31,22 @@ struct GridView: View {
 
     let items = ["Standalone Publish Screen", "Standalone Subscribe Screen", "Stream Manager Publish Screen", "Stream Manager Subscribe Screen", "Chat Screen", "Conference Screen", "Settings"]
 
+    // Try to fetch the version using the most likely API
+    private var sdkVersion: String {
+        return Red5WebrtcClientConfig.getVersion()
+    }
+    
     var body: some View {
         ScrollView {
+            // Show the SDK version at the top (read-only)
+            VStack(spacing: 8) {
+                Text("SDK Version: \(sdkVersion)")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.top, 8)
+            
             LazyVGrid(columns: columns, spacing: 20) {
                 ForEach(items, id: \.self) { item in
                     NavigationLink(destination: destinationView(for: item)) {
