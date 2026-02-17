@@ -242,13 +242,27 @@ if [[ -n "${CERTIFICATE_PATH:-}" ]] && [[ -n "${PROVISIONING_PROFILE_PATH:-}" ]]
     # Install provisioning profile
     log_info "Installing provisioning profile..."
     
+    # Extract profile information
+    PROFILE_PLIST=$(security cms -D -i "${PROVISIONING_PROFILE_PATH}" 2>/dev/null)
+    
     # Extract and display profile information for debugging
     echo "=== PROVISIONING PROFILE INFO ==="
     echo "  File: ${PROVISIONING_PROFILE_PATH}"
-    security cms -D -i "${PROVISIONING_PROFILE_PATH}" 2>/dev/null | grep -A1 -E "(Name|TeamIdentifier|UUID|application-identifier)" | head -20 || echo "  Could not extract profile info"
+    echo "${PROFILE_PLIST}" | grep -A1 -E "(Name|TeamIdentifier|UUID|application-identifier)" | head -20 || echo "  Could not extract profile info"
     echo "=================================="
     
     PROFILE_UUID=$(grep -aA1 'UUID' "${PROVISIONING_PROFILE_PATH}" | grep -oE '[a-fA-F0-9-]{36}' | head -1)
+    
+    # Extract profile name (needed for PROVISIONING_PROFILE_SPECIFIER)
+    PROFILE_NAME=$(echo "${PROFILE_PLIST}" | grep -A1 '<key>Name</key>' | grep '<string>' | sed 's/.*<string>\(.*\)<\/string>.*/\1/' | head -1)
+    
+    if [[ -z "${PROFILE_NAME}" ]]; then
+        log_warning "Could not extract profile name, using UUID instead"
+        PROFILE_NAME="${PROFILE_UUID}"
+    fi
+    
+    echo "  Extracted Profile Name: ${PROFILE_NAME}"
+    echo "  Extracted Profile UUID: ${PROFILE_UUID}"
     
     if [[ -z "${PROFILE_UUID}" ]]; then
         log_error "Could not extract UUID from provisioning profile"
@@ -303,9 +317,11 @@ if [[ "${MANUAL_SIGNING}" == true ]]; then
     # Using sed to replace the signing settings
     
     # Replace CODE_SIGN_STYLE: Automatic with manual signing settings
+    # Note: Using "iPhone Distribution" to match the certificate type
+    # Using profile name (not UUID) for PROVISIONING_PROFILE_SPECIFIER
     sed -i '' "s/CODE_SIGN_STYLE: Automatic/CODE_SIGN_STYLE: Manual\\
-        CODE_SIGN_IDENTITY: Apple Distribution\\
-        PROVISIONING_PROFILE_SPECIFIER: ${PROFILE_UUID}/" "${PROJECT_YML}"
+        CODE_SIGN_IDENTITY: iPhone Distribution\\
+        PROVISIONING_PROFILE_SPECIFIER: ${PROFILE_NAME}/" "${PROJECT_YML}"
     
     log_info "Updated project.yml with manual signing configuration"
     echo "[INFO] Modified signing settings in project.yml:"
@@ -416,7 +432,7 @@ if [[ "${MANUAL_SIGNING}" == true ]]; then
     <key>provisioningProfiles</key>
     <dict>
         <key>${APP_BUNDLE_ID}</key>
-        <string>${PROFILE_UUID}</string>
+        <string>${PROFILE_NAME}</string>
     </dict>
     <key>uploadSymbols</key>
     <true/>
