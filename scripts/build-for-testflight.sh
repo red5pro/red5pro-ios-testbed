@@ -190,8 +190,15 @@ if [[ -n "${CERTIFICATE_PATH:-}" ]] && [[ -n "${PROVISIONING_PROFILE_PATH:-}" ]]
     security set-keychain-settings -lut 21600 "${KEYCHAIN_NAME}"
     security unlock-keychain -p "${KEYCHAIN_PASSWORD}" "${KEYCHAIN_NAME}"
 
-    # Add keychain to search list
-    security list-keychains -d user -s "${KEYCHAIN_NAME}" $(security list-keychains -d user | tr -d '"')
+    # Add keychain to search list (put our build keychain first so it's searched first)
+    EXISTING_KEYCHAINS=$(security list-keychains -d user | tr -d '"' | tr '\n' ' ')
+    security list-keychains -d user -s "${KEYCHAIN_NAME}" ${EXISTING_KEYCHAINS}
+    
+    # Set the build keychain as the default
+    security default-keychain -s "${KEYCHAIN_NAME}"
+    
+    log_info "Keychain search list:"
+    security list-keychains -d user
 
     # Import certificate
     log_info "Importing certificate..."
@@ -203,6 +210,14 @@ if [[ -n "${CERTIFICATE_PATH:-}" ]] && [[ -n "${PROVISIONING_PROFILE_PATH:-}" ]]
 
     # Allow codesign to access the keychain without prompting
     security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "${KEYCHAIN_PASSWORD}" "${KEYCHAIN_NAME}"
+
+    # Verify certificate was imported and list available signing identities
+    log_info "Verifying certificate import..."
+    log_info "Available signing identities in ${KEYCHAIN_NAME}:"
+    security find-identity -v -p codesigning "${KEYCHAIN_NAME}" || log_warning "No signing identities found in keychain"
+    
+    log_info "All available signing identities:"
+    security find-identity -v -p codesigning || log_warning "No signing identities found"
 
     # Install provisioning profile
     log_info "Installing provisioning profile..."
@@ -356,6 +371,19 @@ if [[ "${MANUAL_SIGNING}" == true ]]; then
     log_info "  Team ID: ${TEAM_ID}"
     log_info "  Bundle ID: ${APP_BUNDLE_ID}"
     log_info "  Profile UUID: ${PROFILE_UUID}"
+    
+    # For CI builds with manual signing, we have two approaches:
+    # 
+    # Approach 1 (Recommended): Use Automatic signing during archive, Manual during export
+    # - Don't override CODE_SIGN_STYLE during archive (let project use Automatic)
+    # - The installed certificate and provisioning profile will be discovered automatically
+    # - Use ExportOptions.plist with manual signing for the export step
+    # - This avoids the "does not support provisioning profiles" error for SPM packages
+    #
+    # The key insight: SPM packages (like PubNubSDK) don't need provisioning profiles
+    # because they're compiled into the main app binary, not signed separately.
+    # By keeping automatic signing during archive, Xcode handles this correctly.
+    
     ARCHIVE_CMD="xcodebuild archive \
         -project ${SCHEME}.xcodeproj \
         -scheme ${SCHEME} \
@@ -363,10 +391,8 @@ if [[ "${MANUAL_SIGNING}" == true ]]; then
         -archivePath ${ARCHIVE_PATH} \
         -destination generic/platform=iOS \
         -clonedSourcePackagesDirPath ${BUILD_DIR}/SourcePackages \
-        CODE_SIGN_STYLE=Manual \
-        CODE_SIGN_IDENTITY=\"Apple Distribution\" \
         DEVELOPMENT_TEAM=\"${TEAM_ID}\" \
-        PROVISIONING_PROFILE_SPECIFIER=\"${PROFILE_UUID}\""
+        CODE_SIGN_IDENTITY=\"Apple Distribution\""
 else
     log_info "Using automatic signing..."
     ARCHIVE_CMD="xcodebuild archive \
