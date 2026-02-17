@@ -508,17 +508,30 @@ log_success "Archive created at: ${ARCHIVE_PATH}"
 
 log_info "Exporting IPA..."
 
-if [[ "${MANUAL_SIGNING}" == true ]]; then
-    EXPORT_CMD="xcodebuild -exportArchive \
-        -archivePath ${ARCHIVE_PATH} \
-        -exportOptionsPlist ${EXPORT_OPTIONS_PATH} \
-        -exportPath ${EXPORT_PATH}"
-else
-    EXPORT_CMD="xcodebuild -exportArchive \
-        -archivePath ${ARCHIVE_PATH} \
-        -exportOptionsPlist ${EXPORT_OPTIONS_PATH} \
-        -exportPath ${EXPORT_PATH} \
-        -allowProvisioningUpdates"
+# Build the base export command
+EXPORT_CMD="xcodebuild -exportArchive \
+    -archivePath ${ARCHIVE_PATH} \
+    -exportOptionsPlist ${EXPORT_OPTIONS_PATH} \
+    -exportPath ${EXPORT_PATH}"
+
+echo "=== EXPORT COMMAND ==="
+echo "APP_STORE_CONNECT_API_KEY_ID: ${APP_STORE_CONNECT_API_KEY_ID}"
+echo "APP_STORE_CONNECT_ISSUER_ID: ${APP_STORE_CONNECT_ISSUER_ID}"
+echo "APP_STORE_CONNECT_API_KEY_PATH: ${APP_STORE_CONNECT_API_KEY_PATH}"
+echo "====================="
+
+# Add App Store Connect API authentication if credentials are available
+# This is required for app-store-connect method to avoid interactive login
+if [[ -n "${APP_STORE_CONNECT_API_KEY_ID:-}" ]] && \
+   [[ -n "${APP_STORE_CONNECT_ISSUER_ID:-}" ]] && \
+   [[ -n "${APP_STORE_CONNECT_API_KEY_PATH:-}" ]]; then
+    log_info "Using App Store Connect API authentication for export..."
+    EXPORT_CMD="${EXPORT_CMD} \
+        -authenticationKeyPath \"${APP_STORE_CONNECT_API_KEY_PATH}\" \
+        -authenticationKeyID \"${APP_STORE_CONNECT_API_KEY_ID}\" \
+        -authenticationKeyIssuerID \"${APP_STORE_CONNECT_ISSUER_ID}\""
+elif [[ "${MANUAL_SIGNING}" != true ]]; then
+    EXPORT_CMD="${EXPORT_CMD} -allowProvisioningUpdates"
 fi
 
 if command -v xcpretty &> /dev/null; then
