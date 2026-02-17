@@ -164,6 +164,13 @@ KEYCHAIN_NAME="build.keychain"
 KEYCHAIN_PASSWORD="build_password"
 PROFILE_UUID=""
 
+# Debug: Show signing-related environment variables
+echo "=== SIGNING CONFIGURATION CHECK ==="
+echo "  CERTIFICATE_PATH: '${CERTIFICATE_PATH:-<not set>}'"
+echo "  PROVISIONING_PROFILE_PATH: '${PROVISIONING_PROFILE_PATH:-<not set>}'"
+echo "  CERTIFICATE_PASSWORD: '${CERTIFICATE_PASSWORD:+<set>}${CERTIFICATE_PASSWORD:-<not set>}'"
+echo "==================================="
+
 if [[ -n "${CERTIFICATE_PATH:-}" ]] && [[ -n "${PROVISIONING_PROFILE_PATH:-}" ]]; then
     log_info "CI environment detected - setting up manual signing..."
     MANUAL_SIGNING=true
@@ -250,6 +257,49 @@ log_info "Generating build configuration..."
 "${PROJECT_DIR}/scripts/generate-build-config.sh"
 
 #-------------------------------------------------------------------------------
+# Configure project.yml for manual signing (CI only)
+#-------------------------------------------------------------------------------
+
+PROJECT_YML="${PROJECT_DIR}/project.yml"
+PROJECT_YML_BACKUP=""
+
+if [[ "${MANUAL_SIGNING}" == true ]]; then
+    echo "=== MANUAL SIGNING: Configuring project.yml ==="
+    log_info "Configuring project.yml for manual signing..."
+    log_info "  Profile UUID: ${PROFILE_UUID}"
+    
+    # Backup original project.yml
+    PROJECT_YML_BACKUP="${PROJECT_DIR}/project.yml.backup"
+    cp "${PROJECT_YML}" "${PROJECT_YML_BACKUP}"
+    
+    # Update signing settings in project.yml for the WebRTCTestBed target
+    # This ensures manual signing is applied ONLY to the app target, not SPM packages
+    # Using sed to replace the signing settings
+    
+    # Replace CODE_SIGN_STYLE: Automatic with manual signing settings
+    sed -i '' "s/CODE_SIGN_STYLE: Automatic/CODE_SIGN_STYLE: Manual\\
+        CODE_SIGN_IDENTITY: Apple Distribution\\
+        PROVISIONING_PROFILE_SPECIFIER: ${PROFILE_UUID}/" "${PROJECT_YML}"
+    
+    log_info "Updated project.yml with manual signing configuration"
+    echo "[INFO] Modified signing settings in project.yml:"
+    echo "----------------------------------------"
+    grep -A3 "CODE_SIGN_STYLE" "${PROJECT_YML}" || echo "  (no CODE_SIGN_STYLE found)"
+    echo "----------------------------------------"
+    
+    # Add cleanup to restore original project.yml
+    cleanup_project_yml() {
+        if [[ -n "${PROJECT_YML_BACKUP}" ]] && [[ -f "${PROJECT_YML_BACKUP}" ]]; then
+            log_info "Restoring original project.yml..."
+            mv "${PROJECT_YML_BACKUP}" "${PROJECT_YML}"
+        fi
+    }
+    # Chain this cleanup with the keychain cleanup
+    original_cleanup=$(trap -p EXIT | sed "s/trap -- '\\(.*\\)' EXIT/\\1/")
+    trap "cleanup_project_yml; ${original_cleanup}" EXIT
+fi
+
+#-------------------------------------------------------------------------------
 # Generate Xcode project
 #-------------------------------------------------------------------------------
 
@@ -259,6 +309,12 @@ cd "${PROJECT_DIR}"
 if [[ ! -f "project.yml" ]]; then
     log_error "project.yml not found in ${PROJECT_DIR}"
     exit 1
+fi
+
+# Remove existing .xcodeproj to avoid "item with same name already exists" error
+if [[ -d "${SCHEME}.xcodeproj" ]]; then
+    log_info "Removing existing ${SCHEME}.xcodeproj..."
+    rm -rf "${SCHEME}.xcodeproj"
 fi
 
 ${XCODE_GEN} generate --spec project.yml
@@ -372,17 +428,10 @@ if [[ "${MANUAL_SIGNING}" == true ]]; then
     log_info "  Bundle ID: ${APP_BUNDLE_ID}"
     log_info "  Profile UUID: ${PROFILE_UUID}"
     
-    # For CI builds with manual signing, we have two approaches:
-    # 
-    # Approach 1 (Recommended): Use Automatic signing during archive, Manual during export
-    # - Don't override CODE_SIGN_STYLE during archive (let project use Automatic)
-    # - The installed certificate and provisioning profile will be discovered automatically
-    # - Use ExportOptions.plist with manual signing for the export step
-    # - This avoids the "does not support provisioning profiles" error for SPM packages
-    #
-    # The key insight: SPM packages (like PubNubSDK) don't need provisioning profiles
-    # because they're compiled into the main app binary, not signed separately.
-    # By keeping automatic signing during archive, Xcode handles this correctly.
+    # Manual signing is configured in project.yml (modified earlier in this script).
+    # This approach sets signing settings ONLY on the WebRTCTestBed target, not on
+    # SPM package targets (which don't support provisioning profiles).
+    # We don't pass signing settings on the command line to avoid them being applied globally.
     
     ARCHIVE_CMD="xcodebuild archive \
         -project ${SCHEME}.xcodeproj \
@@ -390,9 +439,7 @@ if [[ "${MANUAL_SIGNING}" == true ]]; then
         -configuration ${CONFIGURATION} \
         -archivePath ${ARCHIVE_PATH} \
         -destination generic/platform=iOS \
-        -clonedSourcePackagesDirPath ${BUILD_DIR}/SourcePackages \
-        DEVELOPMENT_TEAM=\"${TEAM_ID}\" \
-        CODE_SIGN_IDENTITY=\"Apple Distribution\""
+        -clonedSourcePackagesDirPath ${BUILD_DIR}/SourcePackages"
 else
     log_info "Using automatic signing..."
     ARCHIVE_CMD="xcodebuild archive \
