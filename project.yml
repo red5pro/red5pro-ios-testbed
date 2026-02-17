@@ -34,6 +34,9 @@ targets:
           - UIInterfaceOrientationPortrait
         "UISupportedInterfaceOrientations~ipad":
           - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+          - UIInterfaceOrientationPortraitUpsideDown
         NSAppTransportSecurity:
           NSAllowsArbitraryLoads: true
         NSCameraUsageDescription: "This app needs camera access for video calls"
