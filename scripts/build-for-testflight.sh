@@ -432,7 +432,7 @@ if [[ "${MANUAL_SIGNING}" == true ]]; then
     <key>provisioningProfiles</key>
     <dict>
         <key>${APP_BUNDLE_ID}</key>
-        <string>${PROFILE_NAME}</string>
+        <string>${PROFILE_UUID}</string>
     </dict>
     <key>uploadSymbols</key>
     <true/>
@@ -517,6 +517,24 @@ if [[ ! -d "${ARCHIVE_PATH}" ]]; then
 fi
 
 log_success "Archive created at: ${ARCHIVE_PATH}"
+
+# Debug: Check if provisioning profile is embedded in the archive
+echo "=== ARCHIVE VERIFICATION ==="
+EMBEDDED_PROFILE="${ARCHIVE_PATH}/Products/Applications/${SCHEME}.app/embedded.mobileprovision"
+if [[ -f "${EMBEDDED_PROFILE}" ]]; then
+    echo "  Embedded profile found: ${EMBEDDED_PROFILE}"
+    security cms -D -i "${EMBEDDED_PROFILE}" 2>/dev/null | grep -A1 '<key>Name</key>' | head -2
+else
+    echo "  WARNING: No embedded.mobileprovision found in archive!"
+    echo "  Contents of ${ARCHIVE_PATH}/Products/Applications/${SCHEME}.app/:"
+    ls -la "${ARCHIVE_PATH}/Products/Applications/${SCHEME}.app/" | head -15
+fi
+
+# List installed provisioning profiles
+echo ""
+echo "  Installed provisioning profiles:"
+ls -la "${HOME}/Library/MobileDevice/Provisioning Profiles/" 2>/dev/null | head -10 || echo "  No profiles directory found"
+echo "==============================="
 
 #-------------------------------------------------------------------------------
 # Export IPA
