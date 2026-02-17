@@ -241,6 +241,13 @@ if [[ -n "${CERTIFICATE_PATH:-}" ]] && [[ -n "${PROVISIONING_PROFILE_PATH:-}" ]]
 
     # Install provisioning profile
     log_info "Installing provisioning profile..."
+    
+    # Extract and display profile information for debugging
+    echo "=== PROVISIONING PROFILE INFO ==="
+    echo "  File: ${PROVISIONING_PROFILE_PATH}"
+    security cms -D -i "${PROVISIONING_PROFILE_PATH}" 2>/dev/null | grep -A1 -E "(Name|TeamIdentifier|UUID|application-identifier)" | head -20 || echo "  Could not extract profile info"
+    echo "=================================="
+    
     PROFILE_UUID=$(grep -aA1 'UUID' "${PROVISIONING_PROFILE_PATH}" | grep -oE '[a-fA-F0-9-]{36}' | head -1)
     
     if [[ -z "${PROFILE_UUID}" ]]; then
@@ -252,6 +259,12 @@ if [[ -n "${CERTIFICATE_PATH:-}" ]] && [[ -n "${PROVISIONING_PROFILE_PATH:-}" ]]
     mkdir -p "${PROFILES_DIR}"
     cp "${PROVISIONING_PROFILE_PATH}" "${PROFILES_DIR}/${PROFILE_UUID}.mobileprovision"
 
+    echo "=== PROVISIONING PROFILE INSTALLED ==="
+    echo "  Profile UUID: ${PROFILE_UUID}"
+    echo "  Installed to: ${PROFILES_DIR}/${PROFILE_UUID}.mobileprovision"
+    ls -la "${PROFILES_DIR}/${PROFILE_UUID}.mobileprovision" || echo "  WARNING: Profile file not found!"
+    echo "======================================="
+    
     log_success "Manual signing configured (Profile UUID: ${PROFILE_UUID})"
 
     # Set cleanup trap to remove keychain on exit
@@ -393,9 +406,11 @@ if [[ "${MANUAL_SIGNING}" == true ]]; then
 <plist version="1.0">
 <dict>
     <key>method</key>
-    <string>app-store</string>
+    <string>app-store-connect</string>
     <key>signingStyle</key>
     <string>manual</string>
+    <key>signingCertificate</key>
+    <string>iPhone Distribution</string>
     <key>teamID</key>
     <string>${TEAM_ID}</string>
     <key>provisioningProfiles</key>
@@ -407,9 +422,15 @@ if [[ "${MANUAL_SIGNING}" == true ]]; then
     <true/>
     <key>compileBitcode</key>
     <false/>
+    <key>manageAppVersionAndBuildNumber</key>
+    <false/>
 </dict>
 </plist>
 EOF
+    
+    echo "=== EXPORT OPTIONS ==="
+    cat "${EXPORT_OPTIONS_PATH}"
+    echo "======================"
 else
     cat > "${EXPORT_OPTIONS_PATH}" << 'EOF'
 <?xml version="1.0" encoding="UTF-8"?>
@@ -417,7 +438,7 @@ else
 <plist version="1.0">
 <dict>
     <key>method</key>
-    <string>app-store</string>
+    <string>app-store-connect</string>
     <key>signingStyle</key>
     <string>automatic</string>
     <key>uploadSymbols</key>
@@ -428,6 +449,8 @@ else
 </plist>
 EOF
 fi
+
+log_info "ExportOptions.plist created at: ${EXPORT_OPTIONS_PATH}"
 
 #-------------------------------------------------------------------------------
 # Build archive
