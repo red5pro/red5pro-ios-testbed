@@ -160,7 +160,7 @@ log_info "XcodeGen version: $($XCODE_GEN --version)"
 #-------------------------------------------------------------------------------
 
 MANUAL_SIGNING=false
-KEYCHAIN_NAME="build.keychain"
+KEYCHAIN_NAME="${HOME}/Library/Keychains/build.keychain-db"
 KEYCHAIN_PASSWORD="build_password"
 PROFILE_UUID=""
 
@@ -192,9 +192,18 @@ if [[ -n "${CERTIFICATE_PATH:-}" ]] && [[ -n "${PROVISIONING_PROFILE_PATH:-}" ]]
     fi
 
     # Create a temporary keychain for the build
-    log_info "Creating temporary keychain..."
-    security create-keychain -p "${KEYCHAIN_PASSWORD}" "${KEYCHAIN_NAME}" 2>/dev/null || true
+    log_info "Creating temporary keychain at: ${KEYCHAIN_NAME}"
+    
+    # Delete existing keychain if it exists (clean slate)
+    security delete-keychain "${KEYCHAIN_NAME}" 2>/dev/null || true
+    
+    # Create new keychain
+    security create-keychain -p "${KEYCHAIN_PASSWORD}" "${KEYCHAIN_NAME}"
+    
+    # Configure keychain settings (no auto-lock for 6 hours)
     security set-keychain-settings -lut 21600 "${KEYCHAIN_NAME}"
+    
+    # Unlock the keychain
     security unlock-keychain -p "${KEYCHAIN_PASSWORD}" "${KEYCHAIN_NAME}"
 
     # Add keychain to search list (put our build keychain first so it's searched first)
@@ -207,24 +216,28 @@ if [[ -n "${CERTIFICATE_PATH:-}" ]] && [[ -n "${PROVISIONING_PROFILE_PATH:-}" ]]
     log_info "Keychain search list:"
     security list-keychains -d user
 
-    # Import certificate
-    log_info "Importing certificate..."
+    # Import certificate with -A flag to allow all applications to access
+    log_info "Importing certificate from: ${CERTIFICATE_PATH}"
     security import "${CERTIFICATE_PATH}" \
         -k "${KEYCHAIN_NAME}" \
         -P "${CERTIFICATE_PASSWORD}" \
+        -A \
         -T /usr/bin/codesign \
-        -T /usr/bin/security
+        -T /usr/bin/security \
+        -T /usr/bin/xcodebuild
 
     # Allow codesign to access the keychain without prompting
+    # This is critical for CI where there's no UI to approve access
     security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "${KEYCHAIN_PASSWORD}" "${KEYCHAIN_NAME}"
 
     # Verify certificate was imported and list available signing identities
-    log_info "Verifying certificate import..."
-    log_info "Available signing identities in ${KEYCHAIN_NAME}:"
-    security find-identity -v -p codesigning "${KEYCHAIN_NAME}" || log_warning "No signing identities found in keychain"
-    
-    log_info "All available signing identities:"
-    security find-identity -v -p codesigning || log_warning "No signing identities found"
+    echo "=== CERTIFICATE VERIFICATION ==="
+    echo "Signing identities in ${KEYCHAIN_NAME}:"
+    security find-identity -v -p codesigning "${KEYCHAIN_NAME}" || echo "  WARNING: No signing identities found in build keychain"
+    echo ""
+    echo "All available signing identities (all keychains):"
+    security find-identity -v -p codesigning || echo "  WARNING: No signing identities found"
+    echo "================================"
 
     # Install provisioning profile
     log_info "Installing provisioning profile..."
