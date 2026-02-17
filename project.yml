@@ -42,7 +42,7 @@ targets:
       base:
         PRODUCT_NAME: WebRTCTestBed
         FRAMEWORK_SEARCH_PATHS: ["$(inherited)", "$(PROJECT_DIR)/Frameworks"]
-        DEVELOPMENT_TEAM: ZU6399Z3YR
+        DEVELOPMENT_TEAM: E964K44BWW
         CODE_SIGN_STYLE: Automatic
     dependencies:
       - package: WebRTC
