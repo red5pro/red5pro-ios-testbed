@@ -1,6 +1,6 @@
 name: WebRTCTestBed
 options:
-  bundleIdPrefix: com.infrared5.test.testbed
+  bundleIdPrefix: com.infrared5.test
 
 packages:
   WebRTC:

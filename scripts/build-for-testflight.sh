@@ -28,7 +28,7 @@
 #   - R5PRO_VERSION: Marketing version string (CFBundleShortVersionString, e.g., "2.0")
 #   - R5PRO_BUILD: Build number (CFBundleVersion, e.g., "23")
 #   - DEVELOPMENT_TEAM: Apple Developer Team ID (defaults to E964K44BWW)
-#   - BUNDLE_ID: App bundle identifier (defaults to com.infrared5.test.testbed.WebRTCTestBed)
+#   - BUNDLE_ID: App bundle identifier (defaults to com.infrared5.test.WebRTCTestBed)
 #
 # Usage:
 #   ./scripts/build-for-testflight.sh [--upload] [--scheme SCHEME] [--config CONFIG]
@@ -53,7 +53,7 @@ ARCHIVE_PATH="${BUILD_DIR}/${SCHEME}.xcarchive"
 EXPORT_PATH="${BUILD_DIR}/export"
 IPA_PATH="${EXPORT_PATH}/${SCHEME}.ipa"
 TEAM_ID="${DEVELOPMENT_TEAM:-E964K44BWW}"
-APP_BUNDLE_ID="${BUNDLE_ID:-com.infrared5.test.testbed.WebRTCTestBed}"
+APP_BUNDLE_ID="${BUNDLE_ID:-com.infrared5.test.WebRTCTestBed}"
 
 #-------------------------------------------------------------------------------
 # Helper functions
