@@ -167,6 +167,15 @@ struct SettingsScreen: View {
                             .textInputAutocapitalization(.never)
                             .autocorrectionDisabled()
                     }
+
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Token")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        TextField("Enter token", text: $settings.pubnubToken)
+                            .textInputAutocapitalization(.never)
+                            .autocorrectionDisabled()
+                    }
                 }
 
                 Section(header: Text("DTLS Setup")) {
