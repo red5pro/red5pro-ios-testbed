@@ -1,6 +1,6 @@
 name: WebRTCTestBed
 options:
-  bundleIdPrefix: com.infrared5.test.testbed
+  bundleIdPrefix: com.infrared5.test
 
 packages:
   WebRTC:
@@ -34,6 +34,9 @@ targets:
           - UIInterfaceOrientationPortrait
         "UISupportedInterfaceOrientations~ipad":
           - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+          - UIInterfaceOrientationPortraitUpsideDown
         NSAppTransportSecurity:
           NSAllowsArbitraryLoads: true
         NSCameraUsageDescription: "This app needs camera access for video calls"
