@@ -127,6 +127,17 @@ class StreamManagerPublishManager: NSObject, ObservableObject {
     func switchCamera() {
         webrtcClient?.switchCamera()
     }
+    
+    func setResolutionScale(_ scale: Double) {
+        let scaleFactor = scale > 0.0 ? NSNumber(value: scale) : nil
+        webrtcClient?.setVideoTransmissionParameters(scaleResolutionDownBy: scaleFactor, maxFramerate: nil)
+        statusCallback?("Resolution scaling set to \(scale > 0.0 ? String(scale) : "None")x")
+    }
+    
+    func setLocalResolution(width: Int, height: Int, fps: Int) {
+        webrtcClient?.changeCaptureFormat(width: width, height: height, framerate: fps)
+        statusCallback?("Camera format changed to \(width)x\(height)")
+    }
 
     func release() {
         // Stop everything
@@ -288,6 +299,8 @@ struct StreamManagerPublishScreen: View {
     @State private var previewStarted = false
     @State private var cameraPermissionGranted = false
     @State private var showingLogs = false
+    @State private var resolutionScaleFactor: Double = 1.0
+    @State private var localResolution: String = "VGA"
 
     var body: some View {
         ZStack {
@@ -459,7 +472,54 @@ struct StreamManagerPublishScreen: View {
                     .disabled(!previewStarted)
                 }
                 .padding(.horizontal, 20)
-                .padding(.bottom, 40)
+                
+                // Third row: Resolution Scaling Picker
+                if isPublishing {
+                    VStack {
+                        Text("Transmission Scale")
+                            .font(.caption)
+                            .foregroundColor(.white)
+                        Picker("Resolution Scale", selection: $resolutionScaleFactor) {
+                            Text("Full").tag(1.0)
+                            Text("Half").tag(2.0)
+                            Text("Quarter").tag(4.0)
+                        }
+                        .pickerStyle(SegmentedPickerStyle())
+                        .background(Color.white.opacity(0.8))
+                        .cornerRadius(8)
+                        .onChange(of: resolutionScaleFactor) { newValue in
+                            publishManager.setResolutionScale(newValue)
+                        }
+                    }
+                    .padding(.horizontal, 20)
+                }
+                
+                // Fourth row: Local Preview Resolution Picker
+                VStack {
+                    Text("Camera Resolution")
+                        .font(.caption)
+                        .foregroundColor(.white)
+                    Picker("Camera Resolution", selection: $localResolution) {
+                        Text("VGA").tag("VGA")
+                        Text("qHD").tag("qHD")
+                        Text("HD").tag("HD")
+                    }
+                    .pickerStyle(SegmentedPickerStyle())
+                    .background(Color.white.opacity(0.8))
+                    .cornerRadius(8)
+                    .onChange(of: localResolution) { newValue in
+                        switch newValue {
+                        case "VGA": publishManager.setLocalResolution(width: 640, height: 480, fps: 30)
+                        case "qHD": publishManager.setLocalResolution(width: 960, height: 540, fps: 30)
+                        case "HD": publishManager.setLocalResolution(width: 1280, height: 720, fps: 30)
+                        default: break
+                        }
+                    }
+                }
+                .padding(.horizontal, 20)
+                .disabled(!previewStarted)
+
+                Spacer().frame(height: 40)
             }
             
             // Floating Logs Button
