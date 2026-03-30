@@ -1,4 +1,4 @@
-# Red5 iOS SDK Testbed
+# Red5 iOS SDK Testbed (Example App)
 
 ## Introduction
 
