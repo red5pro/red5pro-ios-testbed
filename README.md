@@ -1,8 +1,8 @@
-# Red5 iOS WebRTC SDK Testbed
+# Red5 iOS SDK Testbed
 
 ## Introduction
 
-The Red5 iOS WebRTC SDK Testbed is a comprehensive example application that demonstrates the capabilities of the Red5 iOS WebRTC SDK. This testbed provides working examples of publishing and subscribing to streams on both Red5 Cloud (Stream Manager) and standalone Red5Pro servers.
+The Red5 iOS SDK Testbed is a comprehensive example application that demonstrates the capabilities of the Red5 iOS SDK. This testbed provides working examples of publishing and subscribing to streams on both Red5 Cloud (Stream Manager) and standalone Red5Pro servers.
 
 ## Table of Contents
 
@@ -59,7 +59,7 @@ pod install
 open SampleApp.xcworkspace
 ```
 
-4. Add the Red5 iOS WebRTC SDK framework to the project:
+4. Add the Red5 iOS SDK framework to the project:
    - Drag and drop the Red5WebRTCKit framework into your project
    - Ensure it's added to "Frameworks, Libraries, and Embedded Content"
 
