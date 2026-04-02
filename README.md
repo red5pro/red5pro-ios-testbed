@@ -2,7 +2,7 @@
 
 ## Introduction
 
-The Red5 iOS SDK Testbed is a comprehensive example application that demonstrates the capabilities of the Red5 iOS SDK. This testbed provides working examples of publishing and subscribing to streams on both [Red5 Cloud](https://www.red5.net/red5-cloud-low-latency-live-streaming-platform/) (Stream Manager) and standalone [Red5Pro]((https://www.red5.net/red5-pro/low-latency-streaming-software/)) servers.
+The Red5 iOS SDK Testbed is a comprehensive example application that demonstrates the capabilities of the Red5 iOS SDK. This testbed provides working examples of publishing and subscribing to streams on both [Red5 Cloud](https://www.red5.net/red5-cloud-low-latency-live-streaming-platform/) (Stream Manager) and standalone [Red5Pro](https://www.red5.net/red5-pro/low-latency-streaming-software/) servers.
 
 ## Table of Contents
 
