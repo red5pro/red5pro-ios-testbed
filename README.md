@@ -32,6 +32,9 @@ The testbed includes the following features:
 - **SwiftUI Interface**: Modern SwiftUI-based user interface
 - **Real-time Status Updates**: Live connection status and event notifications
 
+## Usage
+You can clone this testbed project to explore all available features and implementations, or continue with the examples below to get started quickly.
+
 ## Requirements
 
 - iOS 13.0 or later
@@ -72,6 +75,8 @@ open SampleApp.xcworkspace
 ```
 
 6. Build and run the project on a physical device (camera functionality requires a real device).
+
+7. For full SDK setup and usage reference, see: [https://www.red5.net/docs/red5-cloud/development/sdks/ios-sdk/](https://www.red5.net/docs/red5-cloud/development/sdks/ios-sdk/)
 
 ## Configuration
 
