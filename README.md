@@ -76,7 +76,9 @@ open SampleApp.xcworkspace
 
 6. Build and run the project on a physical device (camera functionality requires a real device).
 
-7. For full SDK setup and usage reference, see: [https://www.red5.net/docs/red5-cloud/development/sdks/ios-sdk/](https://www.red5.net/docs/red5-cloud/development/sdks/ios-sdk/)
+7. If you have a Cloud account, you can download the SDK from your Account > Plans section or from the following [link]( https://www.red5.net/docs/red5-cloud/development/sdks/ios-sdk/)
+
+If you have a Red5 Pro Account, you can download the SDK from your Downloads section. Read this documentation [guide](https://www.red5.net/docs/red5-pro/development/sdks/red5-webrtc-sdk/ios-sdk/)
 
 ## Configuration
 
