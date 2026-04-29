@@ -24,6 +24,8 @@
 		6D3406A32F202BB9003EA2E5 /* Red5PubNubClient in Frameworks */ = {isa = PBXBuildFile; productRef = 6D3406A22F202BB9003EA2E5 /* Red5PubNubClient */; };
 		6D5ACE2A2F21656B006F756E /* Red5PubNubClient in Frameworks */ = {isa = PBXBuildFile; productRef = 6D5ACE292F21656B006F756E /* Red5PubNubClient */; };
 		6D5ACE2C2F21656B006F756E /* Red5WebRTCKit in Frameworks */ = {isa = PBXBuildFile; productRef = 6D5ACE2B2F21656B006F756E /* Red5WebRTCKit */; };
+		6D98E1372F9A8F820068F704 /* Red5PubNubClient in Frameworks */ = {isa = PBXBuildFile; productRef = 6D98E1362F9A8F820068F704 /* Red5PubNubClient */; };
+		6D98E1392F9A8F820068F704 /* Red5WebRTCKit in Frameworks */ = {isa = PBXBuildFile; productRef = 6D98E1382F9A8F820068F704 /* Red5WebRTCKit */; };
 		9FC65FB517F99AC1C2ECE2E3 /* WebRTC in Frameworks */ = {isa = PBXBuildFile; productRef = 83AC18E85224689302FF7E33 /* WebRTC */; };
 		AEE75507275FA7A6E37B5DFA /* WebRTCTestBedApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 478E532AF7D9D36C37A63267 /* WebRTCTestBedApp.swift */; };
 		B5666726A3A4D251B7ABB378 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 004ED9961F6AE06224A59003 /* CoreMedia.framework */; };
@@ -81,6 +83,8 @@
 				48DD8B312EF3012D003F0FBE /* Red5PubNubClient in Frameworks */,
 				6D3406A32F202BB9003EA2E5 /* Red5PubNubClient in Frameworks */,
 				6D5ACE2A2F21656B006F756E /* Red5PubNubClient in Frameworks */,
+				6D98E1392F9A8F820068F704 /* Red5WebRTCKit in Frameworks */,
+				6D98E1372F9A8F820068F704 /* Red5PubNubClient in Frameworks */,
 				BB697D18D17B722E83A7DD30 /* CoreAudio.framework in Frameworks */,
 				DF33C75DC92E223A50C6EB12 /* VideoToolbox.framework in Frameworks */,
 			);
@@ -167,6 +171,8 @@
 				6D3406A22F202BB9003EA2E5 /* Red5PubNubClient */,
 				6D5ACE292F21656B006F756E /* Red5PubNubClient */,
 				6D5ACE2B2F21656B006F756E /* Red5WebRTCKit */,
+				6D98E1362F9A8F820068F704 /* Red5PubNubClient */,
+				6D98E1382F9A8F820068F704 /* Red5WebRTCKit */,
 			);
 			productName = WebRTCTestBed;
 			productReference = 74D2F61758CFB631FC0CC7A1 /* WebRTCTestBed.app */;
@@ -200,7 +206,7 @@
 			packageReferences = (
 				C4822941DA12FFC2F4D506B1 /* XCRemoteSwiftPackageReference "swift" */,
 				67267988C19A153227D36125 /* XCRemoteSwiftPackageReference "WebRTC" */,
-				6D5ACE282F21656A006F756E /* XCLocalSwiftPackageReference "../../../Downloads/Red5WebRTCKit-1-2" */,
+				6D98E1352F9A8F820068F704 /* XCLocalSwiftPackageReference "../../../Downloads/Red5WebRTCKit-2-3" */,
 			);
 			projectDirPath = "";
 			projectRoot = "";
@@ -452,9 +458,9 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		6D5ACE282F21656A006F756E /* XCLocalSwiftPackageReference "../../../Downloads/Red5WebRTCKit-1-2" */ = {
+		6D98E1352F9A8F820068F704 /* XCLocalSwiftPackageReference "../../../Downloads/Red5WebRTCKit-2-3" */ = {
 			isa = XCLocalSwiftPackageReference;
-			relativePath = "../../../Downloads/Red5WebRTCKit-1-2";
+			relativePath = "../../../Downloads/Red5WebRTCKit-2-3";
 		};
 /* End XCLocalSwiftPackageReference section */
 
@@ -499,6 +505,14 @@
 			productName = Red5PubNubClient;
 		};
 		6D5ACE2B2F21656B006F756E /* Red5WebRTCKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Red5WebRTCKit;
+		};
+		6D98E1362F9A8F820068F704 /* Red5PubNubClient */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Red5PubNubClient;
+		};
+		6D98E1382F9A8F820068F704 /* Red5WebRTCKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Red5WebRTCKit;
 		};
