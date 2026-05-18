@@ -128,6 +128,14 @@ class StreamManagerPublishManager: NSObject, ObservableObject {
         webrtcClient?.switchCamera()
     }
 
+    func toggleScreenShare(enabled: Bool) {
+        if enabled {
+            webrtcClient?.startScreenShare()
+        } else {
+            webrtcClient?.stopScreenShare()
+        }
+    }
+
     func release() {
         // Stop everything
         webrtcClient?.stopPublish()
@@ -288,6 +296,7 @@ struct StreamManagerPublishScreen: View {
     @State private var previewStarted = false
     @State private var cameraPermissionGranted = false
     @State private var showingLogs = false
+    @State private var isScreenSharing = false
 
     var body: some View {
         ZStack {
@@ -377,8 +386,8 @@ struct StreamManagerPublishScreen: View {
                 Spacer()
 
                 VStack(spacing: 15) {
-                    // First row: 3 buttons
-                    HStack(spacing: 20) {
+                    // First row: 4 buttons
+                    HStack(spacing: 10) {
                         // Video Mute/Unmute Button
                         Button(action: {
                             isVideoMuted.toggle()
@@ -426,6 +435,25 @@ struct StreamManagerPublishScreen: View {
                                 Image(systemName: "arrow.triangle.2.circlepath.camera.fill")
                                     .font(.system(size: 24))
                                 Text("Flip")
+                                    .font(.caption)
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color.white.opacity(previewStarted ? 0.2 : 0.1))
+                            .foregroundColor(previewStarted ? .white : .gray)
+                            .cornerRadius(12)
+                        }
+                        .disabled(!previewStarted)
+
+                        // Screen Share Button
+                        Button(action: {
+                            isScreenSharing.toggle()
+                            publishManager.toggleScreenShare(enabled: isScreenSharing)
+                        }) {
+                            VStack(spacing: 5) {
+                                Image(systemName: isScreenSharing ? "rectangle.on.rectangle.fill" : "rectangle.on.rectangle")
+                                    .font(.system(size: 24))
+                                Text("Share")
                                     .font(.caption)
                             }
                             .frame(maxWidth: .infinity)

@@ -38,6 +38,7 @@ class ConferenceViewModel: ObservableObject, Red5ProWebrtcEventDelegate, Confere
     @Published var statusMessage: String = "Ready"
     @Published var localVideoRenderer: RTCVideoRenderer?
     @Published var participantRenderers: [String: RTCVideoRenderer] = [:]
+    @Published var isScreenSharing: Bool = false
     
     // MARK: - Properties
     private var client: Red5WebrtcClient?
@@ -175,6 +176,18 @@ class ConferenceViewModel: ObservableObject, Red5ProWebrtcEventDelegate, Confere
     func switchCamera() {
         client?.switchCamera()
         print("ViewModel: Switch camera")
+    }
+
+    func toggleScreenShare() {
+        guard let client = client else { return }
+        isScreenSharing.toggle()
+        if isScreenSharing {
+            client.startScreenShare()
+            print("ViewModel: Toggled screen share ON")
+        } else {
+            client.stopScreenShare()
+            print("ViewModel: Toggled screen share OFF")
+        }
     }
     
     func cleanup() {

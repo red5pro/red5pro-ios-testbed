@@ -223,6 +223,17 @@ struct ConferenceView: View {
                             .background(Color.gray.opacity(0.5))
                             .clipShape(Circle())
                     }
+
+                    Button(action: {
+                        viewModel.toggleScreenShare()
+                    }) {
+                        Image(systemName: viewModel.isScreenSharing ? "rectangle.on.rectangle.fill" : "rectangle.on.rectangle")
+                            .font(.title)
+                            .foregroundColor(viewModel.isScreenSharing ? .green : .white)
+                            .frame(width: 50, height: 50)
+                            .background(Color.gray.opacity(0.5))
+                            .clipShape(Circle())
+                    }
                 }
                 .padding()
                 .background(Color.black.opacity(0.8))
